@@ -154,6 +154,13 @@ CREATE TABLE steam_accounts (
   avatar VARCHAR(2048) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS lastfm_accounts (
+    user_id BIGINT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    username VARCHAR(255) NOT NULL,
+    session_key VARCHAR(255) NOT NULL,
+    subscriber INT NOT NULL
+);
+
 CREATE TABLE attachments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   kind VARCHAR(50) NOT NULL,

@@ -11,17 +11,18 @@ import (
 	"github.com/GATEOPENERZ/completionist-api/internal/models"
 	"golang.org/x/crypto/bcrypt"
 )
-
 type registerRequest struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
-
+type loginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
 type loginResponse struct {
 	Token string `json:"token"`
 }
-
 func (h *Handler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	var req registerRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -44,20 +45,19 @@ func (h *Handler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusCreated, user)
 }
-
 func (h *Handler) LoginUser(w http.ResponseWriter, r *http.Request) {
-	var req registerRequest
+	var req loginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		httpx.JSONError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
-	user, err := h.UserRepo.FindByUsername(req.Username)
+	user, err := h.UserRepo.FindByEmail(req.Email)
 	if err != nil {
-		httpx.JSONError(w, http.StatusUnauthorized, "Invalid username or password")
+		httpx.JSONError(w, http.StatusUnauthorized, "Invalid email or password")
 		return
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(req.Password)); err != nil {
-		httpx.JSONError(w, http.StatusUnauthorized, "Invalid username or password")
+		httpx.JSONError(w, http.StatusUnauthorized, "Invalid email or password")
 		return
 	}
 	token, err := auth.GenerateJWT(user.ID, time.Hour*24)
@@ -67,7 +67,6 @@ func (h *Handler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, loginResponse{Token: token})
 }
-
 func (h *Handler) GetMe(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {

@@ -5,12 +5,12 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/GATEOPENERZ/completionist-api/internal/auth"
 	"github.com/GATEOPENERZ/completionist-api/internal/httpx"
 	"github.com/GATEOPENERZ/completionist-api/internal/middleware"
 	"github.com/GATEOPENERZ/completionist-api/internal/models"
 	"github.com/go-chi/chi/v5"
 )
-
 func (h *Handler) SteamLogin(w http.ResponseWriter, r *http.Request) {
 	tokenStr, ok := middleware.AuthTokenFromContext(r.Context())
 	if !ok {
@@ -20,7 +20,6 @@ func (h *Handler) SteamLogin(w http.ResponseWriter, r *http.Request) {
 	url := h.Steam.BuildOpenIDRedirect(tokenStr)
 	http.Redirect(w, r, url, http.StatusFound)
 }
-
 func (h *Handler) SteamCallback(w http.ResponseWriter, r *http.Request) {
 	redirectURL := h.Config.FrontendBaseURL + h.Config.SteamCallbackRedirectPath
 	steamID, err := h.Steam.VerifyOpenID(r)
@@ -28,11 +27,17 @@ func (h *Handler) SteamCallback(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, redirectURL+"?error=steam_verification_failed", http.StatusFound)
 		return
 	}
-	authUserID, ok := middleware.UserIDFromContext(r.Context())
-	if !ok {
+	authToken := r.URL.Query().Get("auth_token")
+	if authToken == "" {
 		http.Redirect(w, r, redirectURL+"?error=auth_failed", http.StatusFound)
 		return
 	}
+	claims, err := auth.ValidateJWT(authToken)
+	if err != nil {
+		http.Redirect(w, r, redirectURL+"?error=invalid_auth_token", http.StatusFound)
+		return
+	}
+	authUserID := claims.UserID
 	summary, err := h.Steam.GetPlayerSummary(r.Context(), steamID)
 	if err != nil {
 		http.Redirect(w, r, redirectURL+"?error=steam_profile_fetch_failed", http.StatusFound)
@@ -50,7 +55,6 @@ func (h *Handler) SteamCallback(w http.ResponseWriter, r *http.Request) {
 	}
 	http.Redirect(w, r, redirectURL, http.StatusFound)
 }
-
 func (h *Handler) GetMySteamAccount(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -64,22 +68,20 @@ func (h *Handler) GetMySteamAccount(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, acc)
 }
-
 func (h *Handler) GetUserSteamAccount(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "user_id")
-	userID, err := strconv.ParseInt(idStr, 10, 64)
+	username := chi.URLParam(r, "username")
+	user, err := h.UserRepo.FindByUsername(username)
 	if err != nil {
-		httpx.JSONError(w, http.StatusBadRequest, "Invalid user_id")
+		httpx.JSONError(w, http.StatusNotFound, "User not found")
 		return
 	}
-	acc, err := h.SteamRepo.FindByUserID(userID)
+	acc, err := h.SteamRepo.FindByUserID(user.ID)
 	if err != nil {
 		httpx.JSONError(w, http.StatusNotFound, "Steam not linked for this user")
 		return
 	}
 	httpx.JSON(w, http.StatusOK, acc)
 }
-
 func (h *Handler) GetMySteamOwnedGames(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -98,7 +100,6 @@ func (h *Handler) GetMySteamOwnedGames(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, g)
 }
-
 func (h *Handler) GetMySteamAchievementsForApp(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -123,7 +124,6 @@ func (h *Handler) GetMySteamAchievementsForApp(w http.ResponseWriter, r *http.Re
 	}
 	httpx.JSON(w, http.StatusOK, res)
 }
-
 func (h *Handler) GetSteamGameSchema(w http.ResponseWriter, r *http.Request) {
 	appStr := chi.URLParam(r, "app_id")
 	appID, err := strconv.Atoi(appStr)
@@ -138,7 +138,6 @@ func (h *Handler) GetSteamGameSchema(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, res)
 }
-
 func (h *Handler) RAWGSearchGames(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query().Get("q")
 	page := 1
@@ -158,7 +157,6 @@ func (h *Handler) RAWGSearchGames(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, res)
 }
-
 func (h *Handler) RAWGGameAchievements(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "rawg_id")
 	gameID, err := strconv.Atoi(idStr)
@@ -179,7 +177,6 @@ func (h *Handler) RAWGGameAchievements(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, res)
 }
-
 func (h *Handler) AttachSteamToUser(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {

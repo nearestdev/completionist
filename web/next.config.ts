@@ -33,6 +33,18 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "books.google.com",
+        port: "",
+        pathname: "/books/content/**",
+      },
+      {
+        protocol: "https",
+        hostname: "lastfm.freetls.fastly.net",
+        port: "",
+        pathname: "/i/u/**",
+      },
     ],
   },
 };

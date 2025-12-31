@@ -5,16 +5,16 @@ import socialService from "@/services/socialService";
 import { UserFollowResponse } from "@/types/social";
 import UserCard from "@/components/users/UserCard";
 export default function FollowingPage() {
-  const { userId } = useParams();
+  const { username } = useParams<{ username: string }>();
   const [following, setFollowing] = useState<UserFollowResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     const fetchFollowing = async () => {
-      if (!userId) return;
+      if (!username) return;
       try {
         setLoading(true);
-        const data = await socialService.getUserFollowing(Number(userId));
+        const data = await socialService.getUserFollowing(username);
         setFollowing(data);
       } catch (err) {
         setError("Failed to load following list.");
@@ -23,7 +23,7 @@ export default function FollowingPage() {
       }
     };
     fetchFollowing();
-  }, [userId]);
+  }, [username]);
   if (loading) return <div>Loading...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
   return (

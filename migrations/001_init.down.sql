@@ -12,6 +12,7 @@ DROP TABLE IF EXISTS user_list_items;
 DROP TABLE IF EXISTS media_items;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS steam_accounts;
+DROP TABLE IF EXISTS lastfm_accounts;
 DROP TYPE IF EXISTS post_type;
 DROP TYPE IF EXISTS priority_level;
 DROP TYPE IF EXISTS item_status;

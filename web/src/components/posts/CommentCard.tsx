@@ -7,13 +7,13 @@ export default function CommentCard({ comment }: CommentCardProps) {
   return (
     <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-4">
       <div className="flex items-center mb-2">
-        <Link href={`/profile/${comment.userId}`}>
+        <Link href={`/profile/${comment.username}`}>
           <span className="font-semibold text-indigo-600 hover:underline">
             {comment.username}
           </span>
         </Link>
         <span className="text-gray-500 dark:text-gray-400 text-sm ml-2">
-          · {new Date(comment.createdAt).toLocaleDateString()}
+          Â· {new Date(comment.createdAt).toLocaleDateString()}
         </span>
       </div>
       <p className="text-gray-700 dark:text-gray-300">{comment.content}</p>

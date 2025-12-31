@@ -1,0 +1,30 @@
+{
+  "name": "completionist-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "postinstall": "cd web && npm install",
+    "setup": "npm install && npm run db:up && npm run migrate:install-tool && npm run swagger:install",
+    "db:up": "docker-compose up -d",
+    "db:down": "docker-compose down",
+    "db:logs": "docker-compose logs -f",
+    "db:reset": "docker-compose down -v && docker-compose up -d",
+    "migrate:install-tool": "go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest",
+    "migrate:create": "migrate create -ext sql -dir migrations -seq",
+    "swagger:install": "go install github.com/swaggo/swag/cmd/swag@latest",
+    "swagger:gen": "swag init -g cmd/api/main.go --output swagger",
+    "dev:backend": "cross-env GO_ENV=development go run cmd/api/main.go",
+    "dev:frontend": "cd web && npm run dev",
+    "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"blue,magenta\" \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "build:backend": "go build -o bin/server.exe cmd/api/main.go",
+    "build:frontend": "cd web && npm run build",
+    "build": "npm run build:backend && npm run build:frontend",
+    "start:backend": "cross-env GO_ENV=production ./bin/server.exe",
+    "start:frontend": "cd web && npm run start",
+    "start": "concurrently -n \"BACKEND,FRONTEND\" -c \"blue,magenta\" \"npm run start:backend\" \"npm run start:frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.1.0"
+  }
+}

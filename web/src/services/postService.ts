@@ -9,7 +9,6 @@ import {
   CommentWithDetails,
   UpdateComment,
 } from "@/types/posts";
-
 const postService = {
   createPost: async (data: NewPost): Promise<Post> => {
     const response = await api.post<Post>("/posts", data);
@@ -23,8 +22,8 @@ const postService = {
     const response = await api.get<PostWithDetails>(`/posts/${postId}`);
     return response.data;
   },
-  getUserPosts: async (userId: number, limit: number = 20, offset: number = 0): Promise<PostWithDetails[]> => {
-    const response = await api.get<PostWithDetails[]>(`/users/${userId}/posts?limit=${limit}&offset=${offset}`);
+  getUserPosts: async (username: string, limit: number = 20, offset: number = 0): Promise<PostWithDetails[]> => {
+    const response = await api.get<PostWithDetails[]>(`/users/${username}/posts?limit=${limit}&offset=${offset}`);
     return response.data;
   },
   updatePost: async (postId: number, data: UpdatePost): Promise<Post> => {
@@ -62,5 +61,4 @@ const postService = {
     await api.delete(`/comments/${commentId}/unlike`);
   },
 };
-
 export default postService;

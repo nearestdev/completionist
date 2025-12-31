@@ -62,7 +62,6 @@ func New() *Client {
 
 func (c *Client) doJSON(ctx context.Context, rawURL string, out any) error {
 	req, _ := http.NewRequestWithContext(ctx, "GET", rawURL, nil)
-	// Jikan recommends sending a UA
 	req.Header.Set("User-Agent", "completionist-api-go/1.0 (+https://localhost)")
 	resp, err := c.http.Do(req)
 	if err != nil {

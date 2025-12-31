@@ -7,6 +7,7 @@ export default function SearchHubPage() {
     { name: "Movies", href: "/search/movies" },
     { name: "TV Shows", href: "/search/tv" },
     { name: "Games", href: "/search/games" },
+    { name: "Books", href: "/search/books" },
   ];
 
   return (

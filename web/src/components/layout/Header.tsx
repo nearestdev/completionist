@@ -30,7 +30,7 @@ export default function Header() {
                 <Link href="/wishlist" className="text-gray-600 dark:text-gray-300 hover:text-gray-800">
                   Wishlist
                 </Link>
-                <Link href={`/profile/${user.id}`} className="text-gray-600 dark:text-gray-300 hover:text-gray-800">
+                <Link href={`/profile/${user.username}`} className="text-gray-600 dark:text-gray-300 hover:text-gray-800">
                   My Profile
                 </Link>
                 <Link href="/settings" className="text-gray-600 dark:text-gray-300 hover:text-gray-800">

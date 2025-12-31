@@ -10,7 +10,6 @@ import (
 	"github.com/GATEOPENERZ/completionist-api/internal/models"
 	"github.com/go-chi/chi/v5"
 )
-
 func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -29,7 +28,6 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusCreated, post)
 }
-
 func (h *Handler) GetPostsFeed(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -55,7 +53,6 @@ func (h *Handler) GetPostsFeed(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, posts)
 }
-
 func (h *Handler) GetPostByID(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -79,17 +76,16 @@ func (h *Handler) GetPostByID(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, post)
 }
-
 func (h *Handler) GetUserPosts(w http.ResponseWriter, r *http.Request) {
 	_, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
 		httpx.JSONError(w, http.StatusUnauthorized, "Unauthorized")
 		return
 	}
-	uidStr := chi.URLParam(r, "user_id")
-	targetUserID, err := strconv.ParseInt(uidStr, 10, 64)
+	username := chi.URLParam(r, "username")
+	targetUser, err := h.UserRepo.FindByUsername(username)
 	if err != nil {
-		httpx.JSONError(w, http.StatusBadRequest, "Invalid user_id")
+		httpx.JSONError(w, http.StatusNotFound, "User not found")
 		return
 	}
 	limit := int64(20)
@@ -104,14 +100,13 @@ func (h *Handler) GetUserPosts(w http.ResponseWriter, r *http.Request) {
 			offset = n
 		}
 	}
-	posts, err := h.PostsRepo.GetPostsByUserID(targetUserID, nil, limit, offset)
+	posts, err := h.PostsRepo.GetPostsByUserID(targetUser.ID, nil, limit, offset)
 	if err != nil {
 		httpx.JSONError(w, http.StatusInternalServerError, "Failed to load posts")
 		return
 	}
 	httpx.JSON(w, http.StatusOK, posts)
 }
-
 func (h *Handler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -136,7 +131,6 @@ func (h *Handler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, post)
 }
-
 func (h *Handler) DeletePost(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -160,7 +154,6 @@ func (h *Handler) DeletePost(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
-
 func (h *Handler) LikePost(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -180,7 +173,6 @@ func (h *Handler) LikePost(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusCreated, like)
 }
-
 func (h *Handler) UnlikePost(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -204,7 +196,6 @@ func (h *Handler) UnlikePost(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
-
 func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -230,7 +221,6 @@ func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusCreated, comment)
 }
-
 func (h *Handler) GetPostComments(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -250,7 +240,6 @@ func (h *Handler) GetPostComments(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, comments)
 }
-
 func (h *Handler) UpdateComment(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -275,7 +264,6 @@ func (h *Handler) UpdateComment(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, comment)
 }
-
 func (h *Handler) DeleteComment(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -299,7 +287,6 @@ func (h *Handler) DeleteComment(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
-
 func (h *Handler) LikeComment(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -319,7 +306,6 @@ func (h *Handler) LikeComment(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusCreated, like)
 }
-
 func (h *Handler) UnlikeComment(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {

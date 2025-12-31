@@ -1,0 +1,14 @@
+basePath: /api
+host: localhost:8080
+info:
+  contact: {}
+  description: This is the API server for the Completionist application.
+  title: Completionist API
+  version: "1.0"
+paths: {}
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
