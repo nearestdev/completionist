@@ -10,6 +10,19 @@ import (
 	"github.com/GATEOPENERZ/completionist-api/internal/models"
 	"github.com/go-chi/chi/v5"
 )
+
+// @Summary      Create a post
+// @Description  Creates a new social post regarding a media item or general topic
+// @Tags         Posts
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request body models.NewPost true "Post content"
+// @Success      201  {object}  models.Post
+// @Failure      400  {object}  map[string]string
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /posts [post]
 func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -28,6 +41,18 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusCreated, post)
 }
+// @Summary      Get posts feed
+// @Description  Retrieves the global or personalized activity feed
+// @Tags         Posts
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        limit query int false "Limit"
+// @Param        offset query int false "Offset"
+// @Success      200  {array}   models.PostWithDetails
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /posts [get]
 func (h *Handler) GetPostsFeed(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -53,6 +78,19 @@ func (h *Handler) GetPostsFeed(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, posts)
 }
+// @Summary      Get post by ID
+// @Description  Retrieves a single post by its ID
+// @Tags         Posts
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        post_id path int true "Post ID"
+// @Success      200  {object}  models.PostWithDetails
+// @Failure      400  {object}  map[string]string
+// @Failure      401  {object}  map[string]string
+// @Failure      404  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /posts/{post_id} [get]
 func (h *Handler) GetPostByID(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -76,6 +114,20 @@ func (h *Handler) GetPostByID(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, post)
 }
+// @Summary      Get user posts
+// @Description  Retrieves posts made by a specific user
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        username path string true "Username"
+// @Param        limit query int false "Limit"
+// @Param        offset query int false "Offset"
+// @Success      200  {array}   models.PostWithDetails
+// @Failure      401  {object}  map[string]string
+// @Failure      404  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /users/{username}/posts [get]
 func (h *Handler) GetUserPosts(w http.ResponseWriter, r *http.Request) {
 	_, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -107,6 +159,19 @@ func (h *Handler) GetUserPosts(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, posts)
 }
+// @Summary      Update post
+// @Description  Updates an existing post
+// @Tags         Posts
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        post_id path int true "Post ID"
+// @Param        request body models.UpdatePost true "Update details"
+// @Success      200  {object}  models.Post
+// @Failure      400  {object}  map[string]string
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /posts/{post_id} [patch]
 func (h *Handler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -131,6 +196,19 @@ func (h *Handler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, post)
 }
+// @Summary      Delete post
+// @Description  Deletes a post
+// @Tags         Posts
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        post_id path int true "Post ID"
+// @Success      204
+// @Failure      400  {object}  map[string]string
+// @Failure      401  {object}  map[string]string
+// @Failure      404  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /posts/{post_id} [delete]
 func (h *Handler) DeletePost(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -154,6 +232,19 @@ func (h *Handler) DeletePost(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
+// @Summary      Like a post
+// @Description  Adds a like to a post
+// @Tags         Posts
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        post_id path int true "Post ID"
+// @Success      201  {object}  models.PostLike
+// @Failure      400  {object}  map[string]string
+// @Failure      401  {object}  map[string]string
+// @Failure      409  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /posts/{post_id}/like [post]
 func (h *Handler) LikePost(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -173,6 +264,19 @@ func (h *Handler) LikePost(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusCreated, like)
 }
+// @Summary      Unlike a post
+// @Description  Removes a like from a post
+// @Tags         Posts
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        post_id path int true "Post ID"
+// @Success      204
+// @Failure      400  {object}  map[string]string
+// @Failure      401  {object}  map[string]string
+// @Failure      404  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /posts/{post_id}/unlike [delete]
 func (h *Handler) UnlikePost(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -196,6 +300,19 @@ func (h *Handler) UnlikePost(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
+// @Summary      Create a comment
+// @Description  Adds a comment to a post
+// @Tags         Comments
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        post_id path int true "Post ID"
+// @Param        request body models.NewComment true "Comment content"
+// @Success      201  {object}  models.Comment
+// @Failure      400  {object}  map[string]string
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /posts/{post_id}/comments [post]
 func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -221,6 +338,18 @@ func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusCreated, comment)
 }
+// @Summary      Get post comments
+// @Description  Retrieves comments for a specific post
+// @Tags         Comments
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        post_id path int true "Post ID"
+// @Success      200  {array}   models.CommentWithDetails
+// @Failure      400  {object}  map[string]string
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /posts/{post_id}/comments [get]
 func (h *Handler) GetPostComments(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -240,6 +369,19 @@ func (h *Handler) GetPostComments(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, comments)
 }
+// @Summary      Update comment
+// @Description  Updates a comment's content
+// @Tags         Comments
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        comment_id path int true "Comment ID"
+// @Param        request body models.UpdateComment true "Update details"
+// @Success      200  {object}  models.Comment
+// @Failure      400  {object}  map[string]string
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /comments/{comment_id} [patch]
 func (h *Handler) UpdateComment(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -264,6 +406,19 @@ func (h *Handler) UpdateComment(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, comment)
 }
+// @Summary      Delete comment
+// @Description  Deletes a comment
+// @Tags         Comments
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        comment_id path int true "Comment ID"
+// @Success      204
+// @Failure      400  {object}  map[string]string
+// @Failure      401  {object}  map[string]string
+// @Failure      404  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /comments/{comment_id} [delete]
 func (h *Handler) DeleteComment(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -287,6 +442,18 @@ func (h *Handler) DeleteComment(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
+// @Summary      Like a comment
+// @Description  Adds a like to a comment
+// @Tags         Comments
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        comment_id path int true "Comment ID"
+// @Success      201  {object}  models.CommentLike
+// @Failure      400  {object}  map[string]string
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /comments/{comment_id}/like [post]
 func (h *Handler) LikeComment(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -306,6 +473,19 @@ func (h *Handler) LikeComment(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusCreated, like)
 }
+// @Summary      Unlike a comment
+// @Description  Removes a like from a comment
+// @Tags         Comments
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        comment_id path int true "Comment ID"
+// @Success      204
+// @Failure      400  {object}  map[string]string
+// @Failure      401  {object}  map[string]string
+// @Failure      404  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /comments/{comment_id}/unlike [delete]
 func (h *Handler) UnlikeComment(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {

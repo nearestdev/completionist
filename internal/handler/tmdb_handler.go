@@ -12,6 +12,17 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+// @Summary      Search Movies (TMDb)
+// @Description  Search for movies using The Movie Database API
+// @Tags         Search
+// @Accept       json
+// @Produce      json
+// @Param        q query string true "Search query"
+// @Param        page query int false "Page number"
+// @Success      200  {object}  tmdb.SearchResult
+// @Failure      400  {object}  map[string]string
+// @Failure      502  {object}  map[string]string
+// @Router       /search/movies [get]
 func (h *Handler) SearchMoviesTMDB(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query().Get("q")
 	if q == "" {
@@ -31,7 +42,17 @@ func (h *Handler) SearchMoviesTMDB(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, res)
 }
-
+// @Summary      Search TV Shows (TMDb)
+// @Description  Search for TV shows using The Movie Database API
+// @Tags         Search
+// @Accept       json
+// @Produce      json
+// @Param        q query string true "Search query"
+// @Param        page query int false "Page number"
+// @Success      200  {object}  tmdb.SearchResult
+// @Failure      400  {object}  map[string]string
+// @Failure      502  {object}  map[string]string
+// @Router       /search/tv [get]
 func (h *Handler) SearchTVTMDB(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query().Get("q")
 	if q == "" {
@@ -51,13 +72,24 @@ func (h *Handler) SearchTVTMDB(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, res)
 }
-
 type addFromTMDBBody struct {
 	Status   models.ItemStatus `json:"status"`
 	Progress *string           `json:"progress,omitempty"`
 	Rating   *int              `json:"rating,omitempty"`
 }
-
+// @Summary      Add Movie from TMDb
+// @Description  Imports a movie from TMDb into the user's list
+// @Tags         Lists
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        tmdb_id path int true "TMDb Movie ID"
+// @Param        request body addFromTMDBBody true "List details"
+// @Success      201  {object}  models.UserListItem
+// @Failure      400  {object}  map[string]string
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /lists/tmdb/movie/{tmdb_id} [post]
 func (h *Handler) AddMovieFromTMDB(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -128,7 +160,19 @@ func (h *Handler) AddMovieFromTMDB(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusCreated, item)
 }
-
+// @Summary      Add TV Show from TMDb
+// @Description  Imports a TV show from TMDb into the user's list
+// @Tags         Lists
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        tmdb_id path int true "TMDb TV ID"
+// @Param        request body addFromTMDBBody true "List details"
+// @Success      201  {object}  models.UserListItem
+// @Failure      400  {object}  map[string]string
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /lists/tmdb/tv/{tmdb_id} [post]
 func (h *Handler) AddTVFromTMDB(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {

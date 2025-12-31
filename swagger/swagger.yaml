@@ -1,11 +1,3151 @@
 basePath: /api
+definitions:
+  googlebooks.Book:
+    properties:
+      id:
+        type: string
+      volumeInfo:
+        $ref: '#/definitions/googlebooks.VolumeInfo'
+    type: object
+  googlebooks.ImageLinks:
+    properties:
+      smallThumbnail:
+        type: string
+      thumbnail:
+        type: string
+    type: object
+  googlebooks.SearchResult:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/googlebooks.Book'
+        type: array
+      kind:
+        type: string
+      totalItems:
+        type: integer
+    type: object
+  googlebooks.VolumeInfo:
+    properties:
+      authors:
+        items:
+          type: string
+        type: array
+      categories:
+        items:
+          type: string
+        type: array
+      description:
+        type: string
+      imageLinks:
+        $ref: '#/definitions/googlebooks.ImageLinks'
+      pageCount:
+        type: integer
+      publishedDate:
+        type: string
+      publisher:
+        type: string
+      subtitle:
+        type: string
+      title:
+        type: string
+    type: object
+  handler.addFromGoogleBooksBody:
+    properties:
+      progress:
+        type: string
+      rating:
+        type: integer
+      status:
+        $ref: '#/definitions/models.ItemStatus'
+    type: object
+  handler.addFromJikanBody:
+    properties:
+      progress:
+        type: string
+      rating:
+        type: integer
+      status:
+        $ref: '#/definitions/models.ItemStatus'
+    type: object
+  handler.addFromTMDBBody:
+    properties:
+      progress:
+        type: string
+      rating:
+        type: integer
+      status:
+        $ref: '#/definitions/models.ItemStatus'
+    type: object
+  handler.createAttachmentBody:
+    properties:
+      contentType:
+        type: string
+      kind:
+        type: string
+      sizeBytes:
+        type: integer
+      storageProvider:
+        type: string
+      value:
+        type: string
+    type: object
+  handler.linkBody:
+    properties:
+      attachmentId:
+        type: string
+      entityPk:
+        type: string
+      entityTable:
+        type: string
+    type: object
+  handler.loginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  handler.loginResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  handler.registerRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  jikan.Anime:
+    properties:
+      aired:
+        properties:
+          from:
+            type: string
+        type: object
+      genres:
+        items:
+          properties:
+            name:
+              type: string
+          type: object
+        type: array
+      images:
+        properties:
+          jpg:
+            properties:
+              image_url:
+                type: string
+            type: object
+          webp:
+            properties:
+              image_url:
+                type: string
+            type: object
+        type: object
+      mal_id:
+        type: integer
+      score:
+        type: number
+      scored_by:
+        type: integer
+      synopsis:
+        type: string
+      title:
+        type: string
+      type:
+        type: string
+    type: object
+  jikan.AnimeSearchResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/jikan.Anime'
+        type: array
+      pagination:
+        properties:
+          has_next_page:
+            type: boolean
+        type: object
+    type: object
+  jikan.Manga:
+    properties:
+      genres:
+        items:
+          properties:
+            name:
+              type: string
+          type: object
+        type: array
+      images:
+        properties:
+          jpg:
+            properties:
+              image_url:
+                type: string
+            type: object
+          webp:
+            properties:
+              image_url:
+                type: string
+            type: object
+        type: object
+      mal_id:
+        type: integer
+      published:
+        properties:
+          from:
+            type: string
+        type: object
+      score:
+        type: number
+      scored_by:
+        type: integer
+      synopsis:
+        type: string
+      title:
+        type: string
+    type: object
+  jikan.MangaSearchResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/jikan.Manga'
+        type: array
+      pagination:
+        properties:
+          has_next_page:
+            type: boolean
+        type: object
+    type: object
+  lastfm.RecentTracksResponse:
+    properties:
+      recenttracks:
+        properties:
+          track:
+            items:
+              $ref: '#/definitions/lastfm.Track'
+            type: array
+        type: object
+    type: object
+  lastfm.Track:
+    properties:
+      '@attr':
+        properties:
+          nowplaying:
+            type: string
+        type: object
+      album:
+        properties:
+          '#text':
+            type: string
+        type: object
+      artist:
+        properties:
+          '#text':
+            type: string
+        type: object
+      image:
+        items:
+          properties:
+            '#text':
+              type: string
+            size:
+              type: string
+          type: object
+        type: array
+      name:
+        type: string
+      url:
+        type: string
+    type: object
+  models.AttachSteamRequest:
+    properties:
+      steamId:
+        type: string
+    type: object
+  models.Attachment:
+    properties:
+      contentType:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: string
+      kind:
+        type: string
+      sizeBytes:
+        type: integer
+      storageProvider:
+        type: string
+      updatedAt:
+        type: string
+      value:
+        type: string
+    type: object
+  models.Comment:
+    properties:
+      content:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: integer
+      parentCommentId:
+        type: integer
+      postId:
+        type: integer
+      updatedAt:
+        type: string
+      userId:
+        type: integer
+    type: object
+  models.CommentLike:
+    properties:
+      commentId:
+        type: integer
+      createdAt:
+        type: string
+      id:
+        type: integer
+      userId:
+        type: integer
+    type: object
+  models.CommentWithDetails:
+    properties:
+      content:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: integer
+      isLikedByUser:
+        type: boolean
+      likesCount:
+        type: integer
+      parentCommentId:
+        type: integer
+      postId:
+        type: integer
+      replies:
+        items:
+          $ref: '#/definitions/models.CommentWithDetails'
+        type: array
+      updatedAt:
+        type: string
+      userId:
+        type: integer
+      username:
+        type: string
+    type: object
+  models.CreateListItemPayload:
+    type: object
+  models.EnhancedUserProfile:
+    properties:
+      bio:
+        type: string
+      createdAt:
+        type: string
+      favoriteGenres:
+        items:
+          type: string
+        type: array
+      id:
+        type: integer
+      isFollowedBy:
+        type: boolean
+      isFollowing:
+        type: boolean
+      stats:
+        $ref: '#/definitions/models.UserStatsResponse'
+      updatedAt:
+        type: string
+      username:
+        type: string
+    type: object
+  models.EntityAttachment:
+    properties:
+      attachmentId:
+        type: string
+      createdAt:
+        type: string
+      entityPk:
+        type: string
+      entityTable:
+        type: string
+      id:
+        type: integer
+    type: object
+  models.ItemStatus:
+    enum:
+    - planning
+    - current
+    - completed
+    - paused
+    - dropped
+    type: string
+    x-enum-varnames:
+    - StatusPlanning
+    - StatusCurrent
+    - StatusCompleted
+    - StatusPaused
+    - StatusDropped
+  models.ItemType:
+    enum:
+    - manga
+    - game
+    - book
+    - movie
+    - series
+    - music
+    type: string
+    x-enum-varnames:
+    - ItemTypeManga
+    - ItemTypeGame
+    - ItemTypeBook
+    - ItemTypeMovie
+    - ItemTypeSeries
+    - ItemTypeMusic
+  models.LastFMAccount:
+    properties:
+      sessionKey:
+        type: string
+      subscriber:
+        type: integer
+      userId:
+        type: integer
+      username:
+        type: string
+    type: object
+  models.NewComment:
+    properties:
+      content:
+        type: string
+      parentCommentId:
+        type: integer
+      postId:
+        type: integer
+    type: object
+  models.NewPost:
+    properties:
+      content:
+        type: string
+      isSpoiler:
+        type: boolean
+      mediaItemId:
+        type: string
+      postType:
+        $ref: '#/definitions/models.PostType'
+      rating:
+        type: integer
+      title:
+        type: string
+    type: object
+  models.NewWishlistItem:
+    properties:
+      mediaItemId:
+        type: string
+      priceCents:
+        type: integer
+      priority:
+        $ref: '#/definitions/models.PriorityLevel'
+    type: object
+  models.Post:
+    properties:
+      content:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: integer
+      isSpoiler:
+        type: boolean
+      mediaItemId:
+        type: string
+      postType:
+        $ref: '#/definitions/models.PostType'
+      rating:
+        type: integer
+      title:
+        type: string
+      updatedAt:
+        type: string
+      userId:
+        type: integer
+    type: object
+  models.PostLike:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      postId:
+        type: integer
+      userId:
+        type: integer
+    type: object
+  models.PostType:
+    enum:
+    - review
+    - discussion
+    - general
+    type: string
+    x-enum-varnames:
+    - PostTypeReview
+    - PostTypeDiscussion
+    - PostTypeGeneral
+  models.PostWithDetails:
+    properties:
+      commentsCount:
+        type: integer
+      content:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: integer
+      isLikedByUser:
+        type: boolean
+      isSpoiler:
+        type: boolean
+      likesCount:
+        type: integer
+      mediaCoverImage:
+        type: string
+      mediaItemId:
+        type: string
+      mediaTitle:
+        type: string
+      postType:
+        $ref: '#/definitions/models.PostType'
+      rating:
+        type: integer
+      title:
+        type: string
+      updatedAt:
+        type: string
+      userId:
+        type: integer
+      username:
+        type: string
+    type: object
+  models.PriorityLevel:
+    enum:
+    - low
+    - medium
+    - high
+    type: string
+    x-enum-varnames:
+    - PriorityLow
+    - PriorityMedium
+    - PriorityHigh
+  models.SteamAccount:
+    properties:
+      avatar:
+        type: string
+      persona:
+        type: string
+      steamId:
+        type: string
+      userId:
+        type: integer
+    type: object
+  models.UpdateComment:
+    properties:
+      content:
+        type: string
+    type: object
+  models.UpdatePost:
+    properties:
+      content:
+        type: string
+      isSpoiler:
+        type: boolean
+      rating:
+        type: integer
+      title:
+        type: string
+    type: object
+  models.UpdateUserListItem:
+    properties:
+      progress:
+        type: string
+      rating:
+        type: integer
+      status:
+        $ref: '#/definitions/models.ItemStatus'
+    type: object
+  models.User:
+    properties:
+      createdAt:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      updatedAt:
+        type: string
+      username:
+        type: string
+    type: object
+  models.UserFollowResponse:
+    properties:
+      followedAt:
+        type: string
+      userId:
+        type: integer
+      username:
+        type: string
+    type: object
+  models.UserListItem:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      mediaItemId:
+        type: string
+      progress:
+        type: string
+      rating:
+        type: integer
+      status:
+        $ref: '#/definitions/models.ItemStatus'
+      updatedAt:
+        type: string
+      userId:
+        type: integer
+    type: object
+  models.UserStatsResponse:
+    properties:
+      followersCount:
+        type: integer
+      followingCount:
+        type: integer
+      totalCompleted:
+        type: integer
+      totalCurrent:
+        type: integer
+      totalDropped:
+        type: integer
+      totalPaused:
+        type: integer
+      totalPlanning:
+        type: integer
+    type: object
+  models.WishlistItem:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      mediaItemId:
+        type: string
+      priceCents:
+        type: integer
+      priority:
+        $ref: '#/definitions/models.PriorityLevel'
+      updatedAt:
+        type: string
+      userId:
+        type: integer
+    type: object
+  rawg.AchievementsResult:
+    properties:
+      count:
+        type: integer
+      results:
+        items:
+          properties:
+            description:
+              type: string
+            id:
+              type: integer
+            image:
+              type: string
+            name:
+              type: string
+            percent:
+              type: number
+          type: object
+        type: array
+    type: object
+  rawg.SearchResult:
+    properties:
+      count:
+        type: integer
+      results:
+        items:
+          properties:
+            background_image:
+              type: string
+            id:
+              type: integer
+            name:
+              type: string
+            platforms:
+              items:
+                properties:
+                  platform:
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                    type: object
+                type: object
+              type: array
+            rating:
+              type: number
+            released:
+              type: string
+          type: object
+        type: array
+    type: object
+  steam.OwnedGamesResponse:
+    properties:
+      response:
+        properties:
+          game_count:
+            type: integer
+          games:
+            items:
+              properties:
+                appid:
+                  type: integer
+                has_community_visible_stats:
+                  type: boolean
+                img_icon_url:
+                  type: string
+                img_logo_url:
+                  type: string
+                name:
+                  type: string
+                playtime_forever:
+                  type: integer
+                playtime_linux_forever:
+                  type: integer
+                playtime_mac_forever:
+                  type: integer
+                playtime_windows_forever:
+                  type: integer
+                rtime_last_played:
+                  type: integer
+              type: object
+            type: array
+        type: object
+    type: object
+  steam.PlayerAchievementsResponse:
+    properties:
+      playerstats:
+        properties:
+          achievements:
+            items:
+              properties:
+                achieved:
+                  type: integer
+                apiname:
+                  type: string
+                unlocktime:
+                  type: integer
+              type: object
+            type: array
+          gameName:
+            type: string
+          steamID:
+            type: string
+          success:
+            type: boolean
+        type: object
+    type: object
+  steam.SchemaForGameResponse:
+    properties:
+      game:
+        properties:
+          availableGameStats:
+            properties:
+              achievements:
+                items:
+                  properties:
+                    defaultvalue:
+                      type: integer
+                    displayName:
+                      type: string
+                    hidden:
+                      type: integer
+                    icon:
+                      type: string
+                    icongray:
+                      type: string
+                    name:
+                      type: string
+                  type: object
+                type: array
+            type: object
+          gameName:
+            type: string
+          gameVersion:
+            type: string
+        type: object
+    type: object
+  tmdb.SearchItem:
+    properties:
+      first_air_date:
+        type: string
+      genre_ids:
+        items:
+          type: integer
+        type: array
+      id:
+        type: integer
+      media_type:
+        type: string
+      name:
+        type: string
+      overview:
+        type: string
+      poster_path:
+        type: string
+      release_date:
+        type: string
+      title:
+        type: string
+    type: object
+  tmdb.SearchResult:
+    properties:
+      page:
+        type: integer
+      results:
+        items:
+          $ref: '#/definitions/tmdb.SearchItem'
+        type: array
+      total_pages:
+        type: integer
+      total_results:
+        type: integer
+    type: object
 host: localhost:8080
 info:
   contact: {}
   description: This is the API server for the Completionist application.
   title: Completionist API
   version: "1.0"
-paths: {}
+paths:
+  /attachments:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new standalone attachment record
+      parameters:
+      - description: Attachment Details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.createAttachmentBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Attachment'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create Attachment
+      tags:
+      - Attachments
+  /attachments/by-entity:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all attachments linked to a specific entity
+      parameters:
+      - description: Entity Table Name
+        in: query
+        name: table
+        required: true
+        type: string
+      - description: Entity Primary Key
+        in: query
+        name: pk
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Attachment'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List Attachments by Entity
+      tags:
+      - Attachments
+  /attachments/link:
+    post:
+      consumes:
+      - application/json
+      description: Links an existing attachment to an entity (post, comment, etc.)
+      parameters:
+      - description: Link Details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.linkBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.EntityAttachment'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Link Attachment
+      tags:
+      - Attachments
+  /attachments/unlink:
+    delete:
+      consumes:
+      - application/json
+      description: Removes a link between an attachment and an entity
+      parameters:
+      - description: Link Details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.linkBody'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Unlink Attachment
+      tags:
+      - Attachments
+  /auth/lastfm:
+    get:
+      consumes:
+      - application/json
+      description: Redirects the user to Last.fm to authorize the application
+      produces:
+      - application/json
+      responses:
+        "302":
+          description: Found
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Initiate Last.fm Auth
+      tags:
+      - Last.fm
+  /auth/lastfm/callback:
+    get:
+      consumes:
+      - application/json
+      description: Handles the callback from Last.fm after authorization
+      parameters:
+      - description: Last.fm Token
+        in: query
+        name: token
+        required: true
+        type: string
+      - description: App Auth Token
+        in: query
+        name: auth_token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "302":
+          description: Redirects to settings with error/success
+          schema:
+            type: string
+      summary: Last.fm Callback
+      tags:
+      - Last.fm
+  /auth/steam/callback:
+    get:
+      consumes:
+      - application/json
+      description: Handles the callback from Steam OpenID
+      produces:
+      - application/json
+      responses:
+        "302":
+          description: Found
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Steam Login Callback
+      tags:
+      - Steam
+  /auth/steam/login:
+    get:
+      consumes:
+      - application/json
+      description: Redirects to Steam OpenID login page
+      produces:
+      - application/json
+      responses:
+        "302":
+          description: Found
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Initiate Steam Login
+      tags:
+      - Steam
+  /comments/{comment_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a comment
+      parameters:
+      - description: Comment ID
+        in: path
+        name: comment_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete comment
+      tags:
+      - Comments
+    patch:
+      consumes:
+      - application/json
+      description: Updates a comment's content
+      parameters:
+      - description: Comment ID
+        in: path
+        name: comment_id
+        required: true
+        type: integer
+      - description: Update details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateComment'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Comment'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update comment
+      tags:
+      - Comments
+  /comments/{comment_id}/like:
+    post:
+      consumes:
+      - application/json
+      description: Adds a like to a comment
+      parameters:
+      - description: Comment ID
+        in: path
+        name: comment_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.CommentLike'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Like a comment
+      tags:
+      - Comments
+  /comments/{comment_id}/unlike:
+    delete:
+      consumes:
+      - application/json
+      description: Removes a like from a comment
+      parameters:
+      - description: Comment ID
+        in: path
+        name: comment_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Unlike a comment
+      tags:
+      - Comments
+  /games/rawg/{rawg_id}/achievements:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves achievements for a specific game via RAWG API
+      parameters:
+      - description: RAWG Game ID
+        in: path
+        name: rawg_id
+        required: true
+        type: integer
+      - description: Page Number
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/rawg.AchievementsResult'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "502":
+          description: Bad Gateway
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get Game Achievements (RAWG)
+      tags:
+      - Games
+  /games/rawg/search:
+    get:
+      consumes:
+      - application/json
+      description: Searches for games using the RAWG API
+      parameters:
+      - description: Search Query
+        in: query
+        name: q
+        required: true
+        type: string
+      - description: Page Number
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/rawg.SearchResult'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "502":
+          description: Bad Gateway
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Search Games (RAWG)
+      tags:
+      - Games
+  /lists:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all items in the logged-in user's list
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.UserListItem'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get user list items
+      tags:
+      - Lists
+    post:
+      consumes:
+      - application/json
+      description: Creates a new list item, potentially creating the media item if
+        it doesn't exist
+      parameters:
+      - description: List item details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateListItemPayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.UserListItem'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Add item to user list
+      tags:
+      - Lists
+  /lists/{item_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Removes an item from the user's list
+      parameters:
+      - description: List Item ID
+        in: path
+        name: item_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete list item
+      tags:
+      - Lists
+    patch:
+      consumes:
+      - application/json
+      description: Updates status, progress, or rating of a list item
+      parameters:
+      - description: List Item ID
+        in: path
+        name: item_id
+        required: true
+        type: integer
+      - description: Update details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateUserListItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserListItem'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update list item
+      tags:
+      - Lists
+  /lists/google/books/{book_id}:
+    post:
+      consumes:
+      - application/json
+      description: Imports a book from Google Books into the user's list
+      parameters:
+      - description: Google Books Volume ID
+        in: path
+        name: book_id
+        required: true
+        type: string
+      - description: List details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.addFromGoogleBooksBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.UserListItem'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Add Book from Google Books
+      tags:
+      - Lists
+  /lists/jikan/anime/{mal_id}:
+    post:
+      consumes:
+      - application/json
+      description: Imports an anime from Jikan/MAL into the user's list
+      parameters:
+      - description: MyAnimeList ID
+        in: path
+        name: mal_id
+        required: true
+        type: integer
+      - description: List details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.addFromJikanBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.UserListItem'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Add Anime from Jikan
+      tags:
+      - Lists
+  /lists/jikan/manga/{mal_id}:
+    post:
+      consumes:
+      - application/json
+      description: Imports a manga from Jikan/MAL into the user's list
+      parameters:
+      - description: MyAnimeList ID
+        in: path
+        name: mal_id
+        required: true
+        type: integer
+      - description: List details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.addFromJikanBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.UserListItem'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Add Manga from Jikan
+      tags:
+      - Lists
+  /lists/tmdb/movie/{tmdb_id}:
+    post:
+      consumes:
+      - application/json
+      description: Imports a movie from TMDb into the user's list
+      parameters:
+      - description: TMDb Movie ID
+        in: path
+        name: tmdb_id
+        required: true
+        type: integer
+      - description: List details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.addFromTMDBBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.UserListItem'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Add Movie from TMDb
+      tags:
+      - Lists
+  /lists/tmdb/tv/{tmdb_id}:
+    post:
+      consumes:
+      - application/json
+      description: Imports a TV show from TMDb into the user's list
+      parameters:
+      - description: TMDb TV ID
+        in: path
+        name: tmdb_id
+        required: true
+        type: integer
+      - description: List details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.addFromTMDBBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.UserListItem'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Add TV Show from TMDb
+      tags:
+      - Lists
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user and returns a JWT token
+      parameters:
+      - description: Login credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.loginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.loginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Login user
+      tags:
+      - Auth
+  /me:
+    get:
+      consumes:
+      - application/json
+      description: Returns the profile of the currently logged-in user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get current user
+      tags:
+      - Auth
+  /me/lastfm:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the linked Last.fm account details
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.LastFMAccount'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get My Last.fm Account
+      tags:
+      - Last.fm
+  /me/lastfm/recent:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves recent tracks from the linked Last.fm account
+      parameters:
+      - description: Limit (max 50)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/lastfm.RecentTracksResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "502":
+          description: Bad Gateway
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get Recent Tracks
+      tags:
+      - Last.fm
+  /me/steam:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the linked Steam account for the current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SteamAccount'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get My Steam Account
+      tags:
+      - Steam
+  /me/steam/attach:
+    post:
+      consumes:
+      - application/json
+      description: Links a Steam ID to the current user manually
+      parameters:
+      - description: Steam ID
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.AttachSteamRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SteamAccount'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Manually Link Steam Account
+      tags:
+      - Steam
+  /me/steam/owned:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves owned games from the linked Steam account
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/steam.OwnedGamesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "502":
+          description: Bad Gateway
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get My Steam Games
+      tags:
+      - Steam
+  /posts:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the global or personalized activity feed
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.PostWithDetails'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get posts feed
+      tags:
+      - Posts
+    post:
+      consumes:
+      - application/json
+      description: Creates a new social post regarding a media item or general topic
+      parameters:
+      - description: Post content
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.NewPost'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Post'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a post
+      tags:
+      - Posts
+  /posts/{post_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a post
+      parameters:
+      - description: Post ID
+        in: path
+        name: post_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete post
+      tags:
+      - Posts
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a single post by its ID
+      parameters:
+      - description: Post ID
+        in: path
+        name: post_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.PostWithDetails'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get post by ID
+      tags:
+      - Posts
+    patch:
+      consumes:
+      - application/json
+      description: Updates an existing post
+      parameters:
+      - description: Post ID
+        in: path
+        name: post_id
+        required: true
+        type: integer
+      - description: Update details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdatePost'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Post'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update post
+      tags:
+      - Posts
+  /posts/{post_id}/comments:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves comments for a specific post
+      parameters:
+      - description: Post ID
+        in: path
+        name: post_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.CommentWithDetails'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get post comments
+      tags:
+      - Comments
+    post:
+      consumes:
+      - application/json
+      description: Adds a comment to a post
+      parameters:
+      - description: Post ID
+        in: path
+        name: post_id
+        required: true
+        type: integer
+      - description: Comment content
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.NewComment'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Comment'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a comment
+      tags:
+      - Comments
+  /posts/{post_id}/like:
+    post:
+      consumes:
+      - application/json
+      description: Adds a like to a post
+      parameters:
+      - description: Post ID
+        in: path
+        name: post_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.PostLike'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Like a post
+      tags:
+      - Posts
+  /posts/{post_id}/unlike:
+    delete:
+      consumes:
+      - application/json
+      description: Removes a like from a post
+      parameters:
+      - description: Post ID
+        in: path
+        name: post_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Unlike a post
+      tags:
+      - Posts
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user account
+      parameters:
+      - description: Register credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.registerRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Register a new user
+      tags:
+      - Auth
+  /search/anime:
+    get:
+      consumes:
+      - application/json
+      description: Search for anime using the Jikan API (MyAnimeList)
+      parameters:
+      - description: Search query
+        in: query
+        name: q
+        required: true
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/jikan.AnimeSearchResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "502":
+          description: Bad Gateway
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Search Anime (Jikan)
+      tags:
+      - Search
+  /search/books:
+    get:
+      consumes:
+      - application/json
+      description: Search for books using the Google Books API
+      parameters:
+      - description: Search query
+        in: query
+        name: q
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/googlebooks.SearchResult'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "502":
+          description: Bad Gateway
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Search Books (Google Books)
+      tags:
+      - Search
+  /search/manga:
+    get:
+      consumes:
+      - application/json
+      description: Search for manga using the Jikan API (MyAnimeList)
+      parameters:
+      - description: Search query
+        in: query
+        name: q
+        required: true
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/jikan.MangaSearchResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "502":
+          description: Bad Gateway
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Search Manga (Jikan)
+      tags:
+      - Search
+  /search/movies:
+    get:
+      consumes:
+      - application/json
+      description: Search for movies using The Movie Database API
+      parameters:
+      - description: Search query
+        in: query
+        name: q
+        required: true
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tmdb.SearchResult'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "502":
+          description: Bad Gateway
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Search Movies (TMDb)
+      tags:
+      - Search
+  /search/tv:
+    get:
+      consumes:
+      - application/json
+      description: Search for TV shows using The Movie Database API
+      parameters:
+      - description: Search query
+        in: query
+        name: q
+        required: true
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tmdb.SearchResult'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "502":
+          description: Bad Gateway
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Search TV Shows (TMDb)
+      tags:
+      - Search
+  /steam/achievements/{app_id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves achievements for a specific game (app_id) for the linked
+        Steam account
+      parameters:
+      - description: Steam App ID
+        in: path
+        name: app_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/steam.PlayerAchievementsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "502":
+          description: Bad Gateway
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get Steam Achievements
+      tags:
+      - Steam
+  /steam/schema/{app_id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the schema (stats/achievements definitions) for a game
+      parameters:
+      - description: Steam App ID
+        in: path
+        name: app_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/steam.SchemaForGameResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "502":
+          description: Bad Gateway
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get Steam Game Schema
+      tags:
+      - Steam
+  /users/{username}/follow:
+    post:
+      consumes:
+      - application/json
+      description: Creates a following relationship with another user
+      parameters:
+      - description: Username to follow
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Follow a user
+      tags:
+      - Social
+  /users/{username}/followers:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list of users following the target user
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.UserFollowResponse'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get user followers
+      tags:
+      - Social
+  /users/{username}/following:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list of users the target user follows
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.UserFollowResponse'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get user following
+      tags:
+      - Social
+  /users/{username}/posts:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves posts made by a specific user
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.PostWithDetails'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get user posts
+      tags:
+      - Users
+  /users/{username}/profile:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves detailed profile information and stats for a user
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.EnhancedUserProfile'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get user profile
+      tags:
+      - Users
+  /users/{username}/steam:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the linked Steam account for a specific user
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SteamAccount'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get User Steam Account
+      tags:
+      - Steam
+  /users/{username}/unfollow:
+    delete:
+      consumes:
+      - application/json
+      description: Removes a following relationship
+      parameters:
+      - description: Username to unfollow
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Unfollow a user
+      tags:
+      - Social
+  /users/search:
+    get:
+      consumes:
+      - application/json
+      description: Searches for users by username
+      parameters:
+      - description: Search query
+        in: query
+        name: q
+        required: true
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.UserFollowResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Search users
+      tags:
+      - Users
+  /users/suggestions:
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of users the current user might want to follow
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.UserFollowResponse'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get follow suggestions
+      tags:
+      - Social
+  /wishlist:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all items in the user's wishlist
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.WishlistItem'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get wishlist
+      tags:
+      - Wishlist
+    post:
+      consumes:
+      - application/json
+      description: Adds a media item to the user's wishlist
+      parameters:
+      - description: Wishlist item details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.NewWishlistItem'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.WishlistItem'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Add to wishlist
+      tags:
+      - Wishlist
+  /wishlist/{item_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Removes an item from the user's wishlist
+      parameters:
+      - description: Wishlist Item ID
+        in: path
+        name: item_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Remove from wishlist
+      tags:
+      - Wishlist
 securityDefinitions:
   BearerAuth:
     in: header

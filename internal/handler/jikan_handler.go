@@ -9,9 +9,21 @@ import (
 	"github.com/GATEOPENERZ/completionist-api/internal/httpx"
 	"github.com/GATEOPENERZ/completionist-api/internal/middleware"
 	"github.com/GATEOPENERZ/completionist-api/internal/models"
+	_ "github.com/GATEOPENERZ/completionist-api/internal/services/jikan"
 	"github.com/go-chi/chi/v5"
 )
 
+// @Summary      Search Anime (Jikan)
+// @Description  Search for anime using the Jikan API (MyAnimeList)
+// @Tags         Search
+// @Accept       json
+// @Produce      json
+// @Param        q query string true "Search query"
+// @Param        page query int false "Page number"
+// @Success      200  {object}  jikan.AnimeSearchResponse
+// @Failure      400  {object}  map[string]string
+// @Failure      502  {object}  map[string]string
+// @Router       /search/anime [get]
 func (h *Handler) SearchAnimeJikan(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query().Get("q")
 	if q == "" {
@@ -31,7 +43,17 @@ func (h *Handler) SearchAnimeJikan(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, res)
 }
-
+// @Summary      Search Manga (Jikan)
+// @Description  Search for manga using the Jikan API (MyAnimeList)
+// @Tags         Search
+// @Accept       json
+// @Produce      json
+// @Param        q query string true "Search query"
+// @Param        page query int false "Page number"
+// @Success      200  {object}  jikan.MangaSearchResponse
+// @Failure      400  {object}  map[string]string
+// @Failure      502  {object}  map[string]string
+// @Router       /search/manga [get]
 func (h *Handler) SearchMangaJikan(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query().Get("q")
 	if q == "" {
@@ -51,39 +73,46 @@ func (h *Handler) SearchMangaJikan(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, res)
 }
-
 type addFromJikanBody struct {
 	Status   models.ItemStatus `json:"status"`
 	Progress *string           `json:"progress,omitempty"`
 	Rating   *int              `json:"rating,omitempty"`
 }
-
+// @Summary      Add Anime from Jikan
+// @Description  Imports an anime from Jikan/MAL into the user's list
+// @Tags         Lists
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        mal_id path int true "MyAnimeList ID"
+// @Param        request body addFromJikanBody true "List details"
+// @Success      201  {object}  models.UserListItem
+// @Failure      400  {object}  map[string]string
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /lists/jikan/anime/{mal_id} [post]
 func (h *Handler) AddAnimeFromJikan(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
 		httpx.JSONError(w, http.StatusUnauthorized, "Unauthorized")
 		return
 	}
-
 	idStr := chi.URLParam(r, "mal_id")
 	malID, err := strconv.Atoi(idStr)
 	if err != nil {
 		httpx.JSONError(w, http.StatusBadRequest, "invalid mal_id")
 		return
 	}
-
 	var body addFromJikanBody
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		httpx.JSONError(w, http.StatusBadRequest, "Invalid payload")
 		return
 	}
-
 	an, err := h.Jikan.GetAnime(r.Context(), malID)
 	if err != nil {
 		httpx.JSONError(w, http.StatusBadGateway, "Failed fetching from Jikan")
 		return
 	}
-
 	var release *time.Time
 	if an.Aired.From != nil {
 		release = an.Aired.From
@@ -105,10 +134,8 @@ func (h *Handler) AddAnimeFromJikan(w http.ResponseWriter, r *http.Request) {
 	for _, g := range an.Genres {
 		genres = append(genres, g.Name)
 	}
-
 	source := "JIKAN"
 	ext := strconv.Itoa(an.MalID)
-
 	media, err := h.MediaRepo.FindOrCreate(models.NewMediaItem{
 		ItemType:      models.ItemTypeSeries,
 		Source:        &source,
@@ -124,7 +151,6 @@ func (h *Handler) AddAnimeFromJikan(w http.ResponseWriter, r *http.Request) {
 		httpx.JSONError(w, http.StatusInternalServerError, "Media upsert failed")
 		return
 	}
-
 	item, err := h.ListRepo.CreateUserListItem(userID, models.NewUserListItem{
 		MediaItemID: media.ID,
 		Status:      body.Status,
@@ -135,36 +161,43 @@ func (h *Handler) AddAnimeFromJikan(w http.ResponseWriter, r *http.Request) {
 		httpx.JSONError(w, http.StatusInternalServerError, "List create failed")
 		return
 	}
-
 	httpx.JSON(w, http.StatusCreated, item)
 }
-
+// @Summary      Add Manga from Jikan
+// @Description  Imports a manga from Jikan/MAL into the user's list
+// @Tags         Lists
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        mal_id path int true "MyAnimeList ID"
+// @Param        request body addFromJikanBody true "List details"
+// @Success      201  {object}  models.UserListItem
+// @Failure      400  {object}  map[string]string
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /lists/jikan/manga/{mal_id} [post]
 func (h *Handler) AddMangaFromJikan(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
 		httpx.JSONError(w, http.StatusUnauthorized, "Unauthorized")
 		return
 	}
-
 	idStr := chi.URLParam(r, "mal_id")
 	malID, err := strconv.Atoi(idStr)
 	if err != nil {
 		httpx.JSONError(w, http.StatusBadRequest, "invalid mal_id")
 		return
 	}
-
 	var body addFromJikanBody
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		httpx.JSONError(w, http.StatusBadRequest, "Invalid payload")
 		return
 	}
-
 	mg, err := h.Jikan.GetManga(r.Context(), malID)
 	if err != nil {
 		httpx.JSONError(w, http.StatusBadGateway, "Failed fetching from Jikan")
 		return
 	}
-
 	var release *time.Time
 	if mg.Published.From != nil {
 		release = mg.Published.From
@@ -186,10 +219,8 @@ func (h *Handler) AddMangaFromJikan(w http.ResponseWriter, r *http.Request) {
 	for _, g := range mg.Genres {
 		genres = append(genres, g.Name)
 	}
-
 	source := "JIKAN"
 	ext := strconv.Itoa(mg.MalID)
-
 	media, err := h.MediaRepo.FindOrCreate(models.NewMediaItem{
 		ItemType:      models.ItemTypeManga,
 		Source:        &source,
@@ -205,7 +236,6 @@ func (h *Handler) AddMangaFromJikan(w http.ResponseWriter, r *http.Request) {
 		httpx.JSONError(w, http.StatusInternalServerError, "Media upsert failed")
 		return
 	}
-
 	item, err := h.ListRepo.CreateUserListItem(userID, models.NewUserListItem{
 		MediaItemID: media.ID,
 		Status:      body.Status,
@@ -216,6 +246,5 @@ func (h *Handler) AddMangaFromJikan(w http.ResponseWriter, r *http.Request) {
 		httpx.JSONError(w, http.StatusInternalServerError, "List create failed")
 		return
 	}
-
 	httpx.JSON(w, http.StatusCreated, item)
 }

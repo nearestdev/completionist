@@ -11,6 +11,18 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+// @Summary      Add item to user list
+// @Description  Creates a new list item, potentially creating the media item if it doesn't exist
+// @Tags         Lists
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request body models.CreateListItemPayload true "List item details"
+// @Success      201  {object}  models.UserListItem
+// @Failure      400  {object}  map[string]string
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /lists [post]
 func (h *Handler) CreateListItem(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -40,7 +52,16 @@ func (h *Handler) CreateListItem(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusCreated, item)
 }
-
+// @Summary      Get user list items
+// @Description  Retrieves all items in the logged-in user's list
+// @Tags         Lists
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {array}   models.UserListItem
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /lists [get]
 func (h *Handler) GetMyListItems(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -54,7 +75,19 @@ func (h *Handler) GetMyListItems(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, items)
 }
-
+// @Summary      Update list item
+// @Description  Updates status, progress, or rating of a list item
+// @Tags         Lists
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        item_id path int true "List Item ID"
+// @Param        request body models.UpdateUserListItem true "Update details"
+// @Success      200  {object}  models.UserListItem
+// @Failure      400  {object}  map[string]string
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /lists/{item_id} [patch]
 func (h *Handler) UpdateMyListItem(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -79,7 +112,19 @@ func (h *Handler) UpdateMyListItem(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, item)
 }
-
+// @Summary      Delete list item
+// @Description  Removes an item from the user's list
+// @Tags         Lists
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        item_id path int true "List Item ID"
+// @Success      204
+// @Failure      400  {object}  map[string]string
+// @Failure      401  {object}  map[string]string
+// @Failure      404  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /lists/{item_id} [delete]
 func (h *Handler) DeleteMyListItem(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -103,7 +148,18 @@ func (h *Handler) DeleteMyListItem(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
-
+// @Summary      Add to wishlist
+// @Description  Adds a media item to the user's wishlist
+// @Tags         Wishlist
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request body models.NewWishlistItem true "Wishlist item details"
+// @Success      201  {object}  models.WishlistItem
+// @Failure      400  {object}  map[string]string
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /wishlist [post]
 func (h *Handler) AddToWishlist(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -122,7 +178,16 @@ func (h *Handler) AddToWishlist(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusCreated, item)
 }
-
+// @Summary      Get wishlist
+// @Description  Retrieves all items in the user's wishlist
+// @Tags         Wishlist
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {array}   models.WishlistItem
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /wishlist [get]
 func (h *Handler) GetMyWishlist(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -136,7 +201,19 @@ func (h *Handler) GetMyWishlist(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, items)
 }
-
+// @Summary      Remove from wishlist
+// @Description  Removes an item from the user's wishlist
+// @Tags         Wishlist
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        item_id path int true "Wishlist Item ID"
+// @Success      204
+// @Failure      400  {object}  map[string]string
+// @Failure      401  {object}  map[string]string
+// @Failure      404  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /wishlist/{item_id} [delete]
 func (h *Handler) RemoveFromWishlist(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {

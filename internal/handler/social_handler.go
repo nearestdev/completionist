@@ -9,6 +9,20 @@ import (
 	"github.com/GATEOPENERZ/completionist-api/internal/models"
 	"github.com/go-chi/chi/v5"
 )
+
+// @Summary      Follow a user
+// @Description  Creates a following relationship with another user
+// @Tags         Social
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        username path string true "Username to follow"
+// @Success      201
+// @Failure      400  {object}  map[string]string
+// @Failure      401  {object}  map[string]string
+// @Failure      404  {object}  map[string]string
+// @Failure      409  {object}  map[string]string
+// @Router       /users/{username}/follow [post]
 func (h *Handler) FollowUser(w http.ResponseWriter, r *http.Request) {
 	authUserID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -31,6 +45,18 @@ func (h *Handler) FollowUser(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusCreated)
 }
+// @Summary      Unfollow a user
+// @Description  Removes a following relationship
+// @Tags         Social
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        username path string true "Username to unfollow"
+// @Success      204
+// @Failure      401  {object}  map[string]string
+// @Failure      404  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /users/{username}/unfollow [delete]
 func (h *Handler) UnfollowUser(w http.ResponseWriter, r *http.Request) {
 	authUserID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -54,6 +80,16 @@ func (h *Handler) UnfollowUser(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
+// @Summary      Get user followers
+// @Description  Retrieves a list of users following the target user
+// @Tags         Social
+// @Accept       json
+// @Produce      json
+// @Param        username path string true "Username"
+// @Success      200  {array}   models.UserFollowResponse
+// @Failure      404  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /users/{username}/followers [get]
 func (h *Handler) GetUserFollowers(w http.ResponseWriter, r *http.Request) {
 	targetUsername := chi.URLParam(r, "username")
 	targetUser, err := h.UserRepo.FindByUsername(targetUsername)
@@ -68,6 +104,16 @@ func (h *Handler) GetUserFollowers(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, list)
 }
+// @Summary      Get user following
+// @Description  Retrieves a list of users the target user follows
+// @Tags         Social
+// @Accept       json
+// @Produce      json
+// @Param        username path string true "Username"
+// @Success      200  {array}   models.UserFollowResponse
+// @Failure      404  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /users/{username}/following [get]
 func (h *Handler) GetUserFollowing(w http.ResponseWriter, r *http.Request) {
 	targetUsername := chi.URLParam(r, "username")
 	targetUser, err := h.UserRepo.FindByUsername(targetUsername)
@@ -82,6 +128,17 @@ func (h *Handler) GetUserFollowing(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, list)
 }
+// @Summary      Get follow suggestions
+// @Description  Returns a list of users the current user might want to follow
+// @Tags         Social
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        limit query int false "Limit"
+// @Success      200  {array}   models.UserFollowResponse
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /users/suggestions [get]
 func (h *Handler) GetFollowSuggestions(w http.ResponseWriter, r *http.Request) {
 	authUserID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -101,6 +158,16 @@ func (h *Handler) GetFollowSuggestions(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, list)
 }
+// @Summary      Get user profile
+// @Description  Retrieves detailed profile information and stats for a user
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param        username path string true "Username"
+// @Success      200  {object}  models.EnhancedUserProfile
+// @Failure      404  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /users/{username}/profile [get]
 func (h *Handler) GetUserProfile(w http.ResponseWriter, r *http.Request) {
 	authUserID, _ := middleware.UserIDFromContext(r.Context())
 	targetUsername := chi.URLParam(r, "username")
@@ -138,6 +205,17 @@ func (h *Handler) GetUserProfile(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, resp)
 }
+// @Summary      Search users
+// @Description  Searches for users by username
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param        q query string true "Search query"
+// @Param        limit query int false "Limit"
+// @Success      200  {array}   models.UserFollowResponse
+// @Failure      400  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /users/search [get]
 func (h *Handler) SearchUsers(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("q")
 	if query == "" {
