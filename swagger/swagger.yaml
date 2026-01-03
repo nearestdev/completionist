@@ -587,10 +587,14 @@ definitions:
         type: string
       id:
         type: integer
+      level:
+        type: integer
       updatedAt:
         type: string
       username:
         type: string
+      xp:
+        type: integer
     type: object
   models.UserFollowResponse:
     properties:
@@ -635,6 +639,23 @@ definitions:
       totalPaused:
         type: integer
       totalPlanning:
+        type: integer
+    type: object
+  models.UserXPHistory:
+    properties:
+      amount:
+        type: integer
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      sourceId:
+        type: string
+      sourceType:
+        type: string
+      userId:
         type: integer
     type: object
   models.WishlistItem:
@@ -2000,6 +2021,46 @@ paths:
       summary: Get My Steam Games
       tags:
       - Steam
+  /me/xp:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the XP history log for the current user
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.UserXPHistory'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get user XP history
+      tags:
+      - Users
   /posts:
     get:
       consumes:

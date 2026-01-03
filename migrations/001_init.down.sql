@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS user_xp_history;
 DROP TABLE IF EXISTS entity_attachments;
 DROP TABLE IF EXISTS attachments;
 DROP TABLE IF EXISTS comment_likes;

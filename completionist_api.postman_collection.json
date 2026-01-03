@@ -1835,6 +1835,30 @@
       "name": "Users",
       "item": [
         {
+          "name": "Get user XP history",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/me/xp",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me",
+                "xp"
+              ],
+              "variable": []
+            },
+            "description": "Retrieves the XP history log for the current user"
+          }
+        },
+        {
           "name": "Search users",
           "request": {
             "method": "GET",

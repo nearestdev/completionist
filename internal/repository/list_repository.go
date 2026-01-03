@@ -40,6 +40,19 @@ func (r *ListRepository) GetUserListItems(userID int64) ([]models.UserListItem, 
 	return items, nil
 }
 
+func (r *ListRepository) GetUserListItem(userID, itemID int64) (*models.UserListItem, error) {
+	var item models.UserListItem
+	err := r.DB.Get(&item, `
+		SELECT id, user_id, media_item_id, status, progress, rating, created_at, updated_at
+		FROM user_list_items
+		WHERE id = $1 AND user_id = $2
+	`, itemID, userID)
+	if err != nil {
+		return nil, err
+	}
+	return &item, nil
+}
+
 func (r *ListRepository) UpdateUserListItem(userID, itemID int64, upd models.UpdateUserListItem) (*models.UserListItem, error) {
 	var out models.UserListItem
 	err := r.DB.QueryRowx(`

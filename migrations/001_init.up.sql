@@ -1,5 +1,4 @@
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
-
 CREATE TYPE item_type AS ENUM ('manga', 'game', 'book', 'movie', 'series', 'music');
 CREATE TYPE item_status AS ENUM ('planning', 'current', 'completed', 'paused', 'dropped');
 CREATE TYPE priority_level AS ENUM ('low', 'medium', 'high');
@@ -10,6 +9,8 @@ CREATE TABLE IF NOT EXISTS users (
   username VARCHAR(255) NOT NULL,
   email VARCHAR(320) NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
+  xp BIGINT NOT NULL DEFAULT 0,
+  level INT NOT NULL DEFAULT 1,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   CONSTRAINT uq_users_username UNIQUE (username),
@@ -182,3 +183,26 @@ CREATE TABLE entity_attachments (
 
 CREATE INDEX idx_entity_attachments_entity ON entity_attachments(entity_table, entity_pk);
 CREATE INDEX idx_entity_attachments_attachment ON entity_attachments(attachment_id);
+
+CREATE TABLE xp_actions (
+    action_key VARCHAR(50) PRIMARY KEY,
+    xp_amount INT NOT NULL
+);
+
+CREATE TABLE level_definitions (
+    level INT PRIMARY KEY,
+    xp_required BIGINT NOT NULL
+);
+
+CREATE TABLE user_xp_history (
+  id BIGSERIAL PRIMARY KEY,
+  user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  amount INT NOT NULL,
+  source_type VARCHAR(50) NOT NULL,
+  source_id VARCHAR(255),
+  description TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_user_xp_history_user_id ON user_xp_history(user_id);
+CREATE INDEX idx_user_xp_history_source ON user_xp_history(source_type, source_id);

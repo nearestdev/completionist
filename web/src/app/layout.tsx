@@ -1,16 +1,19 @@
 "use client";
-
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
   subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
 });
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+
+const poppins = Poppins({
+  weight: ["600", "700"],
   subsets: ["latin"],
+  variable: "--font-poppins",
+  display: "swap",
 });
 
 export default function RootLayout({
@@ -21,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${inter.variable} ${poppins.variable} antialiased`}
       >
         <AuthProvider>{children}</AuthProvider>
       </body>
