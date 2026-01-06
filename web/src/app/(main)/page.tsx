@@ -1,46 +1,35 @@
-import { ReactNode } from "react";
-import Sidebar from "@/components/layout/Sidebar";
+"use client";
+
 import Widgets from "@/components/layout/Widgets";
-import Link from "next/link";
-import { 
-  HouseIcon, 
-  ListChecksIcon, 
-  CompassIcon, 
-  TrophyIcon, 
-  BooksIcon 
-} from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon } from "@phosphor-icons/react";
 
-export default function MainLayout({ children }: { children: ReactNode }) {
+const MockFeed = () => (
+  <div className="flex flex-col gap-6">
+    <div className="flex items-center justify-between mb-2">
+      <h2 className="font-heading font-bold text-2xl text-foreground">Your Feed</h2>
+      <button className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium text-white bg-gradient-to-r from-primary to-primary-hover hover:opacity-90 transition-all shadow-sm hover:shadow-md">
+        <PlusIcon size={18} weight="bold" />
+        <span>Create Post</span>
+      </button>
+    </div>
+    <div 
+      className="bg-card p-6 rounded-xl border border-border transition-all duration-300 hover:shadow-lg" 
+      style={{ boxShadow: 'var(--shadow-sm)' }}
+    >
+      <h3 className="font-heading font-bold text-lg mb-2">Welcome to your Feed</h3>
+      <p className="text-muted">Start tracking your progress and see what your friends are up to!</p>
+    </div>
+  </div>
+);
+
+export default function HomePage() {
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col lg:flex-row">
-      <Sidebar />
+    <div className="flex flex-col lg:flex-row justify-center w-full">
+      <main className="w-full max-w-[680px] px-4 py-8 mb-20 lg:mb-0 min-h-screen">
+         <MockFeed />
+      </main>
 
-      <div className="flex-1 flex justify-center lg:ml-[260px]">
-        
-        <main className="w-full max-w-[680px] px-4 py-8 mb-20 lg:mb-0 min-h-screen">
-          {children}
-        </main>
-
-        <Widgets />
-      </div>
-
-      <nav className="lg:hidden fixed bottom-0 left-0 w-full bg-card border-t border-border flex justify-around py-3 px-2 z-50 safe-area-bottom">
-        <Link href="/" className="p-2 text-muted hover:text-primary transition-colors flex flex-col items-center">
-          <HouseIcon size={24} />
-        </Link>
-        <Link href="/my-list" className="p-2 text-muted hover:text-primary transition-colors flex flex-col items-center">
-          <ListChecksIcon size={24} />
-        </Link>
-        <Link href="/search" className="p-2 text-muted hover:text-primary transition-colors flex flex-col items-center">
-          <CompassIcon size={24} />
-        </Link>
-        <Link href="/challenges" className="p-2 text-muted hover:text-primary transition-colors flex flex-col items-center">
-          <TrophyIcon size={24} />
-        </Link>
-        <Link href="/wishlist" className="p-2 text-muted hover:text-primary transition-colors flex flex-col items-center">
-          <BooksIcon size={24} />
-        </Link>
-      </nav>
+      <Widgets />
     </div>
   );
 }

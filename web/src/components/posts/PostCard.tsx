@@ -14,10 +14,12 @@ interface PostCardProps {
 
 export default function PostCard({ post }: PostCardProps) {
   return (
-    <article className="bg-card rounded-xl p-5 border border-border shadow-sm mb-5 transition-all hover:shadow-md">
-      <div className="flex items-center justify-between mb-4">
+    <article 
+      className="bg-card rounded-xl p-5 border border-border mb-5 transition-all duration-300 hover:shadow-lg" 
+      style={{ boxShadow: 'var(--shadow-sm)' }}
+    >      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-indigo-100 border border-primary/20 flex items-center justify-center text-primary font-bold overflow-hidden">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/20 flex items-center justify-center text-primary font-bold overflow-hidden">
             {post.username.charAt(0).toUpperCase()}
           </div>
           <div>
@@ -31,7 +33,7 @@ export default function PostCard({ post }: PostCardProps) {
             </span>
           </div>
         </div>
-        <button className="text-muted hover:text-foreground">
+        <button className="text-muted hover:text-foreground hover:bg-primary/10 p-2 rounded-full transition-all">
           <DotsThreeIcon size={24} weight="bold" />
         </button>
       </div>
@@ -41,8 +43,8 @@ export default function PostCard({ post }: PostCardProps) {
       </div>
 
       {post.mediaTitle && (
-        <div className="flex gap-4 bg-background p-3 rounded-lg border-l-4 border-accent mb-4">
-          <div className="relative w-16 h-24 flex-shrink-0 bg-gray-200 rounded-md overflow-hidden">
+        <div className="flex gap-4 bg-gradient-to-r from-accent/5 to-primary/5 p-3 rounded-lg border-l-4 border-accent mb-4 transition-all hover:shadow-sm">
+          <div className="relative w-16 h-24 flex-shrink-0 bg-muted/20 rounded-md overflow-hidden">
             {post.mediaCoverImage ? (
               <Image 
                 src={post.mediaCoverImage} 
@@ -57,7 +59,7 @@ export default function PostCard({ post }: PostCardProps) {
             )}
           </div>
           <div className="flex flex-col justify-center">
-            <span className="text-[10px] uppercase tracking-wider font-bold text-muted bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded w-fit mb-1">
+            <span className="text-[10px] uppercase tracking-wider font-bold text-accent bg-accent/10 px-2 py-0.5 rounded w-fit mb-1">
               Media
             </span>
             <h5 className="font-heading font-semibold text-foreground">

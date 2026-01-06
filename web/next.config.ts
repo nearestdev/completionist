@@ -6,7 +6,6 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 const backendBaseURL = process.env.BACKEND_BASE_URL || "http://localhost";
 const backendPort = process.env.BACKEND_PORT || "8080";
-const frontendPort = process.env.PORT || "3000";
 
 const nextConfig: NextConfig = {
   env: {
