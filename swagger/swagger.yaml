@@ -287,6 +287,51 @@ definitions:
       value:
         type: string
     type: object
+  models.Challenge:
+    properties:
+      createdAt:
+        type: string
+      criteriaMetadata:
+        type: string
+      criteriaType:
+        $ref: '#/definitions/models.CriteriaType'
+      description:
+        type: string
+      frequency:
+        $ref: '#/definitions/models.ChallengeFrequency'
+      id:
+        type: integer
+      title:
+        type: string
+      type:
+        $ref: '#/definitions/models.ChallengeType'
+      updatedAt:
+        type: string
+      xpReward:
+        type: integer
+    type: object
+  models.ChallengeFrequency:
+    enum:
+    - daily
+    - weekly
+    - monthly
+    - seasonal
+    - infinite
+    type: string
+    x-enum-varnames:
+    - FrequencyDaily
+    - FrequencyWeekly
+    - FrequencyMonthly
+    - FrequencySeasonal
+    - FrequencyInfinite
+  models.ChallengeType:
+    enum:
+    - global
+    - personal
+    type: string
+    x-enum-varnames:
+    - ChallengeTypeGlobal
+    - ChallengeTypePersonal
   models.Comment:
     properties:
       content:
@@ -331,10 +376,6 @@ definitions:
         type: integer
       postId:
         type: integer
-      replies:
-        items:
-          $ref: '#/definitions/models.CommentWithDetails'
-        type: array
       updatedAt:
         type: string
       userId:
@@ -344,6 +385,16 @@ definitions:
     type: object
   models.CreateListItemPayload:
     type: object
+  models.CriteriaType:
+    enum:
+    - count_items
+    - specific_item
+    - genre_count
+    type: string
+    x-enum-varnames:
+    - CriteriaCountItems
+    - CriteriaSpecificItem
+    - CriteriaGenreCount
   models.EnhancedUserProfile:
     properties:
       bio:
@@ -543,6 +594,37 @@ definitions:
     - PriorityLow
     - PriorityMedium
     - PriorityHigh
+  models.Rank:
+    enum:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    type: integer
+    x-enum-varnames:
+    - RankScribe
+    - RankChronicler
+    - RankCurator
+    - RankPreserver
+    - RankWarden
+    - RankOracle
+  models.Season:
+    properties:
+      createdAt:
+        type: string
+      endAt:
+        type: string
+      id:
+        type: integer
+      isActive:
+        type: boolean
+      name:
+        type: string
+      startAt:
+        type: string
+    type: object
   models.SteamAccount:
     properties:
       avatar:
@@ -596,6 +678,35 @@ definitions:
       xp:
         type: integer
     type: object
+  models.UserChallenge:
+    properties:
+      challengeDescription:
+        type: string
+      challengeId:
+        type: integer
+      challengeTitle:
+        type: string
+      completedAt:
+        type: string
+      createdAt:
+        type: string
+      currentProgress:
+        type: integer
+      id:
+        type: integer
+      isCompleted:
+        type: boolean
+      seasonId:
+        type: integer
+      targetProgress:
+        type: integer
+      updatedAt:
+        type: string
+      userId:
+        type: integer
+      xpReward:
+        type: integer
+    type: object
   models.UserFollowResponse:
     properties:
       followedAt:
@@ -619,6 +730,25 @@ definitions:
         type: integer
       status:
         $ref: '#/definitions/models.ItemStatus'
+      updatedAt:
+        type: string
+      userId:
+        type: integer
+    type: object
+  models.UserRank:
+    properties:
+      createdAt:
+        type: string
+      currentElo:
+        type: integer
+      currentRank:
+        $ref: '#/definitions/models.Rank'
+      id:
+        type: integer
+      peakRank:
+        $ref: '#/definitions/models.Rank'
+      seasonId:
+        type: integer
       updatedAt:
         type: string
       userId:
@@ -726,6 +856,17 @@ definitions:
               type: string
           type: object
         type: array
+    type: object
+  repository.LeaderboardEntry:
+    properties:
+      rank:
+        type: integer
+      totalXp:
+        type: integer
+      userId:
+        type: integer
+      username:
+        type: string
     type: object
   steam.OwnedGamesResponse:
     properties:
@@ -1127,6 +1268,34 @@ paths:
       summary: Initiate Steam Login
       tags:
       - Steam
+  /challenges:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves list of challenges
+      parameters:
+      - description: Filter by frequency (daily, weekly, etc)
+        in: query
+        name: frequency
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Challenge'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get Challenges
+      tags:
+      - Challenges
   /comments/{comment_id}:
     delete:
       consumes:
@@ -1846,6 +2015,37 @@ paths:
       summary: Get current user
       tags:
       - Auth
+  /me/challenges:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the current user's progress on challenges
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.UserChallenge'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get My Challenge Progress
+      tags:
+      - Challenges
   /me/lastfm:
     get:
       consumes:
@@ -1915,6 +2115,35 @@ paths:
       summary: Get Recent Tracks
       tags:
       - Last.fm
+  /me/rank:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the current season rank for the user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserRank'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get user rank
+      tags:
+      - Users
   /me/steam:
     get:
       consumes:
@@ -2675,6 +2904,59 @@ paths:
       summary: Search TV Shows (TMDb)
       tags:
       - Search
+  /seasons/current:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the current active season information
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Season'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get Active Season
+      tags:
+      - Seasons
+  /seasons/leaderboard:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the leaderboard for the current season based on XP gained
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/repository.LeaderboardEntry'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get Season Leaderboard
+      tags:
+      - Seasons
   /steam/achievements/{app_id}:
     get:
       consumes:

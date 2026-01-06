@@ -3,6 +3,8 @@ package handler
 import (
 	"github.com/GATEOPENERZ/completionist-api/internal/config"
 	"github.com/GATEOPENERZ/completionist-api/internal/repository"
+	"github.com/GATEOPENERZ/completionist-api/internal/services"
+	"github.com/GATEOPENERZ/completionist-api/internal/services/challenges"
 	"github.com/GATEOPENERZ/completionist-api/internal/services/googlebooks"
 	"github.com/GATEOPENERZ/completionist-api/internal/services/jikan"
 	"github.com/GATEOPENERZ/completionist-api/internal/services/lastfm"
@@ -12,21 +14,24 @@ import (
 )
 
 type Handler struct {
-	UserRepo       *repository.UserRepository
-	MediaRepo      *repository.MediaRepository
-	ListRepo       *repository.ListRepository
-	SocialRepo     *repository.SocialRepository
-	PostsRepo      *repository.PostsRepository
-	SteamRepo      *repository.SteamRepository
-	AttachmentRepo *repository.AttachmentRepository
-	LastFMRepo     *repository.LastFMRepository
-	Jikan          *jikan.Client
-	TMDB           *tmdb.Client
-	Steam          *steam.Client
-	RAWG           *rawg.Client
-	GoogleBooks    *googlebooks.Client
-	LastFM         *lastfm.Client
-	Config         *config.Config
+	UserRepo         *repository.UserRepository
+	MediaRepo        *repository.MediaRepository
+	ListRepo         *repository.ListRepository
+	SocialRepo       *repository.SocialRepository
+	PostsRepo        *repository.PostsRepository
+	SteamRepo        *repository.SteamRepository
+	AttachmentRepo   *repository.AttachmentRepository
+	LastFMRepo       *repository.LastFMRepository
+	ChallengeRepo    *repository.ChallengeRepository
+	Jikan            *jikan.Client
+	TMDB             *tmdb.Client
+	Steam            *steam.Client
+	RAWG             *rawg.Client
+	GoogleBooks      *googlebooks.Client
+	LastFM           *lastfm.Client
+	ChallengeService *challenges.Service
+	RankService      *services.RankService
+	Config           *config.Config
 }
 
 func NewHandler(
@@ -36,6 +41,7 @@ func NewHandler(
 	socialRepo *repository.SocialRepository,
 	postsRepo *repository.PostsRepository,
 	steamRepo *repository.SteamRepository,
+	chalRepo *repository.ChallengeRepository,
 	jk *jikan.Client,
 	tm *tmdb.Client,
 	st *steam.Client,
@@ -44,23 +50,28 @@ func NewHandler(
 	gb *googlebooks.Client,
 	lf *lastfm.Client,
 	lastfmRepo *repository.LastFMRepository,
+	chalService *challenges.Service,
+	rankService *services.RankService,
 	cfg *config.Config,
 ) *Handler {
 	return &Handler{
-		UserRepo:       userRepo,
-		MediaRepo:      mediaRepo,
-		ListRepo:       listRepo,
-		SocialRepo:     socialRepo,
-		PostsRepo:      postsRepo,
-		SteamRepo:      steamRepo,
-		Jikan:          jk,
-		TMDB:           tm,
-		Steam:          st,
-		RAWG:           rg,
-		AttachmentRepo: attachmentRepo,
-		GoogleBooks:    gb,
-		LastFM:         lf,
-		LastFMRepo:     lastfmRepo,
-		Config:         cfg,
+		UserRepo:         userRepo,
+		MediaRepo:        mediaRepo,
+		ListRepo:         listRepo,
+		SocialRepo:       socialRepo,
+		PostsRepo:        postsRepo,
+		SteamRepo:        steamRepo,
+		ChallengeRepo:    chalRepo,
+		Jikan:            jk,
+		TMDB:             tm,
+		Steam:            st,
+		RAWG:             rg,
+		AttachmentRepo:   attachmentRepo,
+		GoogleBooks:      gb,
+		LastFM:           lf,
+		LastFMRepo:       lastfmRepo,
+		ChallengeService: chalService,
+		RankService:      rankService,
+		Config:           cfg,
 	}
 }

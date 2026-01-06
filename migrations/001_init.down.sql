@@ -1,3 +1,9 @@
+DROP TABLE IF EXISTS user_challenges;
+DROP TABLE IF EXISTS challenges;
+DROP TABLE IF EXISTS seasons;
+DROP TYPE IF EXISTS criteria_type;
+DROP TYPE IF EXISTS challenge_frequency;
+DROP TYPE IF EXISTS challenge_type;
 DROP TABLE IF EXISTS user_xp_history;
 DROP TABLE IF EXISTS entity_attachments;
 DROP TABLE IF EXISTS attachments;

@@ -12,11 +12,9 @@
     "migrate:install-tool": "go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest",
     "migrate:create": "migrate create -ext sql -dir migrations -seq",
     "swagger:install": "go install github.com/swaggo/swag/cmd/swag@latest",
-    
     "swagger:gen": "swag init -g cmd/api/main.go --output swagger && python scripts/gen_postman.py",
     "dev:backend": "npm run swagger:gen && cross-env GO_ENV=development go run cmd/api/main.go",
-    
-    "dev:frontend": "cd web && npm run dev",
+    "dev:frontend": "cd web && cross-env PORT=4000 npm run dev",
     "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"blue,magenta\" \"npm run dev:backend\" \"npm run dev:frontend\"",
     "build:backend": "go build -o bin/server.exe cmd/api/main.go",
     "build:frontend": "cd web && npm run build",

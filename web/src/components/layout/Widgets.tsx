@@ -4,14 +4,24 @@ import Link from "next/link";
 import { UserPlusIcon, UsersIcon } from "@phosphor-icons/react/dist/ssr";
 import socialService from "@/services/socialService";
 import { UserFollowResponse } from "@/types/social";
+import { useAuth } from "@/hooks/useAuth";
+import { getUserRank } from "@/services/rankService";
+import { UserRank } from "@/types/rank";
+import RankBadge from "@/components/rank/RankBadge";
 
 export default function Widgets() {
+  const { user } = useAuth();
   const [suggestions, setSuggestions] = useState<UserFollowResponse[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [rank, setRank] = useState<UserRank | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [rankLoading, setRankLoading] = useState(false);
 
   useEffect(() => {
+    if (!user) return;
+
     const fetchSuggestions = async () => {
       try {
+        setLoading(true);
         const data = await socialService.getFollowSuggestions();
         setSuggestions(data);
       } catch (error) {
@@ -21,8 +31,25 @@ export default function Widgets() {
       }
     };
 
+    const fetchRank = async () => {
+      try {
+        setRankLoading(true);
+        const data = await getUserRank();
+        setRank(data);
+      } catch (error) {
+        console.error("Failed to load rank", error);
+      } finally {
+        setRankLoading(false);
+      }
+    };
+
     fetchSuggestions();
-  }, []);
+    fetchRank();
+  }, [user]);
+
+  if (!user) {
+    return null;
+  }
 
   if (!loading && suggestions.length === 0) {
     return (
@@ -34,12 +61,19 @@ export default function Widgets() {
 
   return (
     <aside className="hidden xl:flex flex-col w-[320px] p-6 space-y-6 h-screen sticky top-0 overflow-y-auto border-l border-border bg-background">
+      
+      {/* Rank Card */}
+      {rank && (
+        <div className="w-full">
+           <RankBadge rank={rank} />
+        </div>
+      )}
+
       <div className="bg-card rounded-xl p-5 border border-border shadow-sm">
         <div className="flex items-center gap-2 mb-4 text-foreground">
           <UsersIcon size={20} weight="bold" className="text-primary" />
           <h3 className="font-heading font-semibold text-lg">Who to Follow</h3>
         </div>
-        
         {loading ? (
           <div className="text-sm text-muted animate-pulse">Loading suggestions...</div>
         ) : (

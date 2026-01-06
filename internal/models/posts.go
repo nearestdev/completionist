@@ -107,5 +107,5 @@ type CommentWithDetails struct {
 	UpdatedAt       time.Time            `json:"updatedAt"`
 	LikesCount      int64                `json:"likesCount"`
 	IsLikedByUser   bool                 `json:"isLikedByUser"`
-	Replies         []CommentWithDetails `json:"replies,omitempty"`
+	Replies         []CommentWithDetails `json:"replies,omitempty" swaggerignore:"true"`
 }

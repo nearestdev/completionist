@@ -108,7 +108,7 @@ func (c *Client) GetSession(ctx context.Context, token string) (*SessionResponse
 	params := map[string]string{
 		"method":  "auth.getSession",
 		"token":   token,
-		"api_sig": "true", // Placeholder to indicate signing
+		"api_sig": "true",
 	}
 	var sessionResp SessionResponse
 	if err := c.doRequest(ctx, params, &sessionResp); err != nil {

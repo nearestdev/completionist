@@ -438,6 +438,49 @@ const docTemplate = `{
                 }
             }
         },
+        "/challenges": {
+            "get": {
+                "description": "Retrieves list of challenges",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Challenges"
+                ],
+                "summary": "Get Challenges",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter by frequency (daily, weekly, etc)",
+                        "name": "frequency",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Challenge"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/comments/{comment_id}": {
             "delete": {
                 "security": [
@@ -1551,6 +1594,55 @@ const docTemplate = `{
                 }
             }
         },
+        "/me/challenges": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieves the current user's progress on challenges",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Challenges"
+                ],
+                "summary": "Get My Challenge Progress",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.UserChallenge"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/me/lastfm": {
             "get": {
                 "security": [
@@ -1650,6 +1742,52 @@ const docTemplate = `{
                     },
                     "502": {
                         "description": "Bad Gateway",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/me/rank": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieves the current season rank for the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get user rank",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserRank"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -2826,6 +2964,87 @@ const docTemplate = `{
                     },
                     "502": {
                         "description": "Bad Gateway",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/seasons/current": {
+            "get": {
+                "description": "Retrieves the current active season information",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Seasons"
+                ],
+                "summary": "Get Active Season",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Season"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/seasons/leaderboard": {
+            "get": {
+                "description": "Retrieves the leaderboard for the current season based on XP gained",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Seasons"
+                ],
+                "summary": "Get Season Leaderboard",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Offset",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/repository.LeaderboardEntry"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -4107,6 +4326,69 @@ const docTemplate = `{
                 }
             }
         },
+        "models.Challenge": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "criteriaMetadata": {
+                    "type": "string"
+                },
+                "criteriaType": {
+                    "$ref": "#/definitions/models.CriteriaType"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "frequency": {
+                    "$ref": "#/definitions/models.ChallengeFrequency"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/models.ChallengeType"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "xpReward": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.ChallengeFrequency": {
+            "type": "string",
+            "enum": [
+                "daily",
+                "weekly",
+                "monthly",
+                "seasonal",
+                "infinite"
+            ],
+            "x-enum-varnames": [
+                "FrequencyDaily",
+                "FrequencyWeekly",
+                "FrequencyMonthly",
+                "FrequencySeasonal",
+                "FrequencyInfinite"
+            ]
+        },
+        "models.ChallengeType": {
+            "type": "string",
+            "enum": [
+                "global",
+                "personal"
+            ],
+            "x-enum-varnames": [
+                "ChallengeTypeGlobal",
+                "ChallengeTypePersonal"
+            ]
+        },
         "models.Comment": {
             "type": "object",
             "properties": {
@@ -4174,12 +4456,6 @@ const docTemplate = `{
                 "postId": {
                     "type": "integer"
                 },
-                "replies": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.CommentWithDetails"
-                    }
-                },
                 "updatedAt": {
                     "type": "string"
                 },
@@ -4193,6 +4469,19 @@ const docTemplate = `{
         },
         "models.CreateListItemPayload": {
             "type": "object"
+        },
+        "models.CriteriaType": {
+            "type": "string",
+            "enum": [
+                "count_items",
+                "specific_item",
+                "genre_count"
+            ],
+            "x-enum-varnames": [
+                "CriteriaCountItems",
+                "CriteriaSpecificItem",
+                "CriteriaGenreCount"
+            ]
         },
         "models.EnhancedUserProfile": {
             "type": "object",
@@ -4484,6 +4773,48 @@ const docTemplate = `{
                 "PriorityHigh"
             ]
         },
+        "models.Rank": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ],
+            "x-enum-varnames": [
+                "RankScribe",
+                "RankChronicler",
+                "RankCurator",
+                "RankPreserver",
+                "RankWarden",
+                "RankOracle"
+            ]
+        },
+        "models.Season": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "endAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isActive": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "startAt": {
+                    "type": "string"
+                }
+            }
+        },
         "models.SteamAccount": {
             "type": "object",
             "properties": {
@@ -4566,6 +4897,50 @@ const docTemplate = `{
                 }
             }
         },
+        "models.UserChallenge": {
+            "type": "object",
+            "properties": {
+                "challengeDescription": {
+                    "type": "string"
+                },
+                "challengeId": {
+                    "type": "integer"
+                },
+                "challengeTitle": {
+                    "type": "string"
+                },
+                "completedAt": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "currentProgress": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isCompleted": {
+                    "type": "boolean"
+                },
+                "seasonId": {
+                    "type": "integer"
+                },
+                "targetProgress": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "integer"
+                },
+                "xpReward": {
+                    "type": "integer"
+                }
+            }
+        },
         "models.UserFollowResponse": {
             "type": "object",
             "properties": {
@@ -4600,6 +4975,35 @@ const docTemplate = `{
                 },
                 "status": {
                     "$ref": "#/definitions/models.ItemStatus"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.UserRank": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "currentElo": {
+                    "type": "integer"
+                },
+                "currentRank": {
+                    "$ref": "#/definitions/models.Rank"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "peakRank": {
+                    "$ref": "#/definitions/models.Rank"
+                },
+                "seasonId": {
+                    "type": "integer"
                 },
                 "updatedAt": {
                     "type": "string"
@@ -4765,6 +5169,23 @@ const docTemplate = `{
                             }
                         }
                     }
+                }
+            }
+        },
+        "repository.LeaderboardEntry": {
+            "type": "object",
+            "properties": {
+                "rank": {
+                    "type": "integer"
+                },
+                "totalXp": {
+                    "type": "integer"
+                },
+                "userId": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         },

@@ -42,7 +42,6 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// XP Logic: Award XP for reviews
 	if post.PostType == models.PostTypeReview {
 		sid := strconv.FormatInt(post.ID, 10)
 		desc := "Wrote a review"
@@ -50,6 +49,12 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 			desc = "Review: " + *post.Title
 		}
 		_ = h.UserRepo.AddXP(userID, "review", &sid, &desc)
+
+		meta := map[string]interface{}{}
+		if post.MediaItemID != nil {
+			meta["media_item_id"] = post.MediaItemID.String()
+		}
+		_ = h.ChallengeService.NotifyAction(r.Context(), userID, "review", meta)
 	}
 
 	httpx.JSON(w, http.StatusCreated, post)
@@ -92,7 +97,6 @@ func (h *Handler) GetPostsFeed(w http.ResponseWriter, r *http.Request) {
 		httpx.JSONError(w, http.StatusInternalServerError, "Failed to load posts")
 		return
 	}
-
 	httpx.JSON(w, http.StatusOK, posts)
 }
 
@@ -132,7 +136,6 @@ func (h *Handler) GetPostByID(w http.ResponseWriter, r *http.Request) {
 		httpx.JSONError(w, http.StatusNotFound, "Post not found")
 		return
 	}
-
 	httpx.JSON(w, http.StatusOK, post)
 }
 
@@ -182,7 +185,6 @@ func (h *Handler) GetUserPosts(w http.ResponseWriter, r *http.Request) {
 		httpx.JSONError(w, http.StatusInternalServerError, "Failed to load posts")
 		return
 	}
-
 	httpx.JSON(w, http.StatusOK, posts)
 }
 
@@ -224,7 +226,6 @@ func (h *Handler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 		httpx.JSONError(w, http.StatusInternalServerError, "Failed to update post")
 		return
 	}
-
 	httpx.JSON(w, http.StatusOK, post)
 }
 
@@ -260,12 +261,10 @@ func (h *Handler) DeletePost(w http.ResponseWriter, r *http.Request) {
 		httpx.JSONError(w, http.StatusInternalServerError, "Failed to delete post")
 		return
 	}
-
 	if affected == 0 {
 		httpx.JSONError(w, http.StatusNotFound, "Post not found or no permission")
 		return
 	}
-
 	w.WriteHeader(http.StatusNoContent)
 }
 
@@ -301,7 +300,6 @@ func (h *Handler) LikePost(w http.ResponseWriter, r *http.Request) {
 		httpx.JSONError(w, http.StatusConflict, "Failed to like post")
 		return
 	}
-
 	httpx.JSON(w, http.StatusCreated, like)
 }
 
@@ -337,12 +335,10 @@ func (h *Handler) UnlikePost(w http.ResponseWriter, r *http.Request) {
 		httpx.JSONError(w, http.StatusInternalServerError, "Failed to unlike post")
 		return
 	}
-
 	if affected == 0 {
 		httpx.JSONError(w, http.StatusNotFound, "Like not found")
 		return
 	}
-
 	w.WriteHeader(http.StatusNoContent)
 }
 
@@ -386,7 +382,6 @@ func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// XP Logic: Award XP for comments
 	sid := strconv.FormatInt(comment.ID, 10)
 	desc := "Commented on post " + strconv.FormatInt(postID, 10)
 	_ = h.UserRepo.AddXP(userID, "comment", &sid, &desc)
@@ -425,7 +420,6 @@ func (h *Handler) GetPostComments(w http.ResponseWriter, r *http.Request) {
 		httpx.JSONError(w, http.StatusInternalServerError, "Failed to load comments")
 		return
 	}
-
 	httpx.JSON(w, http.StatusOK, comments)
 }
 
@@ -467,7 +461,6 @@ func (h *Handler) UpdateComment(w http.ResponseWriter, r *http.Request) {
 		httpx.JSONError(w, http.StatusInternalServerError, "Failed to update comment")
 		return
 	}
-
 	httpx.JSON(w, http.StatusOK, comment)
 }
 
@@ -503,12 +496,10 @@ func (h *Handler) DeleteComment(w http.ResponseWriter, r *http.Request) {
 		httpx.JSONError(w, http.StatusInternalServerError, "Failed to delete comment")
 		return
 	}
-
 	if affected == 0 {
 		httpx.JSONError(w, http.StatusNotFound, "Comment not found or no permission")
 		return
 	}
-
 	w.WriteHeader(http.StatusNoContent)
 }
 
@@ -543,7 +534,6 @@ func (h *Handler) LikeComment(w http.ResponseWriter, r *http.Request) {
 		httpx.JSONError(w, http.StatusInternalServerError, "Failed to like comment")
 		return
 	}
-
 	httpx.JSON(w, http.StatusCreated, like)
 }
 
@@ -579,11 +569,9 @@ func (h *Handler) UnlikeComment(w http.ResponseWriter, r *http.Request) {
 		httpx.JSONError(w, http.StatusInternalServerError, "Failed to unlike comment")
 		return
 	}
-
 	if affected == 0 {
 		httpx.JSONError(w, http.StatusNotFound, "Like not found")
 		return
 	}
-
 	w.WriteHeader(http.StatusNoContent)
 }

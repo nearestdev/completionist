@@ -55,11 +55,17 @@ func (h *Handler) CreateListItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// XP Logic: Award XP if created as completed
 	if item.Status == models.StatusCompleted {
 		desc := "Completed " + payload.MediaData.Title
 		sid := strconv.FormatInt(item.ID, 10)
 		_ = h.UserRepo.AddXP(userID, models.XPSourceListCompletion, &sid, &desc)
+
+		meta := map[string]interface{}{
+			"item_type":     string(media.ItemType),
+			"genres":        media.Genres,
+			"media_item_id": media.ID.String(),
+		}
+		_ = h.ChallengeService.NotifyAction(r.Context(), userID, "complete_item", meta)
 	}
 
 	httpx.JSON(w, http.StatusCreated, item)
@@ -87,7 +93,6 @@ func (h *Handler) GetMyListItems(w http.ResponseWriter, r *http.Request) {
 		httpx.JSONError(w, http.StatusInternalServerError, "Failed to get list items")
 		return
 	}
-
 	httpx.JSON(w, http.StatusOK, items)
 }
 
@@ -124,7 +129,6 @@ func (h *Handler) UpdateMyListItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Fetch existing to check previous status
 	existing, err := h.ListRepo.GetUserListItem(userID, itemID)
 	if err != nil {
 		httpx.JSONError(w, http.StatusNotFound, "Item not found")
@@ -137,17 +141,25 @@ func (h *Handler) UpdateMyListItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// XP Logic: Award XP if transitioning to completed
 	if existing.Status != models.StatusCompleted && item.Status == models.StatusCompleted {
-		// Fetch media title for description
 		media, _ := h.MediaRepo.GetByID(item.MediaItemID)
 		title := "item"
 		if media != nil {
 			title = media.Title
 		}
+		
 		desc := "Completed " + title
 		sid := strconv.FormatInt(item.ID, 10)
 		_ = h.UserRepo.AddXP(userID, models.XPSourceListCompletion, &sid, &desc)
+
+		if media != nil {
+			meta := map[string]interface{}{
+				"item_type":     string(media.ItemType),
+				"genres":        media.Genres,
+				"media_item_id": media.ID.String(),
+			}
+			_ = h.ChallengeService.NotifyAction(r.Context(), userID, "complete_item", meta)
+		}
 	}
 
 	httpx.JSON(w, http.StatusOK, item)
@@ -185,7 +197,6 @@ func (h *Handler) DeleteMyListItem(w http.ResponseWriter, r *http.Request) {
 		httpx.JSONError(w, http.StatusInternalServerError, "Failed to delete list item")
 		return
 	}
-
 	if affected == 0 {
 		httpx.JSONError(w, http.StatusNotFound, "Not found")
 		return
@@ -250,7 +261,6 @@ func (h *Handler) GetMyWishlist(w http.ResponseWriter, r *http.Request) {
 		httpx.JSONError(w, http.StatusInternalServerError, "Failed to get wishlist")
 		return
 	}
-
 	httpx.JSON(w, http.StatusOK, items)
 }
 
@@ -286,7 +296,6 @@ func (h *Handler) RemoveFromWishlist(w http.ResponseWriter, r *http.Request) {
 		httpx.JSONError(w, http.StatusInternalServerError, "Failed to delete wishlist item")
 		return
 	}
-
 	if affected == 0 {
 		httpx.JSONError(w, http.StatusNotFound, "Not found")
 		return

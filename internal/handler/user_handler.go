@@ -169,3 +169,46 @@ func (h *Handler) GetMyXPHistory(w http.ResponseWriter, r *http.Request) {
 
 	httpx.JSON(w, http.StatusOK, history)
 }
+
+// @Summary      Get user rank
+// @Description  Retrieves the current season rank for the user
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {object}  models.UserRank
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /me/rank [get]
+func (h *Handler) GetMyRank(w http.ResponseWriter, r *http.Request) {
+	userID, ok := middleware.UserIDFromContext(r.Context())
+	if !ok {
+		httpx.JSONError(w, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+
+	season, err := h.ChallengeRepo.GetActiveSeason()
+	if err != nil {
+		httpx.JSONError(w, http.StatusInternalServerError, "Failed to get active season")
+		return
+	}
+
+	var seasonID int64
+	if season != nil {
+		seasonID = season.ID
+	} else {
+		// If no active season, handling global or just returning empty/default logic.
+		// For now, let's assume we want to show global rank if we used season_id=0 or null?
+		// But RankService expects int64.
+		// If no season, let's just use 0 (which might mean global or nothing).
+		seasonID = 0
+	}
+
+	rank, err := h.RankService.GetUserRank(userID, seasonID)
+	if err != nil {
+		httpx.JSONError(w, http.StatusInternalServerError, "Failed to get user rank")
+		return
+	}
+
+	httpx.JSON(w, http.StatusOK, rank)
+}

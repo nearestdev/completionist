@@ -3,7 +3,9 @@ CREATE TYPE item_type AS ENUM ('manga', 'game', 'book', 'movie', 'series', 'musi
 CREATE TYPE item_status AS ENUM ('planning', 'current', 'completed', 'paused', 'dropped');
 CREATE TYPE priority_level AS ENUM ('low', 'medium', 'high');
 CREATE TYPE post_type AS ENUM ('review', 'discussion', 'general');
-
+CREATE TYPE challenge_type AS ENUM ('global', 'personal');
+CREATE TYPE challenge_frequency AS ENUM ('daily', 'weekly', 'monthly', 'seasonal', 'infinite');
+CREATE TYPE criteria_type AS ENUM ('count_items', 'specific_item', 'genre_count');
 CREATE TABLE IF NOT EXISTS users (
   id BIGSERIAL PRIMARY KEY,
   username VARCHAR(255) NOT NULL,
@@ -16,7 +18,6 @@ CREATE TABLE IF NOT EXISTS users (
   CONSTRAINT uq_users_username UNIQUE (username),
   CONSTRAINT uq_users_email UNIQUE (email)
 );
-
 CREATE TABLE media_items (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   item_type item_type NOT NULL,
@@ -35,7 +36,6 @@ CREATE TABLE media_items (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   UNIQUE(source, external_id)
 );
-
 CREATE TABLE user_list_items (
   id BIGSERIAL PRIMARY KEY,
   user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -47,7 +47,6 @@ CREATE TABLE user_list_items (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   UNIQUE(user_id, media_item_id)
 );
-
 CREATE TABLE wishlist_items (
   id BIGSERIAL PRIMARY KEY,
   user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -58,11 +57,9 @@ CREATE TABLE wishlist_items (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   UNIQUE(user_id, media_item_id)
 );
-
 CREATE INDEX idx_user_list_items_user_id ON user_list_items(user_id);
 CREATE INDEX idx_wishlist_items_user_id ON wishlist_items(user_id);
 CREATE INDEX idx_media_items_source_external_id ON media_items(source, external_id);
-
 CREATE TABLE game_achievements (
   id BIGSERIAL PRIMARY KEY,
   media_item_id UUID NOT NULL REFERENCES media_items(id) ON DELETE CASCADE,
@@ -72,7 +69,6 @@ CREATE TABLE game_achievements (
   external_api_name VARCHAR(255),
   UNIQUE(media_item_id, name)
 );
-
 CREATE TABLE user_unlocked_achievements (
   id BIGSERIAL PRIMARY KEY,
   user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -80,7 +76,6 @@ CREATE TABLE user_unlocked_achievements (
   unlocked_at TIMESTAMPTZ NOT NULL,
   UNIQUE(user_id, achievement_id)
 );
-
 CREATE TABLE user_follows (
   id BIGSERIAL PRIMARY KEY,
   follower_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -89,10 +84,8 @@ CREATE TABLE user_follows (
   UNIQUE(follower_id, followed_id),
   CHECK (follower_id != followed_id)
 );
-
 CREATE INDEX idx_user_follows_follower_id ON user_follows(follower_id);
 CREATE INDEX idx_user_follows_followed_id ON user_follows(followed_id);
-
 CREATE TABLE posts (
   id BIGSERIAL PRIMARY KEY,
   user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -105,12 +98,10 @@ CREATE TABLE posts (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
 CREATE INDEX idx_posts_user_id ON posts(user_id);
 CREATE INDEX idx_posts_media_item_id ON posts(media_item_id);
 CREATE INDEX idx_posts_created_at ON posts(created_at DESC);
 CREATE INDEX idx_posts_type ON posts(post_type);
-
 CREATE TABLE post_likes (
   id BIGSERIAL PRIMARY KEY,
   user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -118,10 +109,8 @@ CREATE TABLE post_likes (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   UNIQUE(user_id, post_id)
 );
-
 CREATE INDEX idx_post_likes_user_id ON post_likes(user_id);
 CREATE INDEX idx_post_likes_post_id ON post_likes(post_id);
-
 CREATE TABLE comments (
   id BIGSERIAL PRIMARY KEY,
   user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -131,12 +120,10 @@ CREATE TABLE comments (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
 CREATE INDEX idx_comments_user_id ON comments(user_id);
 CREATE INDEX idx_comments_post_id ON comments(post_id);
 CREATE INDEX idx_comments_parent_comment_id ON comments(parent_comment_id);
 CREATE INDEX idx_comments_created_at ON comments(created_at DESC);
-
 CREATE TABLE comment_likes (
   id BIGSERIAL PRIMARY KEY,
   user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -144,24 +131,20 @@ CREATE TABLE comment_likes (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   UNIQUE(user_id, comment_id)
 );
-
 CREATE INDEX idx_comment_likes_user_id ON comment_likes(user_id);
 CREATE INDEX idx_comment_likes_comment_id ON comment_likes(comment_id);
-
 CREATE TABLE steam_accounts (
   user_id BIGINT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
   steam_id VARCHAR(32) UNIQUE NOT NULL,
   persona VARCHAR(255) NOT NULL,
   avatar VARCHAR(2048) NOT NULL
 );
-
 CREATE TABLE IF NOT EXISTS lastfm_accounts (
     user_id BIGINT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
     username VARCHAR(255) NOT NULL,
     session_key VARCHAR(255) NOT NULL,
     subscriber INT NOT NULL
 );
-
 CREATE TABLE attachments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   kind VARCHAR(50) NOT NULL,
@@ -172,7 +155,6 @@ CREATE TABLE attachments (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
 CREATE TABLE entity_attachments (
   id BIGSERIAL PRIMARY KEY,
   entity_table VARCHAR(100) NOT NULL,
@@ -180,20 +162,16 @@ CREATE TABLE entity_attachments (
   attachment_id UUID NOT NULL REFERENCES attachments(id) ON DELETE CASCADE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
 CREATE INDEX idx_entity_attachments_entity ON entity_attachments(entity_table, entity_pk);
 CREATE INDEX idx_entity_attachments_attachment ON entity_attachments(attachment_id);
-
 CREATE TABLE xp_actions (
     action_key VARCHAR(50) PRIMARY KEY,
     xp_amount INT NOT NULL
 );
-
 CREATE TABLE level_definitions (
     level INT PRIMARY KEY,
     xp_required BIGINT NOT NULL
 );
-
 CREATE TABLE user_xp_history (
   id BIGSERIAL PRIMARY KEY,
   user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -203,6 +181,55 @@ CREATE TABLE user_xp_history (
   description TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
 CREATE INDEX idx_user_xp_history_user_id ON user_xp_history(user_id);
 CREATE INDEX idx_user_xp_history_source ON user_xp_history(source_type, source_id);
+CREATE TABLE seasons (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    start_at TIMESTAMPTZ NOT NULL,
+    end_at TIMESTAMPTZ NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE TABLE challenges (
+    id BIGSERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    type challenge_type NOT NULL,
+    frequency challenge_frequency NOT NULL,
+    xp_reward INT NOT NULL,
+    criteria_type criteria_type NOT NULL,
+    criteria_metadata JSONB NOT NULL DEFAULT '{}',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE TABLE user_challenges (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    challenge_id BIGINT NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
+    season_id BIGINT REFERENCES seasons(id) ON DELETE SET NULL,
+    current_progress INT NOT NULL DEFAULT 0,
+    target_progress INT NOT NULL,
+    is_completed BOOLEAN NOT NULL DEFAULT FALSE,
+    completed_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE(user_id, challenge_id, season_id)
+);
+CREATE INDEX idx_user_challenges_user ON user_challenges(user_id);
+CREATE INDEX idx_user_challenges_completed ON user_challenges(is_completed);
+CREATE INDEX idx_challenges_frequency ON challenges(frequency);
+
+CREATE TABLE user_ranks (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    season_id BIGINT REFERENCES seasons(id) ON DELETE CASCADE,
+    current_rank INT NOT NULL DEFAULT 1,
+    current_elo INT NOT NULL DEFAULT 0,
+    peak_rank INT NOT NULL DEFAULT 1,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE(user_id, season_id)
+);
+CREATE INDEX idx_user_ranks_user ON user_ranks(user_id);
+CREATE INDEX idx_user_ranks_season ON user_ranks(season_id);

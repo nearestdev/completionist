@@ -44,11 +44,17 @@ func NewRouter(h *handler.Handler, cfg *config.Config) http.Handler {
 		r.Get("/auth/steam/callback", h.SteamCallback)
 		r.Get("/auth/lastfm/callback", h.LastFMCallback)
 
+		r.Get("/seasons/current", h.GetActiveSeason)
+		r.Get("/seasons/leaderboard", h.GetSeasonLeaderboard)
+		r.Get("/challenges", h.GetChallenges)
+
 		r.Group(func(pr chi.Router) {
 			pr.Use(appmw.AuthMiddleware(h.UserRepo))
-
 			pr.Get("/me", h.GetMe)
 			pr.Get("/me/xp", h.GetMyXPHistory)
+			pr.Get("/me/rank", h.GetMyRank)
+			
+			pr.Get("/me/challenges", h.GetMyChallenges)
 
 			pr.Route("/lists", func(lr chi.Router) {
 				lr.Post("/", h.CreateListItem)
@@ -104,7 +110,6 @@ func NewRouter(h *handler.Handler, cfg *config.Config) http.Handler {
 			pr.Get("/me/steam/owned", h.GetMySteamOwnedGames)
 			pr.Get("/steam/achievements/{app_id}", h.GetMySteamAchievementsForApp)
 			pr.Get("/steam/schema/{app_id}", h.GetSteamGameSchema)
-
 			pr.Get("/games/rawg/{rawg_id}/achievements", h.RAWGGameAchievements)
 
 			pr.Get("/auth/lastfm", h.LastFMAuth)

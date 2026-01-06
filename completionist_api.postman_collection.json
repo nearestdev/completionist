@@ -486,6 +486,58 @@
       ]
     },
     {
+      "name": "Challenges",
+      "item": [
+        {
+          "name": "Get Challenges",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/challenges",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "challenges"
+              ],
+              "variable": []
+            },
+            "description": "Retrieves list of challenges"
+          }
+        },
+        {
+          "name": "Get My Challenge Progress",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/me/challenges",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me",
+                "challenges"
+              ],
+              "variable": []
+            },
+            "description": "Retrieves the current user's progress on challenges"
+          }
+        }
+      ]
+    },
+    {
       "name": "Comments",
       "item": [
         {
@@ -1460,6 +1512,59 @@
       ]
     },
     {
+      "name": "Seasons",
+      "item": [
+        {
+          "name": "Get Active Season",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/seasons/current",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seasons",
+                "current"
+              ],
+              "variable": []
+            },
+            "description": "Retrieves the current active season information"
+          }
+        },
+        {
+          "name": "Get Season Leaderboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/seasons/leaderboard",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seasons",
+                "leaderboard"
+              ],
+              "variable": []
+            },
+            "description": "Retrieves the leaderboard for the current season based on XP gained"
+          }
+        }
+      ]
+    },
+    {
       "name": "Social",
       "item": [
         {
@@ -1834,6 +1939,30 @@
     {
       "name": "Users",
       "item": [
+        {
+          "name": "Get user rank",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/me/rank",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me",
+                "rank"
+              ],
+              "variable": []
+            },
+            "description": "Retrieves the current season rank for the user"
+          }
+        },
         {
           "name": "Get user XP history",
           "request": {
