@@ -34,6 +34,20 @@ type SearchResult struct {
 		} `json:"platforms"`
 	} `json:"results"`
 }
+
+type Game struct {
+	ID              int    `json:"id"`
+	Name            string `json:"name"`
+	Released        string `json:"released"`
+	BackgroundImage string `json:"background_image"`
+	Description     string `json:"description_raw"`
+	Rating          float64 `json:"rating"`
+	Genres          []struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+	} `json:"genres"`
+}
+
 type AchievementsResult struct {
 	Count int `json:"count"`
 	Results []struct {
@@ -62,6 +76,24 @@ func (c *Client) SearchGames(ctx context.Context, q string, page int) (*SearchRe
 	}
 	return &out, nil
 }
+
+func (c *Client) GetGame(ctx context.Context, id int) (*Game, error) {
+	u := fmt.Sprintf("%s/games/%d", c.base, id)
+	v := url.Values{}
+	v.Set("key", c.apiKey)
+	req, _ := http.NewRequestWithContext(ctx, "GET", u+"?"+v.Encode(), nil)
+	resp, err := c.http.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	var game Game
+	if err := json.NewDecoder(resp.Body).Decode(&game); err != nil {
+		return nil, err
+	}
+	return &game, nil
+}
+
 func (c *Client) GameAchievements(ctx context.Context, id int, page int) (*AchievementsResult, error) {
 	u := fmt.Sprintf("%s/games/%d/achievements", c.base, id)
 	v := url.Values{}

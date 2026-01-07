@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"encoding/json"
-
 	"github.com/GATEOPENERZ/completionist-api/internal/models"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -39,9 +37,9 @@ func (r *MediaRepository) FindOrCreate(newItem models.NewMediaItem) (*models.Med
 		genresArr = pq.StringArray(newItem.Genres)
 	}
 
-	var md json.RawMessage
-	if len(newItem.Metadata) > 0 {
-		md = newItem.Metadata
+	var md interface{}
+	if newItem.Metadata != nil && len(*newItem.Metadata) > 0 {
+		md = string(*newItem.Metadata)
 	}
 
 	err := r.DB.QueryRowx(`
@@ -85,4 +83,40 @@ func (r *MediaRepository) GetByID(id uuid.UUID) (*models.MediaItem, error) {
 		return nil, err
 	}
 	return &item, nil
+}
+
+func (r *MediaRepository) GetTrending(limit int) ([]models.MediaItem, error) {
+	var items []models.MediaItem
+	query := `
+		WITH list_counts AS (
+			SELECT media_item_id, COUNT(*) as count
+			FROM user_list_items
+			GROUP BY media_item_id
+		),
+		log_counts AS (
+			SELECT entity_id::uuid as media_item_id, COUNT(*) as count
+			FROM audit_logs
+			WHERE entity_type = 'media' AND action = 'view' AND created_at > NOW() - INTERVAL '7 days'
+			GROUP BY entity_id
+		),
+		combined_counts AS (
+			SELECT COALESCE(l.media_item_id, g.media_item_id) as media_item_id, 
+			       COALESCE(l.count, 0) + COALESCE(g.count, 0) as total_score
+			FROM list_counts l
+			FULL OUTER JOIN log_counts g ON l.media_item_id = g.media_item_id
+		)
+		SELECT 
+			m.id, m.item_type, m.source, m.external_id, m.title, m.description, m.cover_image_url, 
+			m.release_date, m.genres, m.critic_rating_value, m.critic_rating_count, 
+			m.user_rating_external, m.metadata, m.created_at, m.updated_at
+		FROM combined_counts c
+		JOIN media_items m ON c.media_item_id = m.id
+		ORDER BY c.total_score DESC
+		LIMIT $1
+	`
+	err := r.DB.Select(&items, query, limit)
+	if err != nil {
+		return nil, err
+	}
+	return items, nil
 }

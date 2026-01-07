@@ -54,6 +54,7 @@ func main() {
 	attachmentRepo := repository.NewAttachmentRepository(db)
 	lastfmRepo := repository.NewLastFMRepository(db)
 	challengeRepo := repository.NewChallengeRepository(db)
+	auditRepo := repository.NewAuditRepository(db)
 	rankService := services.NewRankService(db)
 
 	challengeService := challenges.NewService(challengeRepo, userRepo, rankService)
@@ -66,7 +67,7 @@ func main() {
 	lf := lastfm.New(cfg.LastFMAPIKey, cfg.LastFMAPISecret, cfg.PublicBaseURL)
 
 	appHandler := handler.NewHandler(
-		userRepo, mediaRepo, listRepo, socialRepo, postsRepo, steamRepo, challengeRepo,
+		userRepo, mediaRepo, listRepo, socialRepo, postsRepo, steamRepo, challengeRepo, auditRepo,
 		jk, tm, st, rg, attachmentRepo, gb, lf, lastfmRepo, challengeService, rankService, cfg,
 	)
 

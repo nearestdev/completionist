@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 	"os"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -66,10 +67,13 @@ func Load() (*Config, error) {
 
 	allowedOriginsEnv := os.Getenv("ALLOWED_ORIGINS")
 	var allowedOrigins string
+	defaultFrontendOrigin := frontendBaseURL + ":" + frontendPort
+	secondaryFrontendOrigin := strings.Replace(defaultFrontendOrigin, "localhost", "127.0.0.1", 1)
+	
 	if allowedOriginsEnv == "" {
-		allowedOrigins = frontendBaseURL + ":" + frontendPort
+		allowedOrigins = defaultFrontendOrigin + "," + secondaryFrontendOrigin
 	} else {
-		allowedOrigins = allowedOriginsEnv
+		allowedOrigins = defaultFrontendOrigin + "," + secondaryFrontendOrigin + "," + allowedOriginsEnv
 	}
 
 	frontendURL := os.Getenv("FRONTEND_URL")

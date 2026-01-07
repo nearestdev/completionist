@@ -31,6 +31,7 @@ type Handler struct {
 	LastFM           *lastfm.Client
 	ChallengeService *challenges.Service
 	RankService      *services.RankService
+	AuditRepo        *repository.AuditRepository
 	Config           *config.Config
 }
 
@@ -42,6 +43,7 @@ func NewHandler(
 	postsRepo *repository.PostsRepository,
 	steamRepo *repository.SteamRepository,
 	chalRepo *repository.ChallengeRepository,
+	auditRepo *repository.AuditRepository,
 	jk *jikan.Client,
 	tm *tmdb.Client,
 	st *steam.Client,
@@ -62,6 +64,7 @@ func NewHandler(
 		PostsRepo:        postsRepo,
 		SteamRepo:        steamRepo,
 		ChallengeRepo:    chalRepo,
+		AuditRepo:        auditRepo,
 		Jikan:            jk,
 		TMDB:             tm,
 		Steam:            st,

@@ -29,10 +29,20 @@ func (r *ListRepository) CreateUserListItem(userID int64, item models.NewUserLis
 func (r *ListRepository) GetUserListItems(userID int64) ([]models.UserListItem, error) {
 	items := []models.UserListItem{}
 	err := r.DB.Select(&items, `
-		SELECT id, user_id, media_item_id, status, progress, rating, created_at, updated_at
-		FROM user_list_items
-		WHERE user_id = $1
-		ORDER BY updated_at DESC
+		SELECT 
+			uli.id, 
+			uli.user_id, 
+			uli.media_item_id, 
+			uli.status, 
+			uli.progress, 
+			uli.rating, 
+			uli.created_at, 
+			uli.updated_at,
+			mi.item_type
+		FROM user_list_items uli
+		JOIN media_items mi ON uli.media_item_id = mi.id
+		WHERE uli.user_id = $1
+		ORDER BY uli.updated_at DESC
 	`, userID)
 	if err != nil {
 		return nil, err

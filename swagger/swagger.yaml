@@ -384,6 +384,11 @@ definitions:
         type: string
     type: object
   models.CreateListItemPayload:
+    properties:
+      listData:
+        $ref: '#/definitions/models.NewUserListItemBody'
+      mediaData:
+        $ref: '#/definitions/models.NewMediaItem'
     type: object
   models.CriteriaType:
     enum:
@@ -472,6 +477,41 @@ definitions:
       username:
         type: string
     type: object
+  models.MediaItem:
+    properties:
+      coverImageUrl:
+        type: string
+      createdAt:
+        type: string
+      criticRatingCount:
+        type: integer
+      criticRatingValue:
+        type: number
+      description:
+        type: string
+      externalId:
+        type: string
+      genres:
+        items:
+          type: string
+        type: array
+      id:
+        type: string
+      itemType:
+        $ref: '#/definitions/models.ItemType'
+      metadata:
+        type: string
+      releaseDate:
+        type: string
+      source:
+        type: string
+      title:
+        type: string
+      updatedAt:
+        type: string
+      userRatingExternal:
+        type: number
+    type: object
   models.NewComment:
     properties:
       content:
@@ -480,6 +520,29 @@ definitions:
         type: integer
       postId:
         type: integer
+    type: object
+  models.NewMediaItem:
+    properties:
+      coverImageUrl:
+        type: string
+      description:
+        type: string
+      externalId:
+        type: string
+      genres:
+        items:
+          type: string
+        type: array
+      itemType:
+        $ref: '#/definitions/models.ItemType'
+      metadata:
+        type: string
+      releaseDate:
+        type: string
+      source:
+        type: string
+      title:
+        type: string
     type: object
   models.NewPost:
     properties:
@@ -495,6 +558,15 @@ definitions:
         type: integer
       title:
         type: string
+    type: object
+  models.NewUserListItemBody:
+    properties:
+      progress:
+        type: string
+      rating:
+        type: integer
+      status:
+        $ref: '#/definitions/models.ItemStatus'
     type: object
   models.NewWishlistItem:
     properties:
@@ -722,6 +794,8 @@ definitions:
         type: string
       id:
         type: integer
+      itemType:
+        $ref: '#/definitions/models.ItemType'
       mediaItemId:
         type: string
       progress:
@@ -2290,6 +2364,118 @@ paths:
       summary: Get user XP history
       tags:
       - Users
+  /media/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Fetches a media item by its UUID
+      parameters:
+      - description: Media Item ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MediaItem'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get Media By ID
+      tags:
+      - Media
+  /media/details:
+    get:
+      consumes:
+      - application/json
+      description: Fetches media details (resolving from external if needed) and logs
+        the view
+      parameters:
+      - description: Source (JIKAN, TMDB)
+        in: query
+        name: source
+        required: true
+        type: string
+      - description: External ID
+        in: query
+        name: external_id
+        required: true
+        type: string
+      - description: Item Type (series, movie, manga, etc)
+        in: query
+        name: item_type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MediaItem'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get Media Details
+      tags:
+      - Media
+  /media/trending:
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of trending media items based on list adds and recent
+        views
+      parameters:
+      - description: Limit number of items (default 10)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.MediaItem'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get Trending Media
+      tags:
+      - Media
   /posts:
     get:
       consumes:

@@ -27,6 +27,7 @@ export interface UserListItem {
   status: ItemStatus;
   progress?: string;
   rating?: number;
+  itemType: ItemType;
   createdAt: string;
   updatedAt: string;
 }

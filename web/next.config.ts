@@ -49,7 +49,13 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "books.google.com",
         port: "",
-        pathname: "/books/content/**",
+        pathname: "/**",
+      },
+      {
+        protocol: "http",
+        hostname: "books.google.com",
+        port: "",
+        pathname: "/**",
       },
       {
         protocol: "https",

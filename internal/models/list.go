@@ -46,11 +46,11 @@ type MediaItem struct {
 	Description        *string         `db:"description" json:"description,omitempty"`
 	CoverImageURL      *string         `db:"cover_image_url" json:"coverImageUrl,omitempty"`
 	ReleaseDate        *time.Time      `db:"release_date" json:"releaseDate,omitempty"`
-	Genres             pq.StringArray  `db:"genres" json:"genres,omitempty"`
+	Genres             pq.StringArray  `db:"genres" json:"genres,omitempty" swaggertype:"array,string"`
 	CriticRatingValue  *float32        `db:"critic_rating_value" json:"criticRatingValue,omitempty"`
 	CriticRatingCount  *int            `db:"critic_rating_count" json:"criticRatingCount,omitempty"`
 	UserRatingExternal *float32        `db:"user_rating_external" json:"userRatingExternal,omitempty"`
-	Metadata           json.RawMessage `db:"metadata" json:"metadata,omitempty"`
+	Metadata           *json.RawMessage `db:"metadata" json:"metadata,omitempty" swaggertype:"string"`
 	CreatedAt          time.Time       `db:"created_at" json:"createdAt"`
 	UpdatedAt          time.Time       `db:"updated_at" json:"updatedAt"`
 }
@@ -62,6 +62,7 @@ type UserListItem struct {
 	Status      ItemStatus `db:"status" json:"status"`
 	Progress    *string    `db:"progress" json:"progress,omitempty"`
 	Rating      *int       `db:"rating" json:"rating,omitempty"`
+	ItemType    ItemType   `db:"item_type" json:"itemType"`
 	CreatedAt   time.Time  `db:"created_at" json:"createdAt"`
 	UpdatedAt   time.Time  `db:"updated_at" json:"updatedAt"`
 }
@@ -85,7 +86,7 @@ type NewMediaItem struct {
 	CoverImageURL *string         `json:"coverImageUrl,omitempty"`
 	ReleaseDate   *time.Time      `json:"releaseDate,omitempty"`
 	Genres        []string        `json:"genres,omitempty"`
-	Metadata      json.RawMessage `json:"metadata,omitempty"`
+	Metadata      *json.RawMessage `json:"metadata,omitempty" swaggertype:"string"`
 }
 
 type NewUserListItem struct {

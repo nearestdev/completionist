@@ -39,7 +39,7 @@ export default function Footer() {
               href="https://github.com" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-muted hover:text-foreground transition-colors p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
+              className="text-muted hover:text-primary transition-colors p-2 hover:bg-primary/10 rounded-full"
               aria-label="GitHub"
             >
               <GithubLogo size={20} weight="fill" />
@@ -48,7 +48,7 @@ export default function Footer() {
               href="https://twitter.com" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-muted hover:text-foreground transition-colors p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
+              className="text-muted hover:text-primary transition-colors p-2 hover:bg-primary/10 rounded-full"
               aria-label="Twitter"
             >
               <TwitterLogo size={20} weight="fill" />
@@ -57,7 +57,7 @@ export default function Footer() {
               href="https://discord.com" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-muted hover:text-foreground transition-colors p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
+              className="text-muted hover:text-primary transition-colors p-2 hover:bg-primary/10 rounded-full"
               aria-label="Discord"
             >
               <DiscordLogo size={20} weight="fill" />

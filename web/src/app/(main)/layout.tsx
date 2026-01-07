@@ -6,7 +6,6 @@ import Sidebar from "@/components/layout/Sidebar";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
 
-// Internal component to consume context
 function LayoutContent({ children }: { children: ReactNode }) {
   const { isCollapsed } = useSidebar();
   

@@ -2028,6 +2028,172 @@ const docTemplate = `{
                 }
             }
         },
+        "/media/details": {
+            "get": {
+                "description": "Fetches media details (resolving from external if needed) and logs the view",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Media"
+                ],
+                "summary": "Get Media Details",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Source (JIKAN, TMDB)",
+                        "name": "source",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "External ID",
+                        "name": "external_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Item Type (series, movie, manga, etc)",
+                        "name": "item_type",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.MediaItem"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/media/trending": {
+            "get": {
+                "description": "Returns a list of trending media items based on list adds and recent views",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Media"
+                ],
+                "summary": "Get Trending Media",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Limit number of items (default 10)",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.MediaItem"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/media/{id}": {
+            "get": {
+                "description": "Fetches a media item by its UUID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Media"
+                ],
+                "summary": "Get Media By ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Media Item ID (UUID)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.MediaItem"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/posts": {
             "get": {
                 "security": [
@@ -4468,7 +4634,15 @@ const docTemplate = `{
             }
         },
         "models.CreateListItemPayload": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "listData": {
+                    "$ref": "#/definitions/models.NewUserListItemBody"
+                },
+                "mediaData": {
+                    "$ref": "#/definitions/models.NewMediaItem"
+                }
+            }
         },
         "models.CriteriaType": {
             "type": "string",
@@ -4591,6 +4765,59 @@ const docTemplate = `{
                 }
             }
         },
+        "models.MediaItem": {
+            "type": "object",
+            "properties": {
+                "coverImageUrl": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "criticRatingCount": {
+                    "type": "integer"
+                },
+                "criticRatingValue": {
+                    "type": "number"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "externalId": {
+                    "type": "string"
+                },
+                "genres": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "itemType": {
+                    "$ref": "#/definitions/models.ItemType"
+                },
+                "metadata": {
+                    "type": "string"
+                },
+                "releaseDate": {
+                    "type": "string"
+                },
+                "source": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "userRatingExternal": {
+                    "type": "number"
+                }
+            }
+        },
         "models.NewComment": {
             "type": "object",
             "properties": {
@@ -4602,6 +4829,41 @@ const docTemplate = `{
                 },
                 "postId": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.NewMediaItem": {
+            "type": "object",
+            "properties": {
+                "coverImageUrl": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "externalId": {
+                    "type": "string"
+                },
+                "genres": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "itemType": {
+                    "$ref": "#/definitions/models.ItemType"
+                },
+                "metadata": {
+                    "type": "string"
+                },
+                "releaseDate": {
+                    "type": "string"
+                },
+                "source": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
                 }
             }
         },
@@ -4625,6 +4887,20 @@ const docTemplate = `{
                 },
                 "title": {
                     "type": "string"
+                }
+            }
+        },
+        "models.NewUserListItemBody": {
+            "type": "object",
+            "properties": {
+                "progress": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "integer"
+                },
+                "status": {
+                    "$ref": "#/definitions/models.ItemStatus"
                 }
             }
         },
@@ -4963,6 +5239,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "itemType": {
+                    "$ref": "#/definitions/models.ItemType"
                 },
                 "mediaItemId": {
                     "type": "string"

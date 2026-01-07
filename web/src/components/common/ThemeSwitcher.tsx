@@ -18,7 +18,6 @@ export default function ThemeSwitcher() {
     setTheme(isDark ? "light" : "dark");
   };
 
-  // Prevent hydration error by rendering a placeholder or consistent initial state until mounted
   if (!mounted) {
     return (
       <button

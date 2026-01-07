@@ -233,3 +233,15 @@ CREATE TABLE user_ranks (
 );
 CREATE INDEX idx_user_ranks_user ON user_ranks(user_id);
 CREATE INDEX idx_user_ranks_season ON user_ranks(season_id);
+
+CREATE TABLE audit_logs (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT REFERENCES users(id) ON DELETE SET NULL,
+    entity_type VARCHAR(50) NOT NULL,
+    entity_id VARCHAR(255) NOT NULL,
+    action VARCHAR(50) NOT NULL,
+    metadata JSONB DEFAULT '{}',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX idx_audit_logs_entity ON audit_logs(entity_type, entity_id);
+CREATE INDEX idx_audit_logs_created_at ON audit_logs(created_at DESC);

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"database/sql"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -188,7 +189,7 @@ func (h *Handler) GetMyRank(w http.ResponseWriter, r *http.Request) {
 	}
 
 	season, err := h.ChallengeRepo.GetActiveSeason()
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		httpx.JSONError(w, http.StatusInternalServerError, "Failed to get active season")
 		return
 	}
@@ -196,12 +197,6 @@ func (h *Handler) GetMyRank(w http.ResponseWriter, r *http.Request) {
 	var seasonID int64
 	if season != nil {
 		seasonID = season.ID
-	} else {
-		// If no active season, handling global or just returning empty/default logic.
-		// For now, let's assume we want to show global rank if we used season_id=0 or null?
-		// But RankService expects int64.
-		// If no season, let's just use 0 (which might mean global or nothing).
-		seasonID = 0
 	}
 
 	rank, err := h.RankService.GetUserRank(userID, seasonID)

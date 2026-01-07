@@ -41,6 +41,10 @@ func NewRouter(h *handler.Handler, cfg *config.Config) http.Handler {
 		r.Get("/search/books", h.SearchBooks)
 		r.Get("/games/rawg/search", h.RAWGSearchGames)
 
+		r.Get("/media/trending", h.GetTrendingMedia)
+		r.Get("/media/details", h.GetMediaDetails)
+		r.Get("/media/{id}", h.GetMediaByID)
+
 		r.Get("/auth/steam/callback", h.SteamCallback)
 		r.Get("/auth/lastfm/callback", h.LastFMCallback)
 

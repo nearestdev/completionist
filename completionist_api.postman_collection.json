@@ -938,7 +938,11 @@
               ],
               "variable": []
             },
-            "description": "Creates a new list item, potentially creating the media item if it doesn't exist"
+            "description": "Creates a new list item, potentially creating the media item if it doesn't exist",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"listData\": \"string\",\n  \"mediaData\": \"string\"\n}"
+            }
           }
         },
         {
@@ -1176,6 +1180,88 @@
               "mode": "raw",
               "raw": "{\n  \"progress\": \"string\",\n  \"rating\": 0,\n  \"status\": \"string\"\n}"
             }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Media",
+      "item": [
+        {
+          "name": "Get Media Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/media/details",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "media",
+                "details"
+              ],
+              "variable": []
+            },
+            "description": "Fetches media details (resolving from external if needed) and logs the view"
+          }
+        },
+        {
+          "name": "Get Trending Media",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/media/trending",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "media",
+                "trending"
+              ],
+              "variable": []
+            },
+            "description": "Returns a list of trending media items based on list adds and recent views"
+          }
+        },
+        {
+          "name": "Get Media By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/media/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "media",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Fetches a media item by its UUID"
           }
         }
       ]

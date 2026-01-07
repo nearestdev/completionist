@@ -1,20 +1,33 @@
 import { Book } from "@/types/books";
 import Image from "next/image";
+import { mediaService } from "@/services/api";
+import { useRouter } from "next/navigation";
 
 interface BookResultCardProps {
   book: Book;
 }
 
 export default function BookResultCard({ book }: BookResultCardProps) {
+  const router = useRouter();
   const thumbnailUrl = book.volumeInfo.imageLinks?.thumbnail;
   const imageUrl = thumbnailUrl
     ? thumbnailUrl.replace(/^http:/, "https:")
     : "/placeholder.svg";
 
+  const handleClick = async () => {
+    try {
+      const response = await mediaService.getMediaDetails("GOOGLE_BOOKS", book.id, "book");
+      router.push(`/media/book/${response.data.id}`);
+    } catch (e) {
+      console.error("Failed to fetch media details", e);
+    }
+  };
+
   return (
     <div 
-      className="bg-card rounded-xl border border-border overflow-hidden transition-all duration-300 hover:shadow-lg group"
+      className="bg-card rounded-xl border border-border overflow-hidden transition-all duration-300 hover:shadow-lg group cursor-pointer"
       style={{ boxShadow: 'var(--shadow-sm)' }}
+      onClick={handleClick}
     >
       <div className="relative h-64 overflow-hidden">
         <Image

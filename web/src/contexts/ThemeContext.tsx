@@ -29,7 +29,6 @@ export function ThemeProvider({
   ...props
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(() => {
-    // Check if we are in a browser environment
     if (typeof window !== "undefined") {
       return (localStorage.getItem(storageKey) as Theme) || defaultTheme;
     }
@@ -54,7 +53,6 @@ export function ThemeProvider({
     root.classList.add(theme);
   }, [theme]);
 
-  // Listen for system theme changes if we are in system mode
   useEffect(() => {
     if (theme !== "system") return;
 

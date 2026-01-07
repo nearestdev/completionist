@@ -17,19 +17,19 @@ const challengeService = {
     const response = await api.get<Challenge[]>("/challenges", {
       params: { frequency },
     });
-    return response.data;
+    return response.data || [];
   },
 
   getMyChallenges: async (): Promise<UserChallenge[]> => {
     const response = await api.get<UserChallenge[]>("/me/challenges");
-    return response.data;
+    return response.data || [];
   },
 
   getLeaderboard: async (limit: number = 20, offset: number = 0): Promise<LeaderboardEntry[]> => {
     const response = await api.get<LeaderboardEntry[]>("/seasons/leaderboard", {
       params: { limit, offset },
     });
-    return response.data;
+    return response.data || [];
   },
 };
 
