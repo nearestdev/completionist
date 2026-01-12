@@ -89,42 +89,55 @@ export default function WishlistPage() {
           {items.map((item) => (
             <div
               key={item.id}
-              className="group bg-card border border-border hover:border-primary/50 rounded-xl p-5 transition-all hover:shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+              className="group bg-card border border-border hover:border-primary/50 rounded-xl overflow-hidden transition-all hover:shadow-md flex flex-col md:flex-row"
             >
-              <div className="flex items-start gap-4">
-                 <div className="w-16 h-16 bg-muted/30 rounded-lg flex items-center justify-center text-muted-foreground">
-                    <TagIcon size={24} weight="duotone" />
-                 </div>
-                 
-                 <div>
-                   <h2 className="text-lg font-bold text-foreground mb-1 group-hover:text-primary transition-colors">
-                     Media Item #{item.mediaItemId.substring(0, 8)}...
-                   </h2>
-                   <div className="flex items-center gap-2">
-                     <span className={`text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${getPriorityColor(item.priority)}`}>
-                       {item.priority}
-                     </span>
-                     {item.priceCents && (
-                       <span className="text-sm font-mono text-muted">
-                         ${(item.priceCents / 100).toFixed(2)}
-                       </span>
-                     )}
-                   </div>
-                 </div>
-              </div>
+              {item.media?.coverImageUrl && (
+                <div className="relative w-full md:w-32 h-32 md:h-auto bg-muted/20 shrink-0">
+                  <img 
+                    src={item.media.coverImageUrl} 
+                    alt={item.media.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+              )}
 
-              <div className="flex items-center gap-2 w-full md:w-auto mt-2 md:mt-0">
-                <Button className="flex-1 md:flex-none gap-2" size="sm">
-                  <ShoppingCartIcon size={16} weight="bold" />
-                  View Details
-                </Button>
-                <button 
-                  onClick={() => handleRemove(item.id)}
-                  className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-colors"
-                  title="Remove from wishlist"
-                >
-                  <TrashIcon size={20} />
-                </button>
+              <div className="p-5 flex-1 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div className="flex-1">
+                  <h2 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+                    {item.media?.title || `Media Item #${item.mediaItemId.substring(0, 8)}...`}
+                  </h2>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className={`text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${getPriorityColor(item.priority)}`}>
+                      {item.priority}
+                    </span>
+                    {item.priceCents && (
+                      <span className="text-sm font-mono text-muted">
+                        ${(item.priceCents / 100).toFixed(2)}
+                      </span>
+                    )}
+                    {item.media?.genres && item.media.genres.length > 0 && (
+                      <span className="text-xs text-muted">
+                        {item.media.genres.slice(0, 2).join(', ')}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 w-full md:w-auto">
+                  <Link href={`/media/${item.media?.itemType || 'movie'}/${item.mediaItemId}`} className="flex-1 md:flex-none">
+                    <Button className="w-full gap-2" size="sm">
+                      <ShoppingCartIcon size={16} weight="bold" />
+                      View Details
+                    </Button>
+                  </Link>
+                  <button 
+                    onClick={() => handleRemove(item.id)}
+                    className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-colors"
+                    title="Remove from wishlist"
+                  >
+                    <TrashIcon size={20} />
+                  </button>
+                </div>
               </div>
             </div>
           ))}

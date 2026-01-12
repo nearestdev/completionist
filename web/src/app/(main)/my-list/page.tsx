@@ -95,42 +95,51 @@ export default function MyListPage() {
              return (
               <div
                 key={item.id}
-                className="group bg-card border border-border hover:border-primary/50 rounded-2xl p-5 hover:shadow-lg transition-all duration-300 flex flex-col justify-between h-[180px]"
+                className="group bg-card border border-border hover:border-primary/50 rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col h-[280px]"
               >
-                <div className="flex justify-between items-start gap-4">
-                   <div className="w-12 h-12 bg-muted/20 rounded-lg flex items-center justify-center text-muted-foreground shrink-0">
-                      <FilmStripIcon size={24} weight="duotone" />
-                   </div>
-                   
-                   <div className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider border flex items-center gap-1.5 ${statusConfig.color}`}>
-                     <StatusIcon size={14} weight="fill" />
-                     {item.status}
-                   </div>
-                </div>
-
-                <div>
-                   <h2 className="text-lg font-bold text-foreground mb-1 line-clamp-2 leading-tight group-hover:text-primary transition-colors">
-                     Media Item #{item.mediaItemId.substring(0, 8)}...
-                   </h2>
-                   <p className="text-xs text-muted">Added on {new Date(item.createdAt).toLocaleDateString()}</p>
-                </div>
-
-                <div className="pt-4 border-t border-border flex items-center justify-between">
-                  <div className="flex items-center gap-1">
-                    {item.rating ? (
-                       <>
-                        <StarIcon size={16} weight="fill" className="text-amber-500" />
-                        <span className="font-bold text-foreground">{item.rating}</span>
-                        <span className="text-muted text-xs">/ 5</span>
-                       </>
-                    ) : (
-                      <span className="text-xs text-muted italic">Not rated</span>
-                    )}
+                {item.media?.coverImageUrl && (
+                  <div className="relative h-32 w-full bg-muted/20">
+                    <img 
+                      src={item.media.coverImageUrl} 
+                      alt={item.media.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent opacity-60" />
                   </div>
-                  
-                  <Link href={`/media/${item.itemType}/${item.mediaItemId}`} className="text-sm font-medium text-primary hover:text-primary-hover transition-colors">
-                    View Details
-                  </Link>
+                )}
+
+                <div className="p-5 flex flex-col flex-1 justify-between">
+                  <div>
+                    <div className="flex justify-between items-start gap-2 mb-2">
+                      <div className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider border flex items-center gap-1.5 ${statusConfig.color}`}>
+                        <StatusIcon size={14} weight="fill" />
+                        {item.status}
+                      </div>
+                    </div>
+                    
+                    <h2 className="text-lg font-bold text-foreground mb-1 line-clamp-2 leading-tight group-hover:text-primary transition-colors">
+                      {item.media?.title || `Media Item #${item.mediaItemId.substring(0, 8)}...`}
+                    </h2>
+                    <p className="text-xs text-muted">Added on {new Date(item.createdAt).toLocaleDateString()}</p>
+                  </div>
+
+                  <div className="pt-4 border-t border-border flex items-center justify-between">
+                    <div className="flex items-center gap-1">
+                      {item.rating ? (
+                         <>
+                          <StarIcon size={16} weight="fill" className="text-amber-500" />
+                          <span className="font-bold text-foreground">{item.rating}</span>
+                          <span className="text-muted text-xs">/ 5</span>
+                         </>
+                      ) : (
+                        <span className="text-xs text-muted italic">Not rated</span>
+                      )}
+                    </div>
+                    
+                    <Link href={`/media/${item.itemType}/${item.mediaItemId}`} className="text-sm font-medium text-primary hover:text-primary-hover transition-colors">
+                      View Details
+                    </Link>
+                  </div>
                 </div>
               </div>
             );

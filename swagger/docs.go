@@ -5243,6 +5243,9 @@ const docTemplate = `{
                 "itemType": {
                     "$ref": "#/definitions/models.ItemType"
                 },
+                "media": {
+                    "$ref": "#/definitions/models.MediaItem"
+                },
                 "mediaItemId": {
                     "type": "string"
                 },
@@ -5352,6 +5355,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "media": {
+                    "$ref": "#/definitions/models.MediaItem"
                 },
                 "mediaItemId": {
                     "type": "string"

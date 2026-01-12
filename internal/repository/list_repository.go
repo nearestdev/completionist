@@ -47,6 +47,21 @@ func (r *ListRepository) GetUserListItems(userID int64) ([]models.UserListItem, 
 	if err != nil {
 		return nil, err
 	}
+
+	for i := range items {
+		var media models.MediaItem
+		err := r.DB.Get(&media, `
+			SELECT id, item_type, source, external_id, title, description, 
+				cover_image_url, release_date, genres, critic_rating_value, 
+				critic_rating_count, user_rating_external, metadata, created_at, updated_at
+			FROM media_items
+			WHERE id = $1
+		`, items[i].MediaItemID)
+		if err == nil {
+			items[i].Media = &media
+		}
+	}
+
 	return items, nil
 }
 
@@ -112,6 +127,21 @@ func (r *ListRepository) GetWishlistItems(userID int64) ([]models.WishlistItem, 
 	if err != nil {
 		return nil, err
 	}
+
+	for i := range items {
+		var media models.MediaItem
+		err := r.DB.Get(&media, `
+			SELECT id, item_type, source, external_id, title, description, 
+				cover_image_url, release_date, genres, critic_rating_value, 
+				critic_rating_count, user_rating_external, metadata, created_at, updated_at
+			FROM media_items
+			WHERE id = $1
+		`, items[i].MediaItemID)
+		if err == nil {
+			items[i].Media = &media
+		}
+	}
+
 	return items, nil
 }
 

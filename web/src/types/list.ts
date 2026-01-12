@@ -45,6 +45,7 @@ export interface UserListItem {
   itemType: ItemType;
   createdAt: string;
   updatedAt: string;
+  media?: MediaItem;
 }
 
 export interface WishlistItem {
@@ -55,6 +56,7 @@ export interface WishlistItem {
   priceCents?: number;
   createdAt: string;
   updatedAt: string;
+  media?: MediaItem;
 }
 
 export interface NewMediaItem {

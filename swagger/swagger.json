@@ -5237,6 +5237,9 @@
                 "itemType": {
                     "$ref": "#/definitions/models.ItemType"
                 },
+                "media": {
+                    "$ref": "#/definitions/models.MediaItem"
+                },
                 "mediaItemId": {
                     "type": "string"
                 },
@@ -5346,6 +5349,9 @@
                 },
                 "id": {
                     "type": "integer"
+                },
+                "media": {
+                    "$ref": "#/definitions/models.MediaItem"
                 },
                 "mediaItemId": {
                     "type": "string"

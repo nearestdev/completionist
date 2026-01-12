@@ -80,6 +80,7 @@ type UserListItem struct {
 	ItemType     ItemType         `db:"item_type" json:"itemType"`
 	CreatedAt    time.Time        `db:"created_at" json:"createdAt"`
 	UpdatedAt    time.Time        `db:"updated_at" json:"updatedAt"`
+	Media        *MediaItem       `db:"-" json:"media,omitempty"`
 }
 
 type WishlistItem struct {
@@ -90,6 +91,7 @@ type WishlistItem struct {
 	PriceCents *int          `db:"price_cents" json:"priceCents,omitempty"`
 	CreatedAt  time.Time     `db:"created_at" json:"createdAt"`
 	UpdatedAt  time.Time     `db:"updated_at" json:"updatedAt"`
+	Media      *MediaItem    `db:"-" json:"media,omitempty"`
 }
 
 type NewMediaItem struct {

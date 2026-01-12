@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import api from "@/services/api";
+import listService from "@/services/listService";
 import { MediaItem } from "@/types/list";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,7 +14,8 @@ import {
   StarIcon,
   TagIcon,
   PlusIcon,
-  HeartIcon
+  HeartIcon,
+  CheckCircleIcon
 } from "@phosphor-icons/react/dist/ssr";
 import Button from "@/components/ui/Button";
 
@@ -26,6 +28,11 @@ export default function MediaDetailsPage() {
   const [media, setMedia] = useState<MediaItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [addingToList, setAddingToList] = useState(false);
+  const [addingToWishlist, setAddingToWishlist] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showPriorityModal, setShowPriorityModal] = useState(false);
 
   useEffect(() => {
     const fetchMediaDetails = async () => {
@@ -45,6 +52,71 @@ export default function MediaDetailsPage() {
       fetchMediaDetails();
     }
   }, [mediaId]);
+
+  const handleAddToList = async () => {
+    if (!media) return;
+
+    try {
+      setAddingToList(true);
+      setErrorMessage(null);
+      setSuccessMessage(null);
+
+      await listService.createListItem({
+        mediaData: {
+          itemType: media.itemType,
+          source: media.source,
+          externalId: media.externalId,
+          title: media.title,
+          description: media.description,
+          coverImageUrl: media.coverImageUrl,
+          releaseDate: media.releaseDate,
+          genres: media.genres,
+          metadata: media.metadata,
+        },
+        listData: {
+          status: "planning",
+        },
+      });
+
+      setSuccessMessage("Successfully added to your list!");
+      setTimeout(() => setSuccessMessage(null), 3000);
+    } catch (err: any) {
+      console.error("Failed to add to list:", err);
+      setErrorMessage(
+        err.response?.data?.error || "Failed to add to list. It may already be in your list."
+      );
+      setTimeout(() => setErrorMessage(null), 5000);
+    } finally {
+      setAddingToList(false);
+    }
+  };
+
+  const handleAddToWishlist = async (priority: "low" | "medium" | "high") => {
+    if (!media) return;
+
+    try {
+      setAddingToWishlist(true);
+      setErrorMessage(null);
+      setSuccessMessage(null);
+      setShowPriorityModal(false);
+
+      await listService.addToWishlist({
+        mediaItemId: media.id,
+        priority,
+      });
+
+      setSuccessMessage("Successfully added to your wishlist!");
+      setTimeout(() => setSuccessMessage(null), 3000);
+    } catch (err: any) {
+      console.error("Failed to add to wishlist:", err);
+      setErrorMessage(
+        err.response?.data?.error || "Failed to add to wishlist. It may already be in your wishlist."
+      );
+      setTimeout(() => setErrorMessage(null), 5000);
+    } finally {
+      setAddingToWishlist(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -177,16 +249,104 @@ export default function MediaDetailsPage() {
             </div>
           </div>
 
+          {(successMessage || errorMessage) && (
+            <div className={`flex items-center gap-2 px-4 py-3 rounded-xl border animate-in fade-in slide-in-from-top-2 ${
+              successMessage 
+                ? "bg-green-500/10 border-green-500/30 text-green-600" 
+                : "bg-red-500/10 border-red-500/30 text-red-600"
+            }`}>
+              {successMessage && <CheckCircleIcon size={20} weight="fill" />}
+              <span className="text-sm font-medium">{successMessage || errorMessage}</span>
+            </div>
+          )}
+
           <div className="flex flex-wrap gap-3 mt-auto">
-            <Button className="gap-2 shadow-lg shadow-primary/20" size="lg">
-              <PlusIcon size={20} weight="bold" />
-              Add to My List
+            <Button 
+              className="gap-2 shadow-lg shadow-primary/20" 
+              size="lg"
+              onClick={handleAddToList}
+              disabled={addingToList || addingToWishlist}
+            >
+              {addingToList ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Adding...
+                </>
+              ) : (
+                <>
+                  <PlusIcon size={20} weight="bold" />
+                  Add to My List
+                </>
+              )}
             </Button>
-            <Button variant="outline" className="gap-2" size="lg">
-              <HeartIcon size={20} weight="duotone" />
-              Add to Wishlist
+            <Button 
+              variant="outline" 
+              className="gap-2" 
+              size="lg"
+              onClick={() => setShowPriorityModal(true)}
+              disabled={addingToList || addingToWishlist}
+            >
+              {addingToWishlist ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                  Adding...
+                </>
+              ) : (
+                <>
+                  <HeartIcon size={20} weight="duotone" />
+                  Add to Wishlist
+                </>
+              )}
             </Button>
           </div>
+
+          {showPriorityModal && (
+            <div 
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200"
+              onClick={() => setShowPriorityModal(false)}
+            >
+              <div 
+                className="bg-card border border-border rounded-2xl p-6 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h3 className="text-xl font-bold text-foreground mb-2">Set Priority</h3>
+                <p className="text-sm text-muted mb-6">How important is this item to you?</p>
+                
+                <div className="flex flex-col gap-3">
+                  <button
+                    onClick={() => handleAddToWishlist("high")}
+                    disabled={addingToWishlist}
+                    className="w-full px-4 py-3 rounded-xl font-medium transition-all border-2 bg-red-500/10 text-red-600 border-red-500/30 hover:bg-red-500/20 hover:border-red-500/50 disabled:opacity-50"
+                  >
+                    🔥 High Priority
+                  </button>
+                  
+                  <button
+                    onClick={() => handleAddToWishlist("medium")}
+                    disabled={addingToWishlist}
+                    className="w-full px-4 py-3 rounded-xl font-medium transition-all border-2 bg-orange-500/10 text-orange-600 border-orange-500/30 hover:bg-orange-500/20 hover:border-orange-500/50 disabled:opacity-50"
+                  >
+                    ⭐ Medium Priority
+                  </button>
+                  
+                  <button
+                    onClick={() => handleAddToWishlist("low")}
+                    disabled={addingToWishlist}
+                    className="w-full px-4 py-3 rounded-xl font-medium transition-all border-2 bg-blue-500/10 text-blue-600 border-blue-500/30 hover:bg-blue-500/20 hover:border-blue-500/50 disabled:opacity-50"
+                  >
+                    💡 Low Priority
+                  </button>
+                </div>
+
+                <button
+                  onClick={() => setShowPriorityModal(false)}
+                  className="w-full mt-4 px-4 py-2 text-sm text-muted hover:text-foreground transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
 
           <div className="pt-6 border-t border-border">
             <div className="grid grid-cols-2 gap-4 text-sm">
