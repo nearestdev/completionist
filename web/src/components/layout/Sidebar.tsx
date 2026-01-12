@@ -10,7 +10,9 @@ import {
   TrophyIcon, 
   BooksIcon, 
   GearIcon,
-  CaretLeftIcon
+  CaretLeftIcon,
+  ChatCircleDotsIcon,
+  UsersThreeIcon
 } from "@phosphor-icons/react/dist/ssr";
 
 export default function Sidebar() {
@@ -59,6 +61,8 @@ export default function Sidebar() {
           <NavLink href="/" icon={<HouseIcon size={24} />} label="Home Feed" collapsed={isCollapsed} />
           <NavLink href="/my-list" icon={<ListChecksIcon size={24} />} label="My Lists" collapsed={isCollapsed} />
           <NavLink href="/search" icon={<CompassIcon size={24} />} label="Explore" collapsed={isCollapsed} />
+          <NavLink href="/messages" icon={<ChatCircleDotsIcon size={24} />} label="Messages" collapsed={isCollapsed} />
+          <NavLink href="/rooms" icon={<UsersThreeIcon size={24} />} label="Rooms" collapsed={isCollapsed} />
           <NavLink href="/challenges" icon={<TrophyIcon size={24} />} label="Challenges" collapsed={isCollapsed} />
           <NavLink href="/wishlist" icon={<BooksIcon size={24} />} label="Wishlist" collapsed={isCollapsed} />
           <NavLink href="/settings" icon={<GearIcon size={24} />} label="Settings" collapsed={isCollapsed} />

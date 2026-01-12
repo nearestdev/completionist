@@ -2,7 +2,8 @@
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { ThemeProvider } from "@/contexts/ThemeContext";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { WebSocketProvider } from "@/contexts/WebSocketContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,12 +24,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${inter.variable} ${poppins.variable} antialiased`}
       >
-        <ThemeProvider>
-          <AuthProvider>{children}</AuthProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AuthProvider>
+            <WebSocketProvider>{children}</WebSocketProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

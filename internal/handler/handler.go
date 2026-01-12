@@ -11,6 +11,7 @@ import (
 	"github.com/GATEOPENERZ/completionist-api/internal/services/rawg"
 	"github.com/GATEOPENERZ/completionist-api/internal/services/steam"
 	"github.com/GATEOPENERZ/completionist-api/internal/services/tmdb"
+	"github.com/GATEOPENERZ/completionist-api/internal/websocket"
 )
 
 type Handler struct {
@@ -23,6 +24,7 @@ type Handler struct {
 	AttachmentRepo   *repository.AttachmentRepository
 	LastFMRepo       *repository.LastFMRepository
 	ChallengeRepo    *repository.ChallengeRepository
+	MessagingRepo    *repository.MessagingRepository
 	Jikan            *jikan.Client
 	TMDB             *tmdb.Client
 	Steam            *steam.Client
@@ -32,6 +34,7 @@ type Handler struct {
 	ChallengeService *challenges.Service
 	RankService      *services.RankService
 	AuditRepo        *repository.AuditRepository
+	WSHub            *websocket.Hub
 	Config           *config.Config
 }
 
@@ -44,6 +47,7 @@ func NewHandler(
 	steamRepo *repository.SteamRepository,
 	chalRepo *repository.ChallengeRepository,
 	auditRepo *repository.AuditRepository,
+	messagingRepo *repository.MessagingRepository,
 	jk *jikan.Client,
 	tm *tmdb.Client,
 	st *steam.Client,
@@ -54,6 +58,7 @@ func NewHandler(
 	lastfmRepo *repository.LastFMRepository,
 	chalService *challenges.Service,
 	rankService *services.RankService,
+	wsHub *websocket.Hub,
 	cfg *config.Config,
 ) *Handler {
 	return &Handler{
@@ -65,6 +70,7 @@ func NewHandler(
 		SteamRepo:        steamRepo,
 		ChallengeRepo:    chalRepo,
 		AuditRepo:        auditRepo,
+		MessagingRepo:    messagingRepo,
 		Jikan:            jk,
 		TMDB:             tm,
 		Steam:            st,
@@ -75,6 +81,7 @@ func NewHandler(
 		LastFMRepo:       lastfmRepo,
 		ChallengeService: chalService,
 		RankService:      rankService,
+		WSHub:            wsHub,
 		Config:           cfg,
 	}
 }

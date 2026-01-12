@@ -246,3 +246,63 @@ CREATE TABLE audit_logs (
 );
 CREATE INDEX idx_audit_logs_entity ON audit_logs(entity_type, entity_id);
 CREATE INDEX idx_audit_logs_created_at ON audit_logs(created_at DESC);
+
+CREATE TABLE direct_messages (
+  id BIGSERIAL PRIMARY KEY,
+  sender_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  receiver_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  content TEXT NOT NULL,
+  is_read BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX idx_dm_conversation ON direct_messages(sender_id, receiver_id);
+CREATE INDEX idx_dm_receiver ON direct_messages(receiver_id, is_read);
+CREATE INDEX idx_dm_created_at ON direct_messages(created_at DESC);
+
+CREATE TYPE room_type AS ENUM ('chat', 'music', 'watch');
+
+CREATE TABLE rooms (
+  id BIGSERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  room_type room_type NOT NULL,
+  creator_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  is_public BOOLEAN NOT NULL DEFAULT TRUE,
+  max_members INT DEFAULT 50,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX idx_rooms_type ON rooms(room_type);
+CREATE INDEX idx_rooms_public ON rooms(is_public);
+CREATE INDEX idx_rooms_created_at ON rooms(created_at DESC);
+
+CREATE TABLE room_members (
+  id BIGSERIAL PRIMARY KEY,
+  room_id BIGINT NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
+  user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  is_moderator BOOLEAN NOT NULL DEFAULT FALSE,
+  joined_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE(room_id, user_id)
+);
+CREATE INDEX idx_room_members_room ON room_members(room_id);
+CREATE INDEX idx_room_members_user ON room_members(user_id);
+
+CREATE TABLE room_messages (
+  id BIGSERIAL PRIMARY KEY,
+  room_id BIGINT NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
+  user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  content TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX idx_room_messages_room ON room_messages(room_id, created_at DESC);
+CREATE INDEX idx_room_messages_user ON room_messages(user_id);
+
+CREATE TABLE room_state (
+  room_id BIGINT PRIMARY KEY REFERENCES rooms(id) ON DELETE CASCADE,
+  current_media_url TEXT,
+  current_media_title VARCHAR(500),
+  current_position_ms BIGINT DEFAULT 0,
+  is_playing BOOLEAN DEFAULT FALSE,
+  updated_by BIGINT REFERENCES users(id) ON DELETE SET NULL,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);

@@ -18,6 +18,7 @@ import (
 	"github.com/GATEOPENERZ/completionist-api/internal/services/rawg"
 	"github.com/GATEOPENERZ/completionist-api/internal/services/steam"
 	"github.com/GATEOPENERZ/completionist-api/internal/services/tmdb"
+	"github.com/GATEOPENERZ/completionist-api/internal/websocket"
 	_ "github.com/GATEOPENERZ/completionist-api/swagger"
 )
 
@@ -55,7 +56,11 @@ func main() {
 	lastfmRepo := repository.NewLastFMRepository(db)
 	challengeRepo := repository.NewChallengeRepository(db)
 	auditRepo := repository.NewAuditRepository(db)
+	messagingRepo := repository.NewMessagingRepository(db)
 	rankService := services.NewRankService(db)
+
+	wsHub := websocket.NewHub(messagingRepo)
+	go wsHub.Run()
 
 	challengeService := challenges.NewService(challengeRepo, userRepo, rankService)
 
@@ -67,8 +72,8 @@ func main() {
 	lf := lastfm.New(cfg.LastFMAPIKey, cfg.LastFMAPISecret, cfg.PublicBaseURL)
 
 	appHandler := handler.NewHandler(
-		userRepo, mediaRepo, listRepo, socialRepo, postsRepo, steamRepo, challengeRepo, auditRepo,
-		jk, tm, st, rg, attachmentRepo, gb, lf, lastfmRepo, challengeService, rankService, cfg,
+		userRepo, mediaRepo, listRepo, socialRepo, postsRepo, steamRepo, challengeRepo, auditRepo, messagingRepo,
+		jk, tm, st, rg, attachmentRepo, gb, lf, lastfmRepo, challengeService, rankService, wsHub, cfg,
 	)
 
 	router := routes.NewRouter(appHandler, cfg)

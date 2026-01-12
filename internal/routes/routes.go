@@ -126,6 +126,26 @@ func NewRouter(h *handler.Handler, cfg *config.Config) http.Handler {
 				ar.Delete("/unlink", h.UnlinkAttachment)
 				ar.Get("/by-entity", h.ListAttachmentsByEntity)
 			})
+
+			pr.Route("/messages", func(mr chi.Router) {
+				mr.Post("/send", h.SendDirectMessage)
+				mr.Get("/conversations", h.GetConversations)
+				mr.Get("/conversation/{userId}", h.GetConversation)
+			})
+
+			pr.Route("/rooms", func(rr chi.Router) {
+				rr.Post("/", h.CreateRoom)
+				rr.Get("/", h.GetRooms)
+				rr.Get("/{roomId}", h.GetRoom)
+				rr.Post("/{roomId}/join", h.JoinRoom)
+				rr.Delete("/{roomId}/leave", h.LeaveRoom)
+				rr.Get("/{roomId}/messages", h.GetRoomMessages)
+				rr.Get("/{roomId}/members", h.GetRoomMembers)
+				rr.Get("/{roomId}/state", h.GetRoomState)
+				rr.Patch("/{roomId}/state", h.UpdateRoomState)
+			})
+
+			pr.Get("/ws", h.HandleWebSocket)
 		})
 	})
 
