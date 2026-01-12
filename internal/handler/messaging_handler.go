@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/GATEOPENERZ/completionist-api/internal/httpx"
 	"github.com/GATEOPENERZ/completionist-api/internal/middleware"
 	"github.com/GATEOPENERZ/completionist-api/internal/models"
+	"github.com/GATEOPENERZ/completionist-api/internal/websocket"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -34,9 +36,15 @@ func (h *Handler) SendDirectMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := h.UserRepo.FindByID(req.ReceiverID)
+	receiver, err := h.UserRepo.FindByID(req.ReceiverID)
 	if err != nil {
 		httpx.JSONError(w, http.StatusNotFound, "Receiver not found")
+		return
+	}
+
+	sender, err := h.UserRepo.FindByID(senderID)
+	if err != nil {
+		httpx.JSONError(w, http.StatusInternalServerError, "Failed to fetch sender details")
 		return
 	}
 
@@ -51,6 +59,26 @@ func (h *Handler) SendDirectMessage(w http.ResponseWriter, r *http.Request) {
 		httpx.JSONError(w, http.StatusInternalServerError, "Failed to send message")
 		return
 	}
+
+	payload := websocket.DMPayload{
+		ID:               result.ID,
+		SenderID:         result.SenderID,
+		SenderUsername:   sender.Username,
+		ReceiverID:       result.ReceiverID,
+		ReceiverUsername: receiver.Username,
+		Content:          result.Content,
+		IsRead:           result.IsRead,
+		CreatedAt:        result.CreatedAt.Format(time.RFC3339),
+	}
+
+	payloadBytes, _ := json.Marshal(payload)
+	wsMsg := &websocket.WSMessage{
+		Type:    websocket.MessageTypeDM,
+		Payload: payloadBytes,
+	}
+
+	h.WSHub.SendToUser(req.ReceiverID, wsMsg)
+	h.WSHub.SendToUser(senderID, wsMsg)
 
 	httpx.JSON(w, http.StatusCreated, result)
 }
@@ -76,7 +104,14 @@ func (h *Handler) GetConversation(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	messages, err := h.MessagingRepo.GetConversation(userID, otherUserID, limit)
+	var beforeID int64
+	if c := r.URL.Query().Get("cursor"); c != "" {
+		if v, err := strconv.ParseInt(c, 10, 64); err == nil {
+			beforeID = v
+		}
+	}
+
+	messages, err := h.MessagingRepo.GetConversation(userID, otherUserID, limit, beforeID)
 	if err != nil {
 		httpx.JSONError(w, http.StatusInternalServerError, "Failed to get conversation")
 		return

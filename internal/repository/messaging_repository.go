@@ -29,9 +29,10 @@ func (r *MessagingRepository) SendDirectMessage(msg *models.DirectMessage) (*mod
 	return &result, nil
 }
 
-func (r *MessagingRepository) GetConversation(userID, otherUserID int64, limit int) ([]models.DirectMessageResponse, error) {
+func (r *MessagingRepository) GetConversation(userID, otherUserID int64, limit int, beforeID int64) ([]models.DirectMessageResponse, error) {
 	messages := []models.DirectMessageResponse{}
-	err := r.DB.Select(&messages, `
+	
+	query := `
 		SELECT 
 			dm.id,
 			dm.sender_id,
@@ -44,11 +45,22 @@ func (r *MessagingRepository) GetConversation(userID, otherUserID int64, limit i
 		FROM direct_messages dm
 		JOIN users s ON dm.sender_id = s.id
 		JOIN users rec ON dm.receiver_id = rec.id
-		WHERE (dm.sender_id = $1 AND dm.receiver_id = $2)
-		   OR (dm.sender_id = $2 AND dm.receiver_id = $1)
-		ORDER BY dm.created_at DESC
-		LIMIT $3
-	`, userID, otherUserID, limit)
+		WHERE ((dm.sender_id = $1 AND dm.receiver_id = $2)
+		   OR (dm.sender_id = $2 AND dm.receiver_id = $1))
+	`
+	args := []interface{}{userID, otherUserID}
+	argIdx := 3
+
+	if beforeID > 0 {
+		query += fmt.Sprintf(" AND dm.id < $%d", argIdx)
+		args = append(args, beforeID)
+		argIdx++
+	}
+
+	query += fmt.Sprintf(" ORDER BY dm.created_at DESC LIMIT $%d", argIdx)
+	args = append(args, limit)
+
+	err := r.DB.Select(&messages, query, args...)
 	if err != nil {
 		return nil, err
 	}

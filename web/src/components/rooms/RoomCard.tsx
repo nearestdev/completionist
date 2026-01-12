@@ -1,7 +1,7 @@
 "use client";
 
 import type { Room, RoomType } from '@/types/messaging';
-import { UsersIcon, MusicNotesIcon, MonitorPlayIcon, LockKeyIcon, GlobeIcon } from '@phosphor-icons/react/dist/ssr';
+import { UsersIcon, MusicNotesIcon, MonitorPlayIcon, LockKeyIcon, GlobeIcon, CaretRightIcon } from '@phosphor-icons/react/dist/ssr';
 
 interface RoomCardProps {
   room: Room;
@@ -9,7 +9,7 @@ interface RoomCardProps {
 }
 
 export default function RoomCard({ room, onJoin }: RoomCardProps) {
-  const getRoomTypeIcon = (type: RoomType) => {
+  const getRoomIcon = (type: RoomType) => {
     switch (type) {
       case 'music':
         return <MusicNotesIcon size={24} weight="fill" />;
@@ -20,55 +20,74 @@ export default function RoomCard({ room, onJoin }: RoomCardProps) {
     }
   };
 
-  const getRoomTypeBadge = (type: RoomType) => {
-    const colors = {
-      chat: 'bg-blue-500/20 text-blue-500',
-      music: 'bg-purple-500/20 text-purple-500',
-      watch: 'bg-pink-500/20 text-pink-500',
-    };
-    return colors[type];
+  const getGradient = (type: RoomType) => {
+    switch (type) {
+      case 'music':
+        return 'from-purple-500/20 to-pink-500/20 text-purple-500';
+      case 'watch':
+        return 'from-blue-500/20 to-cyan-500/20 text-blue-500';
+      default:
+        return 'from-primary/20 to-primary-hover/20 text-primary';
+    }
   };
 
   return (
-    <div className="bg-card border border-border rounded-xl p-4 hover:border-primary/50 transition-all">
-      <div className="flex items-start gap-4">
-        <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
-          {getRoomTypeIcon(room.roomType)}
+    <div 
+      className="group bg-card border border-border hover:border-primary/50 rounded-2xl p-5 transition-all hover:shadow-lg hover:shadow-primary/5 cursor-pointer relative overflow-hidden"
+      onClick={() => onJoin(room.id)}
+    >
+      <div className="relative z-10">
+        <div className="flex items-start justify-between mb-4">
+          <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${getGradient(room.roomType)} flex items-center justify-center shadow-inner`}>
+            {getRoomIcon(room.roomType)}
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium px-2 py-1 rounded-full bg-muted/10 text-muted border border-border/50">
+              {room.memberCount || 0} / {room.maxMembers}
+            </span>
+          </div>
         </div>
 
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2 mb-2">
-            <h3 className="font-semibold text-foreground truncate">{room.name}</h3>
-            <div className="flex items-center gap-1 text-muted flex-shrink-0">
-              {room.isPublic ? (
-                <GlobeIcon size={16} />
+        <div className="mb-4">
+          <div className="flex items-center justify-between gap-2 mb-1">
+            <h3 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors truncate">
+              {room.name}
+            </h3>
+            {room.isPublic ? (
+                 <GlobeIcon size={16} className="text-muted/50 flex-shrink-0" />
               ) : (
-                <LockKeyIcon size={16} />
+                <LockKeyIcon size={16} className="text-muted/50 flex-shrink-0" />
               )}
-            </div>
           </div>
-
           {room.description && (
-            <p className="text-sm text-muted line-clamp-2 mb-3">{room.description}</p>
+            <p className="text-sm text-muted line-clamp-2 min-h-[40px]">
+              {room.description}
+            </p>
           )}
+          {!room.description && (
+             <p className="text-sm text-muted/40 italic min-h-[40px]">
+               No description provided
+             </p>
+          )}
+        </div>
 
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <span className={`text-xs px-2 py-1 rounded-full font-medium ${getRoomTypeBadge(room.roomType)}`}>
-                {room.roomType}
-              </span>
-              <span className="text-xs text-muted">
-                {room.memberCount || 0} / {room.maxMembers} members
-              </span>
-            </div>
-
-            <button
-              onClick={() => onJoin(room.id)}
-              className="px-4 py-1.5 text-sm bg-primary text-white rounded-full hover:bg-primary/90 transition-all"
-            >
-              Join
-            </button>
-          </div>
+        <div className="flex items-center justify-between pt-4 border-t border-border/50">
+           <span className={`text-xs font-semibold uppercase tracking-wider ${
+              room.roomType === 'music' ? 'text-purple-500' :
+              room.roomType === 'watch' ? 'text-blue-500' : 'text-primary'
+           }`}>
+             {room.roomType}
+           </span>
+           <button 
+             className="flex items-center gap-1 text-sm font-medium text-foreground group-hover:text-primary transition-colors group/btn"
+             onClick={(e) => {
+                e.stopPropagation();
+                onJoin(room.id);
+             }}
+           >
+             Join Room
+             <CaretRightIcon className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
+           </button>
         </div>
       </div>
     </div>

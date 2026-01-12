@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import { SidebarProvider, useSidebar } from "@/contexts/SidebarContext";
 import Sidebar from "@/components/layout/Sidebar";
 import Footer from "@/components/layout/Footer";
@@ -8,12 +9,19 @@ import Header from "@/components/layout/Header";
 
 function LayoutContent({ children }: { children: ReactNode }) {
   const { isCollapsed } = useSidebar();
+  const pathname = usePathname();
+  
+  const isFullScreenPage = /^\/rooms\/\d+$/.test(pathname) || pathname === '/messages';
   
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground transition-colors duration-300">
-      <div className={`${isCollapsed ? "lg:ml-[80px]" : "lg:ml-[260px]"} transition-all duration-300`}>
-         <Header />
+      <div className={`${isCollapsed ? "lg:ml-[80px]" : "lg:ml-[260px]"} transition-all duration-300 pointer-events-none fixed top-0 w-full z-10`}> 
+         <div className="pointer-events-auto w-full">
+            <Header />
+         </div>
       </div>
+      {/* Spacer for fixed header */}
+      <div className="h-[73px]" /> 
 
       <div className="flex flex-1">
         <Sidebar />
@@ -24,12 +32,11 @@ function LayoutContent({ children }: { children: ReactNode }) {
             ${isCollapsed ? "lg:ml-[80px]" : "lg:ml-[260px]"}
             transition-all duration-300
             w-full
+            ${isFullScreenPage ? 'h-[calc(100vh-73px)] overflow-hidden' : ''}
           `}
         >
-          <div className="container mx-auto px-4 py-6 flex-grow">
-            {children}
-          </div>
-          <Footer />
+          {children}
+          {!isFullScreenPage && <Footer />}
         </main>
       </div>
     </div>

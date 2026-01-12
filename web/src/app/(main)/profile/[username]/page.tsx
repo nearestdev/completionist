@@ -204,15 +204,24 @@ export default function ProfilePage() {
             {/* Actions */}
             <div className="pt-4 flex flex-wrap justify-center md:justify-start gap-3">
               {!isOwnProfile && currentUser && (
-                 profile.isFollowing ? (
-                  <Button onClick={handleUnfollow} variant="outline" className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 dark:border-red-900/30 dark:text-red-400 dark:hover:bg-red-900/10">
-                    Unfollow
-                  </Button>
-                ) : (
-                  <Button onClick={handleFollow} className="bg-primary hover:bg-primary-hover text-white shadow-lg shadow-primary/20">
-                    Follow
-                  </Button>
-                )
+                <>
+                  {profile.isFollowing ? (
+                    <Button onClick={handleUnfollow} variant="outline" className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 dark:border-red-900/30 dark:text-red-400 dark:hover:bg-red-900/10">
+                      Unfollow
+                    </Button>
+                  ) : (
+                    <Button onClick={handleFollow} className="bg-primary hover:bg-primary-hover text-white shadow-lg shadow-primary/20">
+                      Follow
+                    </Button>
+                  )}
+                  
+                  <Link href={`/messages?userId=${profile.id}&username=${profile.username}`}>
+                    <Button variant="outline" className="gap-2 border-primary/20 hover:bg-primary/5 text-primary">
+                      <ChatCircleTextIcon size={20} weight="bold" />
+                      Message
+                    </Button>
+                  </Link>
+                </>
               )}
               
               {isOwnProfile && (

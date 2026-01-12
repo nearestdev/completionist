@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import {  SignOutIcon, UsersIcon, SidebarIcon } from '@phosphor-icons/react/dist/ssr';
+import {  SignOutIcon, SidebarIcon } from '@phosphor-icons/react/dist/ssr';
 import ChatBox from '@/components/messaging/ChatBox';
 import MembersList from '@/components/rooms/MembersList';
 import { roomService } from '@/services/roomService';
@@ -20,7 +20,7 @@ export default function ChatRoom({ room }: ChatRoomProps) {
   const [onlineUsers, setOnlineUsers] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(true);
   const [showSidebar, setShowSidebar] = useState(true);
-  const { subscribe, sendMessage } = useWebSocket();
+  const { subscribe, sendMessage, isConnected } = useWebSocket();
 
   useEffect(() => {
     loadData();
@@ -161,6 +161,7 @@ export default function ChatRoom({ room }: ChatRoomProps) {
             messages={messages}
             onSendMessage={handleSendMessage}
             loading={loading}
+            disabled={!isConnected}
             placeholder="Send a message..."
           />
         </div>

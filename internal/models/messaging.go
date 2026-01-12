@@ -17,14 +17,14 @@ type SendDirectMessageRequest struct {
 }
 
 type DirectMessageResponse struct {
-	ID               int64     `json:"id"`
-	SenderID         int64     `json:"senderId"`
-	SenderUsername   string    `json:"senderUsername"`
-	ReceiverID       int64     `json:"receiverId"`
-	ReceiverUsername string    `json:"receiverUsername"`
-	Content          string    `json:"content"`
-	IsRead           bool      `json:"isRead"`
-	CreatedAt        time.Time `json:"createdAt"`
+	ID               int64     `db:"id" json:"id"`
+	SenderID         int64     `db:"sender_id" json:"senderId"`
+	SenderUsername   string    `db:"sender_username" json:"senderUsername"`
+	ReceiverID       int64     `db:"receiver_id" json:"receiverId"`
+	ReceiverUsername string    `db:"receiver_username" json:"receiverUsername"`
+	Content          string    `db:"content" json:"content"`
+	IsRead           bool      `db:"is_read" json:"isRead"`
+	CreatedAt        time.Time `db:"created_at" json:"createdAt"`
 }
 
 type ConversationSummary struct {
