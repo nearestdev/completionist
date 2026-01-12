@@ -16,10 +16,10 @@ func NewListRepository(db *sqlx.DB) *ListRepository {
 func (r *ListRepository) CreateUserListItem(userID int64, item models.NewUserListItem) (*models.UserListItem, error) {
 	var out models.UserListItem
 	err := r.DB.QueryRowx(`
-		INSERT INTO user_list_items (user_id, media_item_id, status, progress, rating)
+		INSERT INTO user_list_items (user_id, media_item_id, status, progress_data, rating)
 		VALUES ($1, $2, $3, $4, $5)
-		RETURNING id, user_id, media_item_id, status, progress, rating, created_at, updated_at
-	`, userID, item.MediaItemID, item.Status, item.Progress, item.Rating).StructScan(&out)
+		RETURNING id, user_id, media_item_id, status, progress_data, rating, created_at, updated_at
+	`, userID, item.MediaItemID, item.Status, item.ProgressData, item.Rating).StructScan(&out)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ func (r *ListRepository) GetUserListItems(userID int64) ([]models.UserListItem, 
 			uli.user_id, 
 			uli.media_item_id, 
 			uli.status, 
-			uli.progress, 
+			uli.progress_data, 
 			uli.rating, 
 			uli.created_at, 
 			uli.updated_at,
@@ -53,7 +53,7 @@ func (r *ListRepository) GetUserListItems(userID int64) ([]models.UserListItem, 
 func (r *ListRepository) GetUserListItem(userID, itemID int64) (*models.UserListItem, error) {
 	var item models.UserListItem
 	err := r.DB.Get(&item, `
-		SELECT id, user_id, media_item_id, status, progress, rating, created_at, updated_at
+		SELECT id, user_id, media_item_id, status, progress_data, rating, created_at, updated_at
 		FROM user_list_items
 		WHERE id = $1 AND user_id = $2
 	`, itemID, userID)
@@ -67,10 +67,10 @@ func (r *ListRepository) UpdateUserListItem(userID, itemID int64, upd models.Upd
 	var out models.UserListItem
 	err := r.DB.QueryRowx(`
 		UPDATE user_list_items
-		SET status = $1, progress = $2, rating = $3, updated_at = NOW()
+		SET status = $1, progress_data = $2, rating = $3, updated_at = NOW()
 		WHERE id = $4 AND user_id = $5
-		RETURNING id, user_id, media_item_id, status, progress, rating, created_at, updated_at
-	`, upd.Status, upd.Progress, upd.Rating, itemID, userID).StructScan(&out)
+		RETURNING id, user_id, media_item_id, status, progress_data, rating, created_at, updated_at
+	`, upd.Status, upd.ProgressData, upd.Rating, itemID, userID).StructScan(&out)
 	if err != nil {
 		return nil, err
 	}

@@ -5,6 +5,7 @@ import {
   UpdateUserListItem,
   UserListItem,
   WishlistItem,
+  ProgressData,
 } from "@/types/list";
 
 const listService = {
@@ -32,7 +33,7 @@ const listService = {
 
   addAnimeFromJikan: async (
     malId: number,
-    data: { status: string; progress?: string; rating?: number }
+    data: { status: string; progressData?: ProgressData; rating?: number }
   ): Promise<UserListItem> => {
     const response = await api.post<UserListItem>(`/lists/jikan/anime/${malId}`, data);
     return response.data;
@@ -40,7 +41,7 @@ const listService = {
 
   addMangaFromJikan: async (
     malId: number,
-    data: { status: string; progress?: string; rating?: number }
+    data: { status: string; progressData?: ProgressData; rating?: number }
   ): Promise<UserListItem> => {
     const response = await api.post<UserListItem>(`/lists/jikan/manga/${malId}`, data);
     return response.data;
@@ -48,7 +49,7 @@ const listService = {
 
   addMovieFromTMDB: async (
     tmdbId: number,
-    data: { status: string; progress?: string; rating?: number }
+    data: { status: string; progressData?: ProgressData; rating?: number }
   ): Promise<UserListItem> => {
     const response = await api.post<UserListItem>(`/lists/tmdb/movie/${tmdbId}`, data);
     return response.data;
@@ -56,9 +57,17 @@ const listService = {
 
   addTVFromTMDB: async (
     tmdbId: number,
-    data: { status: string; progress?: string; rating?: number }
+    data: { status: string; progressData?: ProgressData; rating?: number }
   ): Promise<UserListItem> => {
     const response = await api.post<UserListItem>(`/lists/tmdb/tv/${tmdbId}`, data);
+    return response.data;
+  },
+
+  addBookFromGoogle: async (
+    bookId: string,
+    data: { status: string; progressData?: ProgressData; rating?: number }
+  ): Promise<UserListItem> => {
+    const response = await api.post<UserListItem>(`/lists/google/books/${bookId}`, data);
     return response.data;
   },
 

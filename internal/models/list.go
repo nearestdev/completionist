@@ -55,16 +55,31 @@ type MediaItem struct {
 	UpdatedAt          time.Time       `db:"updated_at" json:"updatedAt"`
 }
 
+type ProgressData struct {
+	Current              *int     `json:"current,omitempty"`
+	Total                *int     `json:"total,omitempty"`
+	Unit                 *string  `json:"unit,omitempty"`
+	HoursPlayed          *float64 `json:"hoursPlayed,omitempty"`
+	AchievementsUnlocked *int     `json:"achievementsUnlocked,omitempty"`
+	AchievementsTotal    *int     `json:"achievementsTotal,omitempty"`
+	Watched              *bool    `json:"watched,omitempty"`
+	Season               *int     `json:"season,omitempty"`
+	TracksListened       *int     `json:"tracksListened,omitempty"`
+	TotalTracks          *int     `json:"totalTracks,omitempty"`
+	AlbumsListened       *int     `json:"albumsListened,omitempty"`
+	TotalAlbums          *int     `json:"totalAlbums,omitempty"`
+}
+
 type UserListItem struct {
-	ID          int64      `db:"id" json:"id"`
-	UserID      int64      `db:"user_id" json:"userId"`
-	MediaItemID uuid.UUID  `db:"media_item_id" json:"mediaItemId"`
-	Status      ItemStatus `db:"status" json:"status"`
-	Progress    *string    `db:"progress" json:"progress,omitempty"`
-	Rating      *int       `db:"rating" json:"rating,omitempty"`
-	ItemType    ItemType   `db:"item_type" json:"itemType"`
-	CreatedAt   time.Time  `db:"created_at" json:"createdAt"`
-	UpdatedAt   time.Time  `db:"updated_at" json:"updatedAt"`
+	ID           int64            `db:"id" json:"id"`
+	UserID       int64            `db:"user_id" json:"userId"`
+	MediaItemID  uuid.UUID        `db:"media_item_id" json:"mediaItemId"`
+	Status       ItemStatus       `db:"status" json:"status"`
+	ProgressData *json.RawMessage `db:"progress_data" json:"progressData,omitempty" swaggertype:"string"`
+	Rating       *int             `db:"rating" json:"rating,omitempty"`
+	ItemType     ItemType         `db:"item_type" json:"itemType"`
+	CreatedAt    time.Time        `db:"created_at" json:"createdAt"`
+	UpdatedAt    time.Time        `db:"updated_at" json:"updatedAt"`
 }
 
 type WishlistItem struct {
@@ -90,16 +105,16 @@ type NewMediaItem struct {
 }
 
 type NewUserListItem struct {
-	MediaItemID uuid.UUID  `json:"mediaItemId"`
-	Status      ItemStatus `json:"status"`
-	Progress    *string    `json:"progress,omitempty"`
-	Rating      *int       `json:"rating,omitempty"`
+	MediaItemID  uuid.UUID        `json:"mediaItemId"`
+	Status       ItemStatus       `json:"status"`
+	ProgressData *json.RawMessage `json:"progressData,omitempty" swaggertype:"string"`
+	Rating       *int             `json:"rating,omitempty"`
 }
 
 type UpdateUserListItem struct {
-	Status   ItemStatus `json:"status"`
-	Progress *string    `json:"progress,omitempty"`
-	Rating   *int       `json:"rating,omitempty"`
+	Status       ItemStatus       `json:"status"`
+	ProgressData *json.RawMessage `json:"progressData,omitempty" swaggertype:"string"`
+	Rating       *int             `json:"rating,omitempty"`
 }
 
 type NewWishlistItem struct {
@@ -114,7 +129,7 @@ type CreateListItemPayload struct {
 }
 
 type NewUserListItemBody struct {
-	Status   ItemStatus `json:"status"`
-	Progress *string    `json:"progress,omitempty"`
-	Rating   *int       `json:"rating,omitempty"`
+	Status       ItemStatus       `json:"status"`
+	ProgressData *json.RawMessage `json:"progressData,omitempty" swaggertype:"string"`
+	Rating       *int             `json:"rating,omitempty"`
 }

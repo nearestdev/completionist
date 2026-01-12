@@ -52,7 +52,7 @@ definitions:
     type: object
   handler.addFromGoogleBooksBody:
     properties:
-      progress:
+      progressData:
         type: string
       rating:
         type: integer
@@ -61,7 +61,7 @@ definitions:
     type: object
   handler.addFromJikanBody:
     properties:
-      progress:
+      progressData:
         type: string
       rating:
         type: integer
@@ -70,7 +70,7 @@ definitions:
     type: object
   handler.addFromTMDBBody:
     properties:
-      progress:
+      progressData:
         type: string
       rating:
         type: integer
@@ -561,7 +561,7 @@ definitions:
     type: object
   models.NewUserListItemBody:
     properties:
-      progress:
+      progressData:
         type: string
       rating:
         type: integer
@@ -726,7 +726,7 @@ definitions:
     type: object
   models.UpdateUserListItem:
     properties:
-      progress:
+      progressData:
         type: string
       rating:
         type: integer
@@ -798,7 +798,7 @@ definitions:
         $ref: '#/definitions/models.ItemType'
       mediaItemId:
         type: string
-      progress:
+      progressData:
         type: string
       rating:
         type: integer

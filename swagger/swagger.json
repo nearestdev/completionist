@@ -4117,7 +4117,7 @@
         "handler.addFromGoogleBooksBody": {
             "type": "object",
             "properties": {
-                "progress": {
+                "progressData": {
                     "type": "string"
                 },
                 "rating": {
@@ -4131,7 +4131,7 @@
         "handler.addFromJikanBody": {
             "type": "object",
             "properties": {
-                "progress": {
+                "progressData": {
                     "type": "string"
                 },
                 "rating": {
@@ -4145,7 +4145,7 @@
         "handler.addFromTMDBBody": {
             "type": "object",
             "properties": {
-                "progress": {
+                "progressData": {
                     "type": "string"
                 },
                 "rating": {
@@ -4887,7 +4887,7 @@
         "models.NewUserListItemBody": {
             "type": "object",
             "properties": {
-                "progress": {
+                "progressData": {
                     "type": "string"
                 },
                 "rating": {
@@ -5130,7 +5130,7 @@
         "models.UpdateUserListItem": {
             "type": "object",
             "properties": {
-                "progress": {
+                "progressData": {
                     "type": "string"
                 },
                 "rating": {
@@ -5240,7 +5240,7 @@
                 "mediaItemId": {
                     "type": "string"
                 },
-                "progress": {
+                "progressData": {
                     "type": "string"
                 },
                 "rating": {

@@ -73,9 +73,9 @@ func (h *Handler) SearchTVTMDB(w http.ResponseWriter, r *http.Request) {
 	httpx.JSON(w, http.StatusOK, res)
 }
 type addFromTMDBBody struct {
-	Status   models.ItemStatus `json:"status"`
-	Progress *string           `json:"progress,omitempty"`
-	Rating   *int              `json:"rating,omitempty"`
+	Status       models.ItemStatus `json:"status"`
+	ProgressData *json.RawMessage  `json:"progressData,omitempty" swaggertype:"string"`
+	Rating       *int              `json:"rating,omitempty"`
 }
 // @Summary      Add Movie from TMDb
 // @Description  Imports a movie from TMDb into the user's list
@@ -149,10 +149,10 @@ func (h *Handler) AddMovieFromTMDB(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	item, err := h.ListRepo.CreateUserListItem(userID, models.NewUserListItem{
-		MediaItemID: media.ID,
-		Status:      body.Status,
-		Progress:    body.Progress,
-		Rating:      body.Rating,
+		MediaItemID:  media.ID,
+		Status:       body.Status,
+		ProgressData: body.ProgressData,
+		Rating:       body.Rating,
 	})
 	if err != nil {
 		httpx.JSONError(w, http.StatusInternalServerError, "List create failed")
@@ -233,10 +233,10 @@ func (h *Handler) AddTVFromTMDB(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	item, err := h.ListRepo.CreateUserListItem(userID, models.NewUserListItem{
-		MediaItemID: media.ID,
-		Status:      body.Status,
-		Progress:    body.Progress,
-		Rating:      body.Rating,
+		MediaItemID:  media.ID,
+		Status:       body.Status,
+		ProgressData: body.ProgressData,
+		Rating:       body.Rating,
 	})
 	if err != nil {
 		httpx.JSONError(w, http.StatusInternalServerError, "List create failed")

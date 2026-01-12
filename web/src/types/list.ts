@@ -20,12 +20,27 @@ export interface MediaItem {
   updatedAt: string;
 }
 
+export interface ProgressData {
+  current?: number;
+  total?: number;
+  unit?: "pages" | "chapters" | "volumes" | "episodes" | "tracks" | "albums";
+  hoursPlayed?: number;
+  achievementsUnlocked?: number;
+  achievementsTotal?: number;
+  watched?: boolean;
+  season?: number;
+  tracksListened?: number;
+  totalTracks?: number;
+  albumsListened?: number;
+  totalAlbums?: number;
+}
+
 export interface UserListItem {
   id: number;
   userId: number;
   mediaItemId: string;
   status: ItemStatus;
-  progress?: string;
+  progressData?: ProgressData;
   rating?: number;
   itemType: ItemType;
   createdAt: string;
@@ -56,21 +71,21 @@ export interface NewMediaItem {
 
 export interface NewUserListItemBody {
   status: ItemStatus;
-  progress?: string;
+  progressData?: ProgressData;
   rating?: number;
 }
 
 export interface NewUserListItem {
   mediaItemId: string;
   status: ItemStatus;
-  progress?: string;
+  progressData?: ProgressData;
   rating?: number;
 }
 
 
 export interface UpdateUserListItem {
   status: ItemStatus;
-  progress?: string;
+  progressData?: ProgressData;
   rating?: number;
 }
 

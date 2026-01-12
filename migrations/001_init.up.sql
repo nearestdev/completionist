@@ -41,7 +41,7 @@ CREATE TABLE user_list_items (
   user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   media_item_id UUID NOT NULL REFERENCES media_items(id) ON DELETE CASCADE,
   status item_status NOT NULL,
-  progress VARCHAR(255),
+  progress_data JSONB DEFAULT '{}',
   rating INT CHECK (rating >= 1 AND rating <= 5),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -58,6 +58,7 @@ CREATE TABLE wishlist_items (
   UNIQUE(user_id, media_item_id)
 );
 CREATE INDEX idx_user_list_items_user_id ON user_list_items(user_id);
+CREATE INDEX idx_user_list_items_progress_data ON user_list_items USING GIN (progress_data);
 CREATE INDEX idx_wishlist_items_user_id ON wishlist_items(user_id);
 CREATE INDEX idx_media_items_source_external_id ON media_items(source, external_id);
 CREATE TABLE game_achievements (

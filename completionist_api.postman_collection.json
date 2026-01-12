@@ -976,7 +976,7 @@
             "description": "Imports a book from Google Books into the user's list",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"progress\": \"string\",\n  \"rating\": 0,\n  \"status\": \"string\"\n}"
+              "raw": "{\n  \"progressData\": \"string\",\n  \"rating\": 0,\n  \"status\": \"string\"\n}"
             }
           }
         },
@@ -1011,7 +1011,7 @@
             "description": "Imports an anime from Jikan/MAL into the user's list",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"progress\": \"string\",\n  \"rating\": 0,\n  \"status\": \"string\"\n}"
+              "raw": "{\n  \"progressData\": \"string\",\n  \"rating\": 0,\n  \"status\": \"string\"\n}"
             }
           }
         },
@@ -1046,7 +1046,7 @@
             "description": "Imports a manga from Jikan/MAL into the user's list",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"progress\": \"string\",\n  \"rating\": 0,\n  \"status\": \"string\"\n}"
+              "raw": "{\n  \"progressData\": \"string\",\n  \"rating\": 0,\n  \"status\": \"string\"\n}"
             }
           }
         },
@@ -1081,7 +1081,7 @@
             "description": "Imports a movie from TMDb into the user's list",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"progress\": \"string\",\n  \"rating\": 0,\n  \"status\": \"string\"\n}"
+              "raw": "{\n  \"progressData\": \"string\",\n  \"rating\": 0,\n  \"status\": \"string\"\n}"
             }
           }
         },
@@ -1116,7 +1116,7 @@
             "description": "Imports a TV show from TMDb into the user's list",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"progress\": \"string\",\n  \"rating\": 0,\n  \"status\": \"string\"\n}"
+              "raw": "{\n  \"progressData\": \"string\",\n  \"rating\": 0,\n  \"status\": \"string\"\n}"
             }
           }
         },
@@ -1178,7 +1178,7 @@
             "description": "Updates status, progress, or rating of a list item",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"progress\": \"string\",\n  \"rating\": 0,\n  \"status\": \"string\"\n}"
+              "raw": "{\n  \"progressData\": \"string\",\n  \"rating\": 0,\n  \"status\": \"string\"\n}"
             }
           }
         }

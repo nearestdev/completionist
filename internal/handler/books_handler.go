@@ -35,9 +35,9 @@ func (h *Handler) SearchBooks(w http.ResponseWriter, r *http.Request) {
 	httpx.JSON(w, http.StatusOK, res)
 }
 type addFromGoogleBooksBody struct {
-	Status   models.ItemStatus `json:"status"`
-	Progress *string           `json:"progress,omitempty"`
-	Rating   *int              `json:"rating,omitempty"`
+	Status       models.ItemStatus `json:"status"`
+	ProgressData *json.RawMessage  `json:"progressData,omitempty" swaggertype:"string"`
+	Rating       *int              `json:"rating,omitempty"`
 }
 // @Summary      Add Book from Google Books
 // @Description  Imports a book from Google Books into the user's list
@@ -110,10 +110,10 @@ func (h *Handler) AddBookFromGoogleBooks(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	item, err := h.ListRepo.CreateUserListItem(userID, models.NewUserListItem{
-		MediaItemID: media.ID,
-		Status:      body.Status,
-		Progress:    body.Progress,
-		Rating:      body.Rating,
+		MediaItemID:  media.ID,
+		Status:       body.Status,
+		ProgressData: body.ProgressData,
+		Rating:       body.Rating,
 	})
 	if err != nil {
 		httpx.JSONError(w, http.StatusInternalServerError, "List create failed")

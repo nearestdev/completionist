@@ -42,11 +42,12 @@ func (h *Handler) CreateListItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+
 	newList := models.NewUserListItem{
-		MediaItemID: media.ID,
-		Status:      payload.ListData.Status,
-		Progress:    payload.ListData.Progress,
-		Rating:      payload.ListData.Rating,
+		MediaItemID:  media.ID,
+		Status:       payload.ListData.Status,
+		ProgressData: payload.ListData.ProgressData,
+		Rating:       payload.ListData.Rating,
 	}
 
 	item, err := h.ListRepo.CreateUserListItem(userID, newList)

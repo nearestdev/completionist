@@ -4123,7 +4123,7 @@ const docTemplate = `{
         "handler.addFromGoogleBooksBody": {
             "type": "object",
             "properties": {
-                "progress": {
+                "progressData": {
                     "type": "string"
                 },
                 "rating": {
@@ -4137,7 +4137,7 @@ const docTemplate = `{
         "handler.addFromJikanBody": {
             "type": "object",
             "properties": {
-                "progress": {
+                "progressData": {
                     "type": "string"
                 },
                 "rating": {
@@ -4151,7 +4151,7 @@ const docTemplate = `{
         "handler.addFromTMDBBody": {
             "type": "object",
             "properties": {
-                "progress": {
+                "progressData": {
                     "type": "string"
                 },
                 "rating": {
@@ -4893,7 +4893,7 @@ const docTemplate = `{
         "models.NewUserListItemBody": {
             "type": "object",
             "properties": {
-                "progress": {
+                "progressData": {
                     "type": "string"
                 },
                 "rating": {
@@ -5136,7 +5136,7 @@ const docTemplate = `{
         "models.UpdateUserListItem": {
             "type": "object",
             "properties": {
-                "progress": {
+                "progressData": {
                     "type": "string"
                 },
                 "rating": {
@@ -5246,7 +5246,7 @@ const docTemplate = `{
                 "mediaItemId": {
                     "type": "string"
                 },
-                "progress": {
+                "progressData": {
                     "type": "string"
                 },
                 "rating": {
