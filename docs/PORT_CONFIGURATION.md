@@ -2,6 +2,10 @@
 
 This project supports flexible port and host configuration for both backend and frontend services through a single `.env` file in the root directory.
 
+The repository is organized as a small monorepo:
+- `apps/api/` contains the Go backend module
+- `apps/web/` contains the Next.js frontend
+
 ## How It Works
 
 The configuration is separated into **base URLs** and **ports** for maximum flexibility:
@@ -28,7 +32,7 @@ This separation allows you to:
 
 ### Root `.env` File
 
-The frontend reads from the root `.env` file, so you only need one configuration file:
+Both apps read from the root `.env` file, so you only need one configuration file:
 
 ```env
 DATABASE_URL=postgres://postgres:testPassword@localhost:5434/completionist_db?sslmode=disable
@@ -118,14 +122,14 @@ Manual values take precedence over auto-generated ones.
 
 ### Backend
 ```bash
-go run cmd/api/main.go
+go -C apps/api run ./cmd/api
 ```
 
 Starts on `BACKEND_BASE_URL:BACKEND_PORT`.
 
 ### Frontend
 ```bash
-cd web
+cd apps/web
 npm run dev
 ```
 
@@ -133,7 +137,7 @@ Next.js automatically:
 1. Reads `BACKEND_BASE_URL` and `BACKEND_PORT` from root `.env`
 2. Builds API URL as `${BACKEND_BASE_URL}:${BACKEND_PORT}/api`
 3. Runs dev server on `PORT` from `.env`
-3. Runs dev server on `FRONTEND_PORT`
+4. Serves the frontend from `FRONTEND_BASE_URL:PORT`
 
 ## Clean .env Example
 

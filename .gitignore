@@ -3,6 +3,8 @@ completionist-api
 .env*
 
 api.exe
+/apps/api/bin/
+/apps/api/uploads/
 
 # dependencies
 /node_modules
