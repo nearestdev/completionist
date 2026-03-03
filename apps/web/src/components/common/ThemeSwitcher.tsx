@@ -2,15 +2,15 @@
 
 import { useTheme } from "next-themes";
 import { Sun, Moon } from "@phosphor-icons/react";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 export default function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   const isDark = theme === "dark";
 

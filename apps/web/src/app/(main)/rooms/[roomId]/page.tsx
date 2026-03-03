@@ -25,7 +25,27 @@ export default function RoomPage() {
       return;
     }
 
-    loadRoom();
+    const loadRoom = async () => {
+      try {
+        setLoading(true);
+        const data = await roomService.getRoom(roomId);
+        
+        if (!data.isMember) {
+          await roomService.joinRoom(data.id);
+          const updatedRoom = await roomService.getRoom(roomId);
+          setRoom(updatedRoom);
+        } else {
+          setRoom(data);
+        }
+      } catch (err) {
+        console.error('Failed to load room:', err);
+        setError('Failed to load room');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void loadRoom();
   }, [roomId]);
 
   useEffect(() => {
@@ -37,26 +57,6 @@ export default function RoomPage() {
       username: '',
     });
   }, [room, sendMessage]);
-
-  const loadRoom = async () => {
-    try {
-      setLoading(true);
-      const data = await roomService.getRoom(roomId);
-      
-      if (!data.isMember) {
-        await roomService.joinRoom(data.id);
-        const updatedRoom = await roomService.getRoom(roomId);
-        setRoom(updatedRoom);
-      } else {
-        setRoom(data);
-      }
-    } catch (err) {
-      console.error('Failed to load room:', err);
-      setError('Failed to load room');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (loading) {
     return (

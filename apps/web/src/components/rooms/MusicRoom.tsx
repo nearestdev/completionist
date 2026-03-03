@@ -22,8 +22,23 @@ export default function MusicRoom({ room }: MusicRoomProps) {
   const { subscribe, sendMessage } = useWebSocket();
 
   useEffect(() => {
-    loadMessages();
-    loadRoomState();
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        const [messageData, state] = await Promise.all([
+          roomService.getRoomMessages(room.id),
+          roomService.getRoomState(room.id),
+        ]);
+        setMessages(messageData);
+        setRoomState(state);
+      } catch (error) {
+        console.error('Failed to load room data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void loadData();
   }, [room.id]);
 
   useEffect(() => {
@@ -63,27 +78,6 @@ export default function MusicRoom({ room }: MusicRoomProps) {
       unsubscribeState();
     };
   }, [subscribe, room.id]);
-
-  const loadMessages = async () => {
-    try {
-      setLoading(true);
-      const data = await roomService.getRoomMessages(room.id);
-      setMessages(data);
-    } catch (error) {
-      console.error('Failed to load messages:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadRoomState = async () => {
-    try {
-      const state = await roomService.getRoomState(room.id);
-      setRoomState(state);
-    } catch (error) {
-      console.error('Failed to load room state:', error);
-    }
-  };
 
   const handleSendMessage = (content: string) => {
     sendMessage('room_chat', {

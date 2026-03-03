@@ -1073,7 +1073,7 @@ info:
   contact: {}
   description: This is the API server for the Completionist application.
   title: Completionist API
-  version: "1.0"
+  version: 1.0.5
 paths:
   /attachments:
     post:

@@ -161,7 +161,7 @@ export default function ChallengesPage() {
               </div>
               <h3 className="text-lg font-bold text-foreground mb-2">All Caught Up!</h3>
               <p className="text-muted max-w-sm mx-auto">
-                You've engaged with all active challenges. Check back later for new quests or explore the community lists.
+                You&apos;ve engaged with all active challenges. Check back later for new quests or explore the community lists.
               </p>
             </div>
           )}

@@ -1,10 +1,13 @@
 {
   "name": "completionist-monorepo",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "private": true,
+  "packageManager": "bun@1.3.9",
+  "workspaces": [
+    "apps/web"
+  ],
   "scripts": {
-    "postinstall": "npm --prefix apps/web install",
-    "setup": "npm install && npm run db:up && npm run migrate:install-tool && npm run swagger:install",
+    "setup": "bun install && bun run db:up && bun run migrate:install-tool && bun run swagger:install",
     "db:up": "docker compose up -d",
     "db:down": "docker compose down",
     "db:logs": "docker compose logs -f",
@@ -13,15 +16,15 @@
     "migrate:create": "migrate create -ext sql -dir apps/api/migrations -seq",
     "swagger:install": "go install github.com/swaggo/swag/cmd/swag@latest",
     "swagger:gen": "go -C apps/api run github.com/swaggo/swag/cmd/swag init -g cmd/api/main.go --output swagger",
-    "dev:backend": "npm run swagger:gen && cross-env GO_ENV=development go -C apps/api run ./cmd/api",
-    "dev:frontend": "cross-env PORT=4000 npm --prefix apps/web run dev",
-    "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"blue,magenta\" \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "bun run swagger:gen && cross-env GO_ENV=development go -C apps/api run ./cmd/api",
+    "dev:frontend": "cross-env PORT=4000 bun run --cwd apps/web dev",
+    "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"blue,magenta\" \"bun run dev:backend\" \"bun run dev:frontend\"",
     "build:backend": "mkdir -p apps/api/bin && go -C apps/api build -o ./bin/server ./cmd/api",
-    "build:frontend": "npm --prefix apps/web run build",
-    "build": "npm run build:backend && npm run build:frontend",
+    "build:frontend": "bun run --cwd apps/web build",
+    "build": "bun run build:backend && bun run build:frontend",
     "start:backend": "cross-env GO_ENV=production ./apps/api/bin/server",
-    "start:frontend": "cross-env PORT=4000 npm --prefix apps/web run start",
-    "start": "concurrently -n \"BACKEND,FRONTEND\" -c \"blue,magenta\" \"npm run start:backend\" \"npm run start:frontend\""
+    "start:frontend": "cross-env PORT=4000 bun run --cwd apps/web start",
+    "start": "concurrently -n \"BACKEND,FRONTEND\" -c \"blue,magenta\" \"bun run start:backend\" \"bun run start:frontend\""
   },
   "devDependencies": {
     "concurrently": "^9.2.1",

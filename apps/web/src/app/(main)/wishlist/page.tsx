@@ -12,6 +12,7 @@ import {
   ShoppingCartIcon
 } from "@phosphor-icons/react/dist/ssr";
 import Button from "@/components/ui/Button";
+import Image from "next/image";
 
 export default function WishlistPage() {
   const [items, setItems] = useState<WishlistItem[]>([]);
@@ -92,10 +93,13 @@ export default function WishlistPage() {
               className="group bg-card border border-border hover:border-primary/50 rounded-xl overflow-hidden transition-all hover:shadow-md flex flex-col md:flex-row"
             >
               {item.media?.coverImageUrl && (
-                <div className="relative w-full md:w-32 h-32 md:h-auto bg-muted/20 shrink-0">
-                  <img 
+                <div className="w-full md:w-32 h-32 md:h-auto bg-muted/20 shrink-0">
+                  <Image
                     src={item.media.coverImageUrl} 
                     alt={item.media.title}
+                    width={128}
+                    height={128}
+                    sizes="(max-width: 768px) 100vw, 128px"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>

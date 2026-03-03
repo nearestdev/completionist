@@ -16,6 +16,7 @@ import {
   FilmStripIcon
 } from "@phosphor-icons/react/dist/ssr";
 import Button from "@/components/ui/Button";
+import Image from "next/image";
 
 export default function MyListPage() {
   const [items, setItems] = useState<UserListItem[]>([]);
@@ -99,9 +100,11 @@ export default function MyListPage() {
               >
                 {item.media?.coverImageUrl && (
                   <div className="relative h-32 w-full bg-muted/20">
-                    <img 
+                    <Image
                       src={item.media.coverImageUrl} 
                       alt={item.media.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent opacity-60" />

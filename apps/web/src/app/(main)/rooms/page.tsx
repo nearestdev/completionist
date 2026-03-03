@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { PlusIcon, MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr';
 import RoomCard from '@/components/rooms/RoomCard';
@@ -15,11 +15,7 @@ export default function RoomsPage() {
   const [selectedType, setSelectedType] = useState<RoomType | 'all'>('all');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-  useEffect(() => {
-    loadRooms();
-  }, [selectedType]);
-
-  const loadRooms = async () => {
+  const loadRooms = useCallback(async () => {
     try {
       setLoading(true);
       const type = selectedType === 'all' ? undefined : selectedType;
@@ -30,7 +26,11 @@ export default function RoomsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedType]);
+
+  useEffect(() => {
+    void loadRooms();
+  }, [loadRooms]);
 
   const handleJoinRoom = async (roomId: number) => {
     try {
@@ -42,7 +42,7 @@ export default function RoomsPage() {
   };
 
   const handleRoomCreated = () => {
-    loadRooms();
+    void loadRooms();
   };
 
   return (

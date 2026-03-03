@@ -45,35 +45,36 @@ export default function ChatBox({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const prevMessagesLengthRef = useRef(messages.length);
   const beforeLoadScrollHeightRef = useRef<number>(0);
+  const shouldRestoreScrollRef = useRef(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messageRefs = useRef<Map<number, HTMLDivElement>>(new Map());
 
-  useLayoutEffect(() => {
-    if (messages.length > prevMessagesLengthRef.current) {
-      if (isFetchingMore && scrollContainerRef.current) {
-        const newScrollHeight = scrollContainerRef.current.scrollHeight;
-        const diff = newScrollHeight - beforeLoadScrollHeightRef.current;
-        scrollContainerRef.current.scrollTop = diff;
-        setIsFetchingMore(false);
-      } else if (!isFetchingMore) {
-        scrollToBottom();
-      }
-    }
-    prevMessagesLengthRef.current = messages.length;
-  }, [messages, isFetchingMore]);
-
-  const scrollToBottom = () => {
+  function scrollToBottom() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  }
 
-  const scrollToMessage = (messageId: number) => {
+  function scrollToMessage(messageId: number) {
     const messageElement = messageRefs.current.get(messageId);
     if (messageElement && scrollContainerRef.current) {
       messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
       setHighlightedMessageId(messageId);
       setTimeout(() => setHighlightedMessageId(null), 2000);
     }
-  };
+  }
+
+  useLayoutEffect(() => {
+    if (messages.length > prevMessagesLengthRef.current) {
+      if (shouldRestoreScrollRef.current && scrollContainerRef.current) {
+        const newScrollHeight = scrollContainerRef.current.scrollHeight;
+        const diff = newScrollHeight - beforeLoadScrollHeightRef.current;
+        scrollContainerRef.current.scrollTop = diff;
+        shouldRestoreScrollRef.current = false;
+      } else if (!isFetchingMore) {
+        scrollToBottom();
+      }
+    }
+    prevMessagesLengthRef.current = messages.length;
+  }, [messages, isFetchingMore]);
 
   const getReplyMessageContent = (replyToId: number): string => {
     const replyMsg = messages.find(m => m.id === replyToId);
@@ -96,7 +97,12 @@ export default function ChatBox({
     if (scrollTop === 0 && hasMore && !loading && !isFetchingMore && onLoadMore) {
        setIsFetchingMore(true);
        beforeLoadScrollHeightRef.current = scrollHeight;
-       await onLoadMore();
+       shouldRestoreScrollRef.current = true;
+       try {
+         await onLoadMore();
+       } finally {
+         setIsFetchingMore(false);
+       }
     }
   };
 

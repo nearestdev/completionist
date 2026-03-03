@@ -19,6 +19,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const handlersRef = useRef<Map<MessageType, Set<MessageHandler>>>(new Map());
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const reconnectAttemptsRef = useRef(0);
+  const connectRef = useRef<() => void>(() => {});
 
   const connect = useCallback(() => {
     const token = localStorage.getItem('token');
@@ -52,7 +53,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
 
       console.log(`Reconnecting in ${delay}ms (attempt ${reconnectAttemptsRef.current})`);
       reconnectTimeoutRef.current = setTimeout(() => {
-        connect();
+        connectRef.current();
       }, delay);
     };
 
@@ -79,8 +80,8 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
       }
     };
   }, []);
-
   useEffect(() => {
+    connectRef.current = connect;
     connect();
 
     return () => {

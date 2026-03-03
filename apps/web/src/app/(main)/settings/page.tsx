@@ -8,6 +8,7 @@ import { LastFMAccount } from "@/types/lastfm";
 import Button from "@/components/ui/Button";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
+import Image from "next/image";
 import { 
   GearIcon, 
   GameControllerIcon, 
@@ -107,7 +108,13 @@ export default function SettingsPage() {
                   ) : steamAccount ? (
                     <div className="bg-muted/30 p-3 rounded-lg border border-border mb-4">
                       <div className="flex items-center gap-3">
-                        <img src={steamAccount.avatar} alt="Avatar" className="w-10 h-10 rounded-md" />
+                        <Image
+                          src={steamAccount.avatar}
+                          alt="Avatar"
+                          width={40}
+                          height={40}
+                          className="w-10 h-10 rounded-md"
+                        />
                         <div>
                           <div className="font-bold text-sm">{steamAccount.persona}</div>
                           <div className="text-xs text-muted">ID: {steamAccount.steamId}</div>

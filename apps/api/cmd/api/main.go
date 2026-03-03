@@ -29,7 +29,7 @@ import (
 )
 
 // @title           Completionist API
-// @version         1.0
+// @version         1.0.5
 // @description     This is the API server for the Completionist application.
 // @host            localhost:8080
 // @BasePath        /api

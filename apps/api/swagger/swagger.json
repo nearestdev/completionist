@@ -4,7 +4,7 @@
         "description": "This is the API server for the Completionist application.",
         "title": "Completionist API",
         "contact": {},
-        "version": "1.0"
+        "version": "1.0.5"
     },
     "host": "localhost:8080",
     "basePath": "/api",

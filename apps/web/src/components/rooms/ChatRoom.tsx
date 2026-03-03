@@ -23,7 +23,26 @@ export default function ChatRoom({ room }: ChatRoomProps) {
   const { subscribe, sendMessage, isConnected } = useWebSocket();
 
   useEffect(() => {
-    loadData();
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        const [msgs, mems] = await Promise.all([
+          roomService.getRoomMessages(room.id),
+          roomService.getRoomMembers(room.id)
+        ]);
+        setMessages(msgs.reverse());
+        setMembers(mems);
+      } catch (error: any) {
+        console.error('Failed to load room data:', error);
+        if (error?.response?.status === 403) {
+          console.error('Not a member/forbidden');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void loadData();
   }, [room.id]);
 
   useEffect(() => {
@@ -88,25 +107,6 @@ export default function ChatRoom({ room }: ChatRoomProps) {
       unsubscribeUsers();
     };
   }, [subscribe, room.id]);
-
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      const [msgs, mems] = await Promise.all([
-        roomService.getRoomMessages(room.id),
-        roomService.getRoomMembers(room.id)
-      ]);
-      setMessages(msgs.reverse());
-      setMembers(mems);
-    } catch (error: any) {
-      console.error('Failed to load room data:', error);
-      if (error?.response?.status === 403) {
-        console.error('Not a member/forbidden');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSendMessage = (content: string) => {
     sendMessage('room_chat', {

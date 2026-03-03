@@ -130,7 +130,7 @@ Starts on `BACKEND_BASE_URL:BACKEND_PORT`.
 ### Frontend
 ```bash
 cd apps/web
-npm run dev
+bun run dev
 ```
 
 Next.js automatically:

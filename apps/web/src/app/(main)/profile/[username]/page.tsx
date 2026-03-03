@@ -274,7 +274,7 @@ export default function ProfilePage() {
             <div className="text-center py-16 bg-card rounded-2xl border border-dashed border-border text-muted">
               <ChatCircleTextIcon size={48} className="mx-auto mb-4 opacity-20" />
               <p className="text-lg font-medium">No posts yet</p>
-              <p className="text-sm opacity-70">This user hasn't shared any updates.</p>
+              <p className="text-sm opacity-70">This user hasn&apos;t shared any updates.</p>
             </div>
           )}
         </div>
