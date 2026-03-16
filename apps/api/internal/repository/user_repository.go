@@ -14,14 +14,18 @@ func NewUserRepository(db *sqlx.DB) *UserRepository {
 }
 
 func (r *UserRepository) Create(user *models.User) error {
-	query := `INSERT INTO users (username, email, password_hash) VALUES ($1, $2, $3)
-		RETURNING id, username, email, password_hash, xp, level, created_at, updated_at`
-	return r.DB.QueryRowx(query, user.Username, user.Email, user.PasswordHash).StructScan(user)
+	if user.Role == "" {
+		user.Role = models.RoleUser
+	}
+
+	query := `INSERT INTO users (username, email, password_hash, role) VALUES ($1, $2, $3, $4)
+		RETURNING id, username, email, password_hash, role, xp, level, created_at, updated_at`
+	return r.DB.QueryRowx(query, user.Username, user.Email, user.PasswordHash, user.Role).StructScan(user)
 }
 
 func (r *UserRepository) FindByUsername(username string) (*models.User, error) {
 	var user models.User
-	query := `SELECT id, username, email, password_hash, xp, level, created_at, updated_at FROM users WHERE username = $1`
+	query := `SELECT id, username, email, password_hash, role, xp, level, created_at, updated_at FROM users WHERE username = $1`
 	if err := r.DB.Get(&user, query, username); err != nil {
 		return nil, err
 	}
@@ -30,7 +34,7 @@ func (r *UserRepository) FindByUsername(username string) (*models.User, error) {
 
 func (r *UserRepository) FindByEmail(email string) (*models.User, error) {
 	var user models.User
-	query := `SELECT id, username, email, password_hash, xp, level, created_at, updated_at FROM users WHERE email = $1`
+	query := `SELECT id, username, email, password_hash, role, xp, level, created_at, updated_at FROM users WHERE email = $1`
 	if err := r.DB.Get(&user, query, email); err != nil {
 		return nil, err
 	}
@@ -39,7 +43,7 @@ func (r *UserRepository) FindByEmail(email string) (*models.User, error) {
 
 func (r *UserRepository) FindByID(id int64) (*models.User, error) {
 	var user models.User
-	query := `SELECT id, username, email, password_hash, xp, level, created_at, updated_at FROM users WHERE id = $1`
+	query := `SELECT id, username, email, password_hash, role, xp, level, created_at, updated_at FROM users WHERE id = $1`
 	if err := r.DB.Get(&user, query, id); err != nil {
 		return nil, err
 	}
@@ -123,4 +127,27 @@ func (r *UserRepository) GetXPHistory(userID int64, limit, offset int) ([]models
 	`
 	err := r.DB.Select(&history, query, userID, limit, offset)
 	return history, err
+}
+
+func (r *UserRepository) UpdateRoleAndPasswordByEmail(email string, role models.UserRole, passwordHash string) error {
+	_, err := r.DB.Exec(`
+		UPDATE users
+		SET role = $1, password_hash = $2, updated_at = NOW()
+		WHERE email = $3
+	`, role, passwordHash, email)
+	return err
+}
+
+func (r *UserRepository) ListUsers(limit, offset int) ([]models.User, error) {
+	users := []models.User{}
+	query := `
+		SELECT id, username, email, password_hash, role, xp, level, created_at, updated_at
+		FROM users
+		ORDER BY created_at DESC
+		LIMIT $1 OFFSET $2
+	`
+	if err := r.DB.Select(&users, query, limit, offset); err != nil {
+		return nil, err
+	}
+	return users, nil
 }

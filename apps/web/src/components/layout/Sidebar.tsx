@@ -12,14 +12,34 @@ import {
   GearIcon,
   CaretLeftIcon,
   ChatCircleDotsIcon,
-  UsersThreeIcon
+  UsersThreeIcon,
+  ShieldCheckIcon
 } from "@phosphor-icons/react/dist/ssr";
 
 export default function Sidebar() {
-  const { user } = useAuth();
+  const { user, canAccess } = useAuth();
   const { isCollapsed, toggleSidebar } = useSidebar();
 
   const sidebarWidth = isCollapsed ? "w-[80px]" : "w-[260px]";
+
+  const desktopLinks = [
+    { href: "/", icon: <HouseIcon size={24} />, label: "Home Feed" },
+    { href: "/my-list", icon: <ListChecksIcon size={24} />, label: "My Lists" },
+    { href: "/search", icon: <CompassIcon size={24} />, label: "Explore" },
+    { href: "/messages", icon: <ChatCircleDotsIcon size={24} />, label: "Messages" },
+    { href: "/rooms", icon: <UsersThreeIcon size={24} />, label: "Rooms" },
+    { href: "/challenges", icon: <TrophyIcon size={24} />, label: "Challenges" },
+    { href: "/wishlist", icon: <BooksIcon size={24} />, label: "Wishlist" },
+    { href: "/settings", icon: <GearIcon size={24} />, label: "Settings" },
+  ].filter((link) => canAccess(link.href));
+
+  const mobileLinks = [
+    { href: "/", icon: <HouseIcon size={24} /> },
+    { href: "/my-list", icon: <ListChecksIcon size={24} /> },
+    { href: "/search", icon: <CompassIcon size={24} /> },
+    { href: "/challenges", icon: <TrophyIcon size={24} /> },
+    { href: "/wishlist", icon: <BooksIcon size={24} /> },
+  ].filter((link) => canAccess(link.href));
 
   return (
     <>
@@ -58,14 +78,18 @@ export default function Sidebar() {
 
         {/* Navigation */}
         <nav className="flex flex-col gap-2 px-4">
-          <NavLink href="/" icon={<HouseIcon size={24} />} label="Home Feed" collapsed={isCollapsed} />
-          <NavLink href="/my-list" icon={<ListChecksIcon size={24} />} label="My Lists" collapsed={isCollapsed} />
-          <NavLink href="/search" icon={<CompassIcon size={24} />} label="Explore" collapsed={isCollapsed} />
-          <NavLink href="/messages" icon={<ChatCircleDotsIcon size={24} />} label="Messages" collapsed={isCollapsed} />
-          <NavLink href="/rooms" icon={<UsersThreeIcon size={24} />} label="Rooms" collapsed={isCollapsed} />
-          <NavLink href="/challenges" icon={<TrophyIcon size={24} />} label="Challenges" collapsed={isCollapsed} />
-          <NavLink href="/wishlist" icon={<BooksIcon size={24} />} label="Wishlist" collapsed={isCollapsed} />
-          <NavLink href="/settings" icon={<GearIcon size={24} />} label="Settings" collapsed={isCollapsed} />
+          {desktopLinks.map((link) => (
+            <NavLink
+              key={link.href}
+              href={link.href}
+              icon={link.icon}
+              label={link.label}
+              collapsed={isCollapsed}
+            />
+          ))}
+          {user?.role === "admin" && (
+            <NavLink href="/admin" icon={<ShieldCheckIcon size={24} />} label="Admin" collapsed={isCollapsed} />
+          )}
         </nav>
 
         <div 
@@ -101,21 +125,20 @@ export default function Sidebar() {
 
       {/* Mobile Navigation */}
       <nav className="lg:hidden fixed bottom-0 left-0 w-full bg-card border-t border-border flex justify-around py-3 px-2 z-50 safe-area-bottom">
-        <Link href="/" className="p-2 text-muted hover:text-primary transition-colors flex flex-col items-center">
-          <HouseIcon size={24} />
-        </Link>
-        <Link href="/my-list" className="p-2 text-muted hover:text-primary transition-colors flex flex-col items-center">
-          <ListChecksIcon size={24} />
-        </Link>
-        <Link href="/search" className="p-2 text-muted hover:text-primary transition-colors flex flex-col items-center">
-          <CompassIcon size={24} />
-        </Link>
-        <Link href="/challenges" className="p-2 text-muted hover:text-primary transition-colors flex flex-col items-center">
-          <TrophyIcon size={24} />
-        </Link>
-        <Link href="/wishlist" className="p-2 text-muted hover:text-primary transition-colors flex flex-col items-center">
-          <BooksIcon size={24} />
-        </Link>
+        {mobileLinks.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className="p-2 text-muted hover:text-primary transition-colors flex flex-col items-center"
+          >
+            {link.icon}
+          </Link>
+        ))}
+        {user?.role === "admin" && (
+          <Link href="/admin" className="p-2 text-muted hover:text-primary transition-colors flex flex-col items-center">
+            <ShieldCheckIcon size={24} />
+          </Link>
+        )}
       </nav>
     </>
   );

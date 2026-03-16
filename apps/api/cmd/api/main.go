@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/GATEOPENERZ/completionist-api/internal/bootstrap"
 	"github.com/GATEOPENERZ/completionist-api/internal/config"
 	"github.com/GATEOPENERZ/completionist-api/internal/database"
 	"github.com/GATEOPENERZ/completionist-api/internal/handler"
@@ -29,7 +30,7 @@ import (
 )
 
 // @title           Completionist API
-// @version         1.0.5
+// @version         1.1.0
 // @description     This is the API server for the Completionist application.
 // @host            localhost:8080
 // @BasePath        /api
@@ -65,6 +66,10 @@ func main() {
 	auditRepo := repository.NewAuditRepository(db)
 	messagingRepo := repository.NewMessagingRepository(db)
 	rankService := services.NewRankService(db)
+
+	if err := bootstrap.EnsureDevAdmin(cfg, userRepo); err != nil {
+		log.Fatalf("could not ensure development admin user: %v", err)
+	}
 
 	wsHub := websocket.NewHub(messagingRepo)
 	go wsHub.Run()

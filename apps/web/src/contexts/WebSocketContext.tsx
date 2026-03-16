@@ -13,6 +13,21 @@ interface WebSocketContextValue {
 
 const WebSocketContext = createContext<WebSocketContextValue | undefined>(undefined);
 
+function parseIncomingMessages(data: string): WSMessage[] {
+  return data
+    .split(/\r?\n/)
+    .map((chunk) => chunk.trim())
+    .filter(Boolean)
+    .flatMap((chunk) => {
+      try {
+        return [JSON.parse(chunk) as WSMessage];
+      } catch (error) {
+        console.error('Error parsing WebSocket message chunk:', error, chunk);
+        return [];
+      }
+    });
+}
+
 export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const [isConnected, setIsConnected] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
@@ -62,10 +77,16 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     };
 
     ws.onmessage = (event) => {
-      try {
-        const message: WSMessage = JSON.parse(event.data);
+      if (typeof event.data !== 'string') {
+        console.warn('Ignoring non-text WebSocket message');
+        return;
+      }
+
+      const messages = parseIncomingMessages(event.data);
+
+      messages.forEach((message) => {
         const handlers = handlersRef.current.get(message.type);
-        
+
         if (handlers) {
           handlers.forEach(handler => {
             try {
@@ -75,9 +96,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
             }
           });
         }
-      } catch (error) {
-        console.error('Error parsing WebSocket message:', error);
-      }
+      });
     };
   }, []);
   useEffect(() => {

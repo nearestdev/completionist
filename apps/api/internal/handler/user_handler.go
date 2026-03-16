@@ -56,6 +56,7 @@ func (h *Handler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		Username:     req.Username,
 		Email:        req.Email,
 		PasswordHash: string(hashedPassword),
+		Role:         models.RoleUser,
 	}
 
 	if err := h.UserRepo.Create(user); err != nil {

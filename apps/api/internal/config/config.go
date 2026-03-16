@@ -29,6 +29,9 @@ type Config struct {
 	AWSBucket                 string
 	AWSAccessKeyID            string
 	AWSSecretAccessKey        string
+	DevAdminEmail             string
+	DevAdminPassword          string
+	DevAdminUsername          string
 }
 
 func Load() (*Config, error) {
@@ -121,5 +124,8 @@ func Load() (*Config, error) {
 		AWSBucket:                 os.Getenv("AWS_BUCKET"),
 		AWSAccessKeyID:            os.Getenv("AWS_ACCESS_KEY_ID"),
 		AWSSecretAccessKey:        os.Getenv("AWS_SECRET_ACCESS_KEY"),
+		DevAdminEmail:             os.Getenv("DEV_ADMIN_EMAIL"),
+		DevAdminPassword:          os.Getenv("DEV_ADMIN_PASSWORD"),
+		DevAdminUsername:          os.Getenv("DEV_ADMIN_USERNAME"),
 	}, nil
 }

@@ -20,7 +20,12 @@ export default function LoginForm() {
     try {
       const { token } = await authService.login({ email, password });
       login(token);
-      router.push("/");
+      const next =
+        typeof window !== "undefined"
+          ? new URLSearchParams(window.location.search).get("next")
+          : null;
+      const safeNext = next && next.startsWith("/") ? next : "/";
+      router.push(safeNext);
     } catch (err: any) {
       setError(err.response?.data?.error || "Login failed");
     } finally {

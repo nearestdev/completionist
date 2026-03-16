@@ -15,23 +15,6 @@ export default function Header() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-6">
             {/* Logo removed as requested */}
-            
-            {user && (
-              <div className="hidden md:flex items-center gap-2">
-                <Link 
-                  href="/posts" 
-                  className="px-4 py-2 rounded-full text-sm font-medium text-muted hover:text-foreground hover:bg-primary/10 transition-all"
-                >
-                  Feed
-                </Link>
-                <Link 
-                  href="/search" 
-                  className="px-4 py-2 rounded-full text-sm font-medium text-muted hover:text-foreground hover:bg-primary/10 transition-all"
-                >
-                  Search
-                </Link>
-              </div>
-            )}
           </div>
           
           <div className="flex items-center gap-3">

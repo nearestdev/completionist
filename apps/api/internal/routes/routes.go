@@ -7,6 +7,7 @@ import (
 	"github.com/GATEOPENERZ/completionist-api/internal/config"
 	"github.com/GATEOPENERZ/completionist-api/internal/handler"
 	appmw "github.com/GATEOPENERZ/completionist-api/internal/middleware"
+	"github.com/GATEOPENERZ/completionist-api/internal/models"
 	"github.com/go-chi/chi/v5"
 	chimw "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
@@ -149,6 +150,11 @@ func NewRouter(h *handler.Handler, cfg *config.Config) http.Handler {
 				rr.Get("/{roomId}/pinned", h.GetPinnedRoomMessages)
 				rr.Post("/{roomId}/messages/{messageId}/react", h.ReactToRoomMessage)
 				rr.Post("/{roomId}/messages/{messageId}/pin", h.PinRoomMessage)
+			})
+
+			pr.Route("/admin", func(ar chi.Router) {
+				ar.Use(appmw.RequireRoles(models.RoleAdmin))
+				ar.Get("/users", h.AdminListUsers)
 			})
 
 			pr.Get("/ws", h.HandleWebSocket)
