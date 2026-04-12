@@ -53,13 +53,34 @@ func NewRouter(h *handler.Handler, cfg *config.Config) http.Handler {
 		r.Get("/seasons/leaderboard", h.GetSeasonLeaderboard)
 		r.Get("/challenges", h.GetChallenges)
 
+		r.Get("/badges", h.ListBadges)
+		r.Get("/streaks/leaderboard", h.GetStreakLeaderboard)
+		r.Get("/users/{id}/streak", h.GetUserStreak)
+		r.Get("/users/{id}/badges", h.GetUserBadges)
+		r.Get("/users/{id}/stats", h.GetUserStats)
+		r.Get("/users/{id}/stats/heatmap", h.GetUserHeatmap)
+		r.Get("/users/{id}/profile-custom", h.GetCustomProfile)
+		r.Get("/reviews/user/{id}", h.GetUserReviews)
+		r.Get("/reviews/media/{id}", h.GetMediaReviews)
+		r.Get("/franchises", h.ListFranchises)
+		r.Get("/franchises/{id}", h.GetFranchise)
+		r.Get("/posts/{id}/og", h.GetPostOG)
+		r.Get("/ads", h.GetActiveAd)
+		r.Post("/ads/{id}/impression", h.RecordAdImpression)
+		r.Post("/webhooks/stripe", h.HandleStripeWebhook)
+		r.Get("/connections/{provider}/callback", h.OAuthCallback)
+
 		r.Group(func(pr chi.Router) {
 			pr.Use(appmw.AuthMiddleware(h.UserRepo))
 			pr.Get("/me", h.GetMe)
 			pr.Get("/me/xp", h.GetMyXPHistory)
 			pr.Get("/me/rank", h.GetMyRank)
-
 			pr.Get("/me/challenges", h.GetMyChallenges)
+			pr.Put("/me/profile", h.UpdateProfile)
+			pr.Post("/me/delete", h.RequestAccountDeletion)
+			pr.Delete("/me/delete", h.CancelAccountDeletion)
+			pr.Get("/me/export", h.ExportUserData)
+			pr.Post("/me/appeal", h.SubmitBanAppeal)
 
 			pr.Route("/lists", func(lr chi.Router) {
 				lr.Post("/", h.CreateListItem)
@@ -152,9 +173,77 @@ func NewRouter(h *handler.Handler, cfg *config.Config) http.Handler {
 				rr.Post("/{roomId}/messages/{messageId}/pin", h.PinRoomMessage)
 			})
 
+			pr.Route("/collections", func(cr chi.Router) {
+				cr.Post("/", h.CreateCollection)
+				cr.Get("/", h.GetMyCollections)
+				cr.Get("/{id}", h.GetCollection)
+				cr.Put("/{id}", h.UpdateCollection)
+				cr.Delete("/{id}", h.DeleteCollection)
+			})
+
+			pr.Put("/lists/{item_id}/collection", h.AssignItemToCollection)
+			pr.Delete("/lists/{item_id}/collection", h.UnassignItemFromCollection)
+
+			pr.Route("/reviews", func(rr chi.Router) {
+				rr.Post("/", h.CreateReview)
+				rr.Put("/{id}", h.UpdateReview)
+				rr.Delete("/{id}", h.DeleteReview)
+			})
+
+			pr.Route("/queue", func(qr chi.Router) {
+				qr.Get("/", h.GetMyQueue)
+				qr.Put("/reorder", h.ReorderQueue)
+				qr.Post("/{item_id}", h.AddToQueue)
+				qr.Delete("/{item_id}", h.RemoveFromQueue)
+			})
+
+			pr.Get("/suggestions", h.GetSuggestions)
+
+			pr.Post("/posts/{id}/share", h.SharePost)
+
+			pr.Post("/moderation/report", h.ReportContent)
+
+			pr.Route("/subscriptions", func(sr chi.Router) {
+				sr.Post("/checkout", h.CreateCheckoutSession)
+				sr.Get("/me", h.GetMySubscription)
+				sr.Post("/portal", h.CreatePortalSession)
+			})
+
+			pr.Route("/connections", func(cr chi.Router) {
+				cr.Get("/", h.GetConnections)
+				cr.Post("/{provider}/connect", h.ConnectProvider)
+				cr.Delete("/{provider}", h.DisconnectProvider)
+				cr.Post("/{provider}/sync", h.TriggerSync)
+			})
+			pr.Get("/imports", h.GetImportJobs)
+
 			pr.Route("/admin", func(ar chi.Router) {
 				ar.Use(appmw.RequireRoles(models.RoleAdmin))
 				ar.Get("/users", h.AdminListUsers)
+
+				ar.Route("/moderation", func(mr chi.Router) {
+					mr.Get("/", h.AdminGetModerationQueue)
+					mr.Put("/{id}", h.AdminReviewModerationItem)
+				})
+				ar.Get("/bans", h.AdminGetBanAppeals)
+				ar.Post("/users/{id}/ban", h.AdminBanUser)
+				ar.Delete("/users/{id}/ban", h.AdminUnbanUser)
+				ar.Route("/ban-appeals", func(br chi.Router) {
+					br.Get("/", h.AdminGetBanAppeals)
+					br.Put("/{id}", h.AdminReviewBanAppeal)
+				})
+				ar.Route("/ads", func(adr chi.Router) {
+					adr.Post("/", h.AdminCreateAdCampaign)
+					adr.Get("/", h.AdminGetAdCampaigns)
+					adr.Put("/{id}", h.AdminUpdateAdCampaign)
+					adr.Get("/{id}/stats", h.AdminGetAdCampaignStats)
+				})
+				ar.Route("/franchises", func(fr chi.Router) {
+					fr.Post("/", h.AdminCreateFranchise)
+					fr.Put("/{id}", h.AdminUpdateFranchise)
+					fr.Post("/{id}/items", h.AdminAddFranchiseItem)
+					fr.Delete("/{id}/items/{itemId}", h.AdminRemoveFranchiseItem)
+				})
 			})
 
 			pr.Get("/ws", h.HandleWebSocket)

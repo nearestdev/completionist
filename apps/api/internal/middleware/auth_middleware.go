@@ -68,6 +68,21 @@ func AuthMiddleware(userRepo *repository.UserRepository) func(http.Handler) http
 					return
 				}
 				role = user.Role
+
+				// Ban check — banned users can only access appeal and export endpoints
+				if user.BannedAt != nil {
+					path := r.URL.Path
+					if !strings.HasSuffix(path, "/me/appeal") && !strings.HasSuffix(path, "/me/export") {
+						w.Header().Set("Content-Type", "application/json")
+						w.WriteHeader(http.StatusForbidden)
+						reason := "Account suspended"
+						if user.BanReason != nil {
+							reason = *user.BanReason
+						}
+						w.Write([]byte(`{"error":"Account suspended","banReason":"` + reason + `"}`))
+						return
+					}
+				}
 			} else {
 				role = models.RoleUser
 			}

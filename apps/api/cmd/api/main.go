@@ -16,6 +16,7 @@ import (
 	"github.com/GATEOPENERZ/completionist-api/internal/service/filestorage"
 	"github.com/GATEOPENERZ/completionist-api/internal/services"
 	"github.com/GATEOPENERZ/completionist-api/internal/services/challenges"
+	"github.com/GATEOPENERZ/completionist-api/internal/services/importer"
 	"github.com/GATEOPENERZ/completionist-api/internal/services/googlebooks"
 	"github.com/GATEOPENERZ/completionist-api/internal/services/jikan"
 	"github.com/GATEOPENERZ/completionist-api/internal/services/lastfm"
@@ -30,7 +31,7 @@ import (
 )
 
 // @title           Completionist API
-// @version         1.1.0
+// @version         2.0.0
 // @description     This is the API server for the Completionist application.
 // @host            localhost:8080
 // @BasePath        /api
@@ -65,6 +66,15 @@ func main() {
 	challengeRepo := repository.NewChallengeRepository(db)
 	auditRepo := repository.NewAuditRepository(db)
 	messagingRepo := repository.NewMessagingRepository(db)
+	streakRepo := repository.NewStreakRepository(db)
+	badgeRepo := repository.NewBadgeRepository(db)
+	collectionRepo := repository.NewCollectionRepository(db)
+	reviewRepo := repository.NewReviewRepository(db)
+	moderationRepo := repository.NewModerationRepository(db)
+	subscriptionRepo := repository.NewSubscriptionRepository(db)
+	adRepo := repository.NewAdRepository(db)
+	connAcctRepo := repository.NewConnectedAccountRepository(db)
+	franchiseRepo := repository.NewFranchiseRepository(db)
 	rankService := services.NewRankService(db)
 
 	if err := bootstrap.EnsureDevAdmin(cfg, userRepo); err != nil {
@@ -104,6 +114,15 @@ func main() {
 
 	challengeService := challenges.NewService(challengeRepo, userRepo, rankService)
 
+	badgeService := services.NewBadgeService(badgeRepo)
+	streakService := services.NewStreakService(streakRepo, badgeService)
+	moderationService := services.NewModerationService(cfg.OpenAIModerationKey, cfg.ModerationEnabled)
+	sqlSuggestionProvider := services.NewSQLSuggestionProvider(db)
+	suggestionService := services.NewSuggestionService(sqlSuggestionProvider)
+	stripeService := services.NewStripeService(cfg.StripeSecretKey, cfg.StripeWebhookSecret, cfg.StripePriceID, cfg.FrontendBaseURL, subscriptionRepo)
+	importerService := importer.NewService(connAcctRepo, mediaRepo, listRepo)
+	franchiseDiscovery := services.NewFranchiseDiscoveryService(franchiseRepo, cfg.TMDBApiKey)
+
 	jk := jikan.New()
 	tm := tmdb.New(cfg.TMDBApiKey)
 	st := steam.New(cfg.SteamWebAPIKey, cfg.PublicBaseURL)
@@ -113,7 +132,10 @@ func main() {
 
 	appHandler := handler.NewHandler(
 		userRepo, mediaRepo, listRepo, socialRepo, postsRepo, steamRepo, challengeRepo, auditRepo, messagingRepo,
-		jk, tm, st, rg, attachmentRepo, gb, lf, lastfmRepo, challengeService, rankService, wsHub, fileService, cfg,
+		streakRepo, badgeRepo, collectionRepo, reviewRepo, moderationRepo, subscriptionRepo, adRepo, connAcctRepo, franchiseRepo,
+		jk, tm, st, rg, attachmentRepo, gb, lf, lastfmRepo, challengeService, rankService,
+		streakService, badgeService, moderationService, suggestionService, stripeService, importerService, franchiseDiscovery,
+		wsHub, fileService, cfg,
 	)
 
 	router := routes.NewRouter(appHandler, cfg)

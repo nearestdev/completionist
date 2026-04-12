@@ -1,4 +1,4 @@
-export type PostType = "review" | "discussion" | "general";
+export type PostType = "review" | "discussion" | "general" | "share";
 
 export interface Post {
   id: number;
@@ -9,6 +9,7 @@ export interface Post {
   postType: PostType;
   rating?: number;
   isSpoiler: boolean;
+  sharedPostId?: number;
   createdAt: string;
   updatedAt: string;
 }

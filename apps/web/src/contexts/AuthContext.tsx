@@ -10,6 +10,7 @@ interface AuthContextType {
   token: string | null;
   role: AppRole;
   isAdmin: boolean;
+  isMember: boolean;
   isGuest: boolean;
   canAccess: (pathname: string) => boolean;
   login: (token: string) => void;
@@ -71,6 +72,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const role: AppRole = user?.role ?? "guest";
   const isAdmin = role === "admin";
+  const isMember = role === "member" || role === "admin";
   const isGuest = role === "guest";
 
   const canAccess = useCallback(
@@ -84,13 +86,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       token,
       role,
       isAdmin,
+      isMember,
       isGuest,
       canAccess,
       login,
       logout,
       loading,
     }),
-    [user, token, role, isAdmin, isGuest, canAccess, loading]
+    [user, token, role, isAdmin, isMember, isGuest, canAccess, loading]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

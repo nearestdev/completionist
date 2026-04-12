@@ -32,6 +32,13 @@ type Config struct {
 	DevAdminEmail             string
 	DevAdminPassword          string
 	DevAdminUsername          string
+	StripeSecretKey           string
+	StripeWebhookSecret       string
+	StripePriceID             string
+	ModerationEnabled         bool
+	OpenAIModerationKey       string
+	LLMProvider               string
+	LLMAPIKey                 string
 }
 
 func Load() (*Config, error) {
@@ -127,5 +134,12 @@ func Load() (*Config, error) {
 		DevAdminEmail:             os.Getenv("DEV_ADMIN_EMAIL"),
 		DevAdminPassword:          os.Getenv("DEV_ADMIN_PASSWORD"),
 		DevAdminUsername:          os.Getenv("DEV_ADMIN_USERNAME"),
+		StripeSecretKey:           os.Getenv("STRIPE_SECRET_KEY"),
+		StripeWebhookSecret:       os.Getenv("STRIPE_WEBHOOK_SECRET"),
+		StripePriceID:             os.Getenv("STRIPE_PRICE_ID"),
+		ModerationEnabled:         os.Getenv("MODERATION_ENABLED") == "true",
+		OpenAIModerationKey:       os.Getenv("OPENAI_MODERATION_KEY"),
+		LLMProvider:               os.Getenv("LLM_PROVIDER"),
+		LLMAPIKey:                 os.Getenv("LLM_API_KEY"),
 	}, nil
 }

@@ -71,16 +71,18 @@ type ProgressData struct {
 }
 
 type UserListItem struct {
-	ID           int64            `db:"id" json:"id"`
-	UserID       int64            `db:"user_id" json:"userId"`
-	MediaItemID  uuid.UUID        `db:"media_item_id" json:"mediaItemId"`
-	Status       ItemStatus       `db:"status" json:"status"`
-	ProgressData *json.RawMessage `db:"progress_data" json:"progressData,omitempty" swaggertype:"string"`
-	Rating       *int             `db:"rating" json:"rating,omitempty"`
-	ItemType     ItemType         `db:"item_type" json:"itemType"`
-	CreatedAt    time.Time        `db:"created_at" json:"createdAt"`
-	UpdatedAt    time.Time        `db:"updated_at" json:"updatedAt"`
-	Media        *MediaItem       `db:"-" json:"media,omitempty"`
+	ID            int64            `db:"id" json:"id"`
+	UserID        int64            `db:"user_id" json:"userId"`
+	MediaItemID   uuid.UUID        `db:"media_item_id" json:"mediaItemId"`
+	Status        ItemStatus       `db:"status" json:"status"`
+	ProgressData  *json.RawMessage `db:"progress_data" json:"progressData,omitempty" swaggertype:"string"`
+	Rating        *int             `db:"rating" json:"rating,omitempty"`
+	ItemType      ItemType         `db:"item_type" json:"itemType"`
+	CollectionID  *int64           `db:"collection_id" json:"collectionId,omitempty"`
+	QueuePosition *int             `db:"queue_position" json:"queuePosition,omitempty"`
+	CreatedAt     time.Time        `db:"created_at" json:"createdAt"`
+	UpdatedAt     time.Time        `db:"updated_at" json:"updatedAt"`
+	Media         *MediaItem       `db:"-" json:"media,omitempty"`
 }
 
 type WishlistItem struct {

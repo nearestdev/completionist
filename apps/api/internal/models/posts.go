@@ -12,19 +12,21 @@ const (
 	PostTypeReview     PostType = "review"
 	PostTypeDiscussion PostType = "discussion"
 	PostTypeGeneral    PostType = "general"
+	PostTypeShare      PostType = "share"
 )
 
 type Post struct {
-	ID          int64      `db:"id" json:"id"`
-	UserID      int64      `db:"user_id" json:"userId"`
-	MediaItemID *uuid.UUID `db:"media_item_id" json:"mediaItemId,omitempty"`
-	Title       *string    `db:"title" json:"title,omitempty"`
-	Content     string     `db:"content" json:"content"`
-	PostType    PostType   `db:"post_type" json:"postType"`
-	Rating      *int       `db:"rating" json:"rating,omitempty"`
-	IsSpoiler   bool       `db:"is_spoiler" json:"isSpoiler"`
-	CreatedAt   time.Time  `db:"created_at" json:"createdAt"`
-	UpdatedAt   time.Time  `db:"updated_at" json:"updatedAt"`
+	ID           int64      `db:"id" json:"id"`
+	UserID       int64      `db:"user_id" json:"userId"`
+	MediaItemID  *uuid.UUID `db:"media_item_id" json:"mediaItemId,omitempty"`
+	Title        *string    `db:"title" json:"title,omitempty"`
+	Content      string     `db:"content" json:"content"`
+	PostType     PostType   `db:"post_type" json:"postType"`
+	Rating       *int       `db:"rating" json:"rating,omitempty"`
+	IsSpoiler    bool       `db:"is_spoiler" json:"isSpoiler"`
+	SharedPostID *int64     `db:"shared_post_id" json:"sharedPostId,omitempty"`
+	CreatedAt    time.Time  `db:"created_at" json:"createdAt"`
+	UpdatedAt    time.Time  `db:"updated_at" json:"updatedAt"`
 }
 
 type NewPost struct {

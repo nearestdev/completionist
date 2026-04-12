@@ -7,6 +7,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
 import { useAuth } from "@/hooks/useAuth";
+import RandomizerFAB from "@/components/randomizer/RandomizerFAB";
 
 function LayoutContent({ children }: { children: ReactNode }) {
   const { isCollapsed } = useSidebar();
@@ -60,6 +61,7 @@ function LayoutContent({ children }: { children: ReactNode }) {
           {!isFullScreenPage && <Footer />}
         </main>
       </div>
+      <RandomizerFAB />
     </div>
   );
 }

@@ -4,7 +4,7 @@
         "description": "This is the API server for the Completionist application.",
         "title": "Completionist API",
         "contact": {},
-        "version": "1.1.0"
+        "version": "2.0.0"
     },
     "host": "localhost:8080",
     "basePath": "/api",
@@ -5010,6 +5010,9 @@
                 "rating": {
                     "type": "integer"
                 },
+                "sharedPostId": {
+                    "type": "integer"
+                },
                 "title": {
                     "type": "string"
                 },
@@ -5043,12 +5046,14 @@
             "enum": [
                 "review",
                 "discussion",
-                "general"
+                "general",
+                "share"
             ],
             "x-enum-varnames": [
                 "PostTypeReview",
                 "PostTypeDiscussion",
-                "PostTypeGeneral"
+                "PostTypeGeneral",
+                "PostTypeShare"
             ]
         },
         "models.PostWithDetails": {
@@ -5218,6 +5223,12 @@
         "models.User": {
             "type": "object",
             "properties": {
+                "banReason": {
+                    "type": "string"
+                },
+                "bannedAt": {
+                    "type": "string"
+                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -5229,6 +5240,12 @@
                 },
                 "level": {
                     "type": "integer"
+                },
+                "profileHtml": {
+                    "type": "string"
+                },
+                "profileTheme": {
+                    "type": "string"
                 },
                 "role": {
                     "$ref": "#/definitions/models.UserRole"
@@ -5305,6 +5322,9 @@
         "models.UserListItem": {
             "type": "object",
             "properties": {
+                "collectionId": {
+                    "type": "integer"
+                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -5322,6 +5342,9 @@
                 },
                 "progressData": {
                     "type": "string"
+                },
+                "queuePosition": {
+                    "type": "integer"
                 },
                 "rating": {
                     "type": "integer"
@@ -5370,10 +5393,12 @@
             "type": "string",
             "enum": [
                 "user",
+                "member",
                 "admin"
             ],
             "x-enum-varnames": [
                 "RoleUser",
+                "RoleMember",
                 "RoleAdmin"
             ]
         },

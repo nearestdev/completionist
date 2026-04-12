@@ -3,17 +3,21 @@
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { useSidebar } from "@/contexts/SidebarContext";
-import { 
-  HouseIcon, 
-  ListChecksIcon, 
-  CompassIcon, 
-  TrophyIcon, 
-  BooksIcon, 
+import {
+  HouseIcon,
+  ListChecksIcon,
+  CompassIcon,
+  TrophyIcon,
+  BooksIcon,
   GearIcon,
   CaretLeftIcon,
   ChatCircleDotsIcon,
   UsersThreeIcon,
-  ShieldCheckIcon
+  ShieldCheckIcon,
+  ChartBarIcon,
+  FolderOpenIcon,
+  FilmSlateIcon,
+  CrownIcon
 } from "@phosphor-icons/react/dist/ssr";
 
 export default function Sidebar() {
@@ -29,6 +33,9 @@ export default function Sidebar() {
     { href: "/messages", icon: <ChatCircleDotsIcon size={24} />, label: "Messages" },
     { href: "/rooms", icon: <UsersThreeIcon size={24} />, label: "Rooms" },
     { href: "/challenges", icon: <TrophyIcon size={24} />, label: "Challenges" },
+    { href: "/stats", icon: <ChartBarIcon size={24} />, label: "Stats" },
+    { href: "/collections", icon: <FolderOpenIcon size={24} />, label: "Collections" },
+    { href: "/franchises", icon: <FilmSlateIcon size={24} />, label: "Franchises" },
     { href: "/wishlist", icon: <BooksIcon size={24} />, label: "Wishlist" },
     { href: "/settings", icon: <GearIcon size={24} />, label: "Settings" },
   ].filter((link) => canAccess(link.href));
@@ -92,14 +99,18 @@ export default function Sidebar() {
           )}
         </nav>
 
-        <div 
-          className="mt-auto p-4 flex flex-col gap-4 border-t border-border" 
+        <div
+          className="mt-auto p-4 flex flex-col gap-4 border-t border-border"
           style={{
             background: 'linear-gradient(to bottom, transparent, rgba(99, 102, 241, 0.03))'
           }}
         >
-          
-          
+          {user && user.role === "user" && !isCollapsed && (
+            <Link href="/upgrade" className="flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-primary/10 to-accent/10 text-primary hover:from-primary/20 hover:to-accent/20 transition-all text-sm font-medium">
+              <CrownIcon size={18} weight="fill" /> Upgrade
+            </Link>
+          )}
+
           <div className={`flex items-center ${isCollapsed ? "justify-center" : "gap-3"}`}>
             <div className="w-10 h-10 rounded-full border-2 border-primary overflow-hidden relative bg-gradient-to-br from-primary/20 to-accent/20 flex-shrink-0">
                <div className="w-full h-full flex items-center justify-center text-primary font-bold bg-primary/10">

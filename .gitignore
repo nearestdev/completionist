@@ -1,6 +1,7 @@
 completionist-api
 
 .env*
+!.env.production.example
 
 api.exe
 /apps/api/bin/

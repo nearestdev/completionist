@@ -2,6 +2,8 @@
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
 import ThemeSwitcher from "@/components/common/ThemeSwitcher";
+import StreakPill from "@/components/streaks/StreakPill";
+import MemberBadge from "@/components/subscription/MemberBadge";
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -22,8 +24,10 @@ export default function Header() {
             
             {user ? (
               <>
-                <Link 
-                  href={`/profile/${user.username}`} 
+                <StreakPill userId={user.id} />
+                {(user.role === "member" || user.role === "admin") && <MemberBadge />}
+                <Link
+                  href={`/profile/${user.username}`}
                   className="hidden sm:flex px-4 py-2 rounded-full text-sm font-medium text-muted hover:text-foreground hover:bg-primary/10 transition-all"
                 >
                   Profile

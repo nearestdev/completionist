@@ -5016,6 +5016,9 @@ const docTemplate = `{
                 "rating": {
                     "type": "integer"
                 },
+                "sharedPostId": {
+                    "type": "integer"
+                },
                 "title": {
                     "type": "string"
                 },
@@ -5049,12 +5052,14 @@ const docTemplate = `{
             "enum": [
                 "review",
                 "discussion",
-                "general"
+                "general",
+                "share"
             ],
             "x-enum-varnames": [
                 "PostTypeReview",
                 "PostTypeDiscussion",
-                "PostTypeGeneral"
+                "PostTypeGeneral",
+                "PostTypeShare"
             ]
         },
         "models.PostWithDetails": {
@@ -5224,6 +5229,12 @@ const docTemplate = `{
         "models.User": {
             "type": "object",
             "properties": {
+                "banReason": {
+                    "type": "string"
+                },
+                "bannedAt": {
+                    "type": "string"
+                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -5235,6 +5246,12 @@ const docTemplate = `{
                 },
                 "level": {
                     "type": "integer"
+                },
+                "profileHtml": {
+                    "type": "string"
+                },
+                "profileTheme": {
+                    "type": "string"
                 },
                 "role": {
                     "$ref": "#/definitions/models.UserRole"
@@ -5311,6 +5328,9 @@ const docTemplate = `{
         "models.UserListItem": {
             "type": "object",
             "properties": {
+                "collectionId": {
+                    "type": "integer"
+                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -5328,6 +5348,9 @@ const docTemplate = `{
                 },
                 "progressData": {
                     "type": "string"
+                },
+                "queuePosition": {
+                    "type": "integer"
                 },
                 "rating": {
                     "type": "integer"
@@ -5376,10 +5399,12 @@ const docTemplate = `{
             "type": "string",
             "enum": [
                 "user",
+                "member",
                 "admin"
             ],
             "x-enum-varnames": [
                 "RoleUser",
+                "RoleMember",
                 "RoleAdmin"
             ]
         },
@@ -5763,7 +5788,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.1.0",
+	Version:          "2.0.0",
 	Host:             "localhost:8080",
 	BasePath:         "/api",
 	Schemes:          []string{},
