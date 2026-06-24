@@ -4,9 +4,11 @@ import (
 	"github.com/GATEOPENERZ/completionist-api/internal/models"
 	"github.com/jmoiron/sqlx"
 )
+
 type SteamRepository struct {
 	DB *sqlx.DB
 }
+
 func NewSteamRepository(db *sqlx.DB) *SteamRepository {
 	return &SteamRepository{DB: db}
 }

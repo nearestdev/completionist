@@ -30,6 +30,7 @@ func (h *Handler) SteamLogin(w http.ResponseWriter, r *http.Request) {
 	url := h.Steam.BuildOpenIDRedirect(tokenStr)
 	http.Redirect(w, r, url, http.StatusFound)
 }
+
 // @Summary      Steam Login Callback
 // @Description  Handles the callback from Steam OpenID
 // @Tags         Steam
@@ -74,6 +75,7 @@ func (h *Handler) SteamCallback(w http.ResponseWriter, r *http.Request) {
 	}
 	http.Redirect(w, r, redirectURL, http.StatusFound)
 }
+
 // @Summary      Get My Steam Account
 // @Description  Retrieves the linked Steam account for the current user
 // @Tags         Steam
@@ -97,6 +99,7 @@ func (h *Handler) GetMySteamAccount(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, acc)
 }
+
 // @Summary      Get User Steam Account
 // @Description  Retrieves the linked Steam account for a specific user
 // @Tags         Steam
@@ -120,6 +123,7 @@ func (h *Handler) GetUserSteamAccount(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, acc)
 }
+
 // @Summary      Get My Steam Games
 // @Description  Retrieves owned games from the linked Steam account
 // @Tags         Steam
@@ -149,6 +153,7 @@ func (h *Handler) GetMySteamOwnedGames(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, g)
 }
+
 // @Summary      Get Steam Achievements
 // @Description  Retrieves achievements for a specific game (app_id) for the linked Steam account
 // @Tags         Steam
@@ -185,6 +190,7 @@ func (h *Handler) GetMySteamAchievementsForApp(w http.ResponseWriter, r *http.Re
 	}
 	httpx.JSON(w, http.StatusOK, res)
 }
+
 // @Summary      Get Steam Game Schema
 // @Description  Retrieves the schema (stats/achievements definitions) for a game
 // @Tags         Steam
@@ -209,6 +215,7 @@ func (h *Handler) GetSteamGameSchema(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, res)
 }
+
 // @Summary      Search Games (RAWG)
 // @Description  Searches for games using the RAWG API
 // @Tags         Games
@@ -239,6 +246,7 @@ func (h *Handler) RAWGSearchGames(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, res)
 }
+
 // @Summary      Get Game Achievements (RAWG)
 // @Description  Retrieves achievements for a specific game via RAWG API
 // @Tags         Games
@@ -270,6 +278,7 @@ func (h *Handler) RAWGGameAchievements(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, res)
 }
+
 // @Summary      Manually Link Steam Account
 // @Description  Links a Steam ID to the current user manually
 // @Tags         Steam

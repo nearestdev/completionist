@@ -47,16 +47,16 @@ type Challenge struct {
 }
 
 type UserChallenge struct {
-	ID              int64     `db:"id" json:"id"`
-	UserID          int64     `db:"user_id" json:"userId"`
-	ChallengeID     int64     `db:"challenge_id" json:"challengeId"`
-	SeasonID        *int64    `db:"season_id" json:"seasonId,omitempty"`
-	CurrentProgress int       `db:"current_progress" json:"currentProgress"`
-	TargetProgress  int       `db:"target_progress" json:"targetProgress"`
-	IsCompleted     bool      `db:"is_completed" json:"isCompleted"`
+	ID              int64      `db:"id" json:"id"`
+	UserID          int64      `db:"user_id" json:"userId"`
+	ChallengeID     int64      `db:"challenge_id" json:"challengeId"`
+	SeasonID        *int64     `db:"season_id" json:"seasonId,omitempty"`
+	CurrentProgress int        `db:"current_progress" json:"currentProgress"`
+	TargetProgress  int        `db:"target_progress" json:"targetProgress"`
+	IsCompleted     bool       `db:"is_completed" json:"isCompleted"`
 	CompletedAt     *time.Time `db:"completed_at" json:"completedAt,omitempty"`
-	CreatedAt       time.Time `db:"created_at" json:"createdAt"`
-	UpdatedAt       time.Time `db:"updated_at" json:"updatedAt"`
+	CreatedAt       time.Time  `db:"created_at" json:"createdAt"`
+	UpdatedAt       time.Time  `db:"updated_at" json:"updatedAt"`
 
 	ChallengeTitle       *string `db:"challenge_title" json:"challengeTitle,omitempty"`
 	ChallengeDescription *string `db:"challenge_description" json:"challengeDescription,omitempty"`

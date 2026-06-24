@@ -72,7 +72,6 @@ export default function ChallengesPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl animate-in fade-in duration-500">
       
-      {/* Hero Section */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-900 to-purple-900 text-white shadow-2xl mb-12">
         <div className="absolute inset-0 bg-[url('/patterns/grid.svg')] opacity-10"></div>
         <div className="absolute top-0 right-0 p-12 opacity-10 transform rotate-12">
@@ -98,7 +97,6 @@ export default function ChallengesPage() {
               )}
             </div>
 
-            {/* User Stats Card */}
             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10 w-full md:w-auto min-w-[280px] shadow-xl">
               <div className="flex items-center gap-4 mb-6">
                 <div className="p-3 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl shadow-lg ring-4 ring-white/5">
@@ -123,7 +121,7 @@ export default function ChallengesPage() {
                 <div className="h-1.5 w-full bg-black/20 rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-gradient-to-r from-amber-300 to-orange-400 rounded-full"
-                    style={{ width: `${Math.min(100, ((userRank?.currentElo || 0) / 3000) * 100)}%` }} // Simplified visual progress
+                    style={{ width: `${Math.min(100, ((userRank?.currentElo || 0) / 3000) * 100)}%` }}
                   />
                 </div>
               </div>
@@ -134,7 +132,6 @@ export default function ChallengesPage() {
 
       <div className="grid lg:grid-cols-12 gap-8 items-start">
         
-        {/* Main Content: Challenges */}
         <div className="lg:col-span-8 space-y-8">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold font-heading flex items-center gap-3 text-foreground">
@@ -167,7 +164,6 @@ export default function ChallengesPage() {
           )}
         </div>
 
-        {/* Sidebar: Leaderboard */}
         <div className="lg:col-span-4 space-y-6">
           <section className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
             <div className="p-6 border-b border-border bg-gradient-to-r from-card to-muted/5">

@@ -13,12 +13,12 @@ import (
 func (h *Handler) GetMyQueue(w http.ResponseWriter, r *http.Request) {
 	userID, _ := middleware.UserIDFromContext(r.Context())
 	var items []struct {
-		ID            int64  `db:"id" json:"id"`
-		MediaItemID   string `db:"media_item_id" json:"mediaItemId"`
-		QueuePosition *int   `db:"queue_position" json:"queuePosition"`
-		Title         string `db:"title" json:"title"`
+		ID            int64   `db:"id" json:"id"`
+		MediaItemID   string  `db:"media_item_id" json:"mediaItemId"`
+		QueuePosition *int    `db:"queue_position" json:"queuePosition"`
+		Title         string  `db:"title" json:"title"`
 		CoverImageURL *string `db:"cover_image_url" json:"coverImageUrl,omitempty"`
-		ItemType      string `db:"item_type" json:"itemType"`
+		ItemType      string  `db:"item_type" json:"itemType"`
 	}
 	err := h.ListRepo.DB.Select(&items, `
 		SELECT uli.id, uli.media_item_id, uli.queue_position, mi.title, mi.cover_image_url, mi.item_type

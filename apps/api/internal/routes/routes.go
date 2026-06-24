@@ -147,7 +147,7 @@ func NewRouter(h *handler.Handler, cfg *config.Config) http.Handler {
 				ar.Post("/link", h.LinkAttachment)
 				ar.Delete("/unlink", h.UnlinkAttachment)
 				ar.Get("/by-entity", h.ListAttachmentsByEntity)
-				ar.Post("/upload", h.UploadFile) // Add upload endpoint
+				ar.Post("/upload", h.UploadFile)
 			})
 
 			pr.Route("/messages", func(mr chi.Router) {

@@ -34,11 +34,13 @@ func (h *Handler) SearchBooks(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, res)
 }
+
 type addFromGoogleBooksBody struct {
 	Status       models.ItemStatus `json:"status"`
 	ProgressData *json.RawMessage  `json:"progressData,omitempty" swaggertype:"string"`
 	Rating       *int              `json:"rating,omitempty"`
 }
+
 // @Summary      Add Book from Google Books
 // @Description  Imports a book from Google Books into the user's list
 // @Tags         Lists

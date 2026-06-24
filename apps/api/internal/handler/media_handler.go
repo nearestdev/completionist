@@ -132,7 +132,6 @@ func (h *Handler) resolveMediaItem(ctx context.Context, source, externalID strin
 	}
 
 	var newItem models.NewMediaItem
-	
 	switch source {
 	case "JIKAN":
 		malID, err := strconv.Atoi(externalID)
@@ -222,7 +221,7 @@ func jikanAnimeToMediaItem(an *jikan.Anime, source, extID string) models.NewMedi
 	for _, g := range an.Genres {
 		genres = append(genres, g.Name)
 	}
-	
+
 	mdBytes, _ := json.Marshal(an)
 	md := json.RawMessage(mdBytes)
 
@@ -407,4 +406,3 @@ func googleBookToMediaItem(book *googlebooks.Book, source, extID string) models.
 		Metadata:      nil,
 	}
 }
-

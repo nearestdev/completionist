@@ -190,7 +190,6 @@ function MessagesPageContent() {
         />
       </div>
 
-      {/* Main Chat Area */}
       <div className="flex-1 flex flex-col bg-card rounded-3xl border border-border shadow-sm overflow-hidden">
         {selectedUserId && selectedUsername ? (
           <>

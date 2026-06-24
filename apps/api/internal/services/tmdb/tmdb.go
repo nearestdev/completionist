@@ -86,22 +86,22 @@ func (c *Client) fullPosterURL(ctx context.Context, path string) *string {
 }
 
 type SearchResult struct {
-	Page         int            `json:"page"`
-	Results      []SearchItem   `json:"results"`
-	TotalPages   int            `json:"total_pages"`
-	TotalResults int            `json:"total_results"`
+	Page         int          `json:"page"`
+	Results      []SearchItem `json:"results"`
+	TotalPages   int          `json:"total_pages"`
+	TotalResults int          `json:"total_results"`
 }
 
 type SearchItem struct {
-	ID           int      `json:"id"`
-	Title        string   `json:"title"`
-	Name         string   `json:"name"`
-	Overview     string   `json:"overview"`
-	PosterPath   string   `json:"poster_path"`
-	MediaType    string   `json:"media_type"`
-	GenreIDs     []int    `json:"genre_ids"`
-	ReleaseDate  string   `json:"release_date"`
-	FirstAirDate string   `json:"first_air_date"`
+	ID           int    `json:"id"`
+	Title        string `json:"title"`
+	Name         string `json:"name"`
+	Overview     string `json:"overview"`
+	PosterPath   string `json:"poster_path"`
+	MediaType    string `json:"media_type"`
+	GenreIDs     []int  `json:"genre_ids"`
+	ReleaseDate  string `json:"release_date"`
+	FirstAirDate string `json:"first_air_date"`
 }
 
 func (c *Client) SearchMovies(ctx context.Context, query string, page int) (*SearchResult, error) {
@@ -143,21 +143,21 @@ func (c *Client) SearchTV(ctx context.Context, query string, page int) (*SearchR
 }
 
 type Movie struct {
-	ID          int       `json:"id"`
-	Title       string    `json:"title"`
-	Overview    string    `json:"overview"`
-	PosterPath  string    `json:"poster_path"`
-	ReleaseDate string    `json:"release_date"`
-	Genres      []Genre   `json:"genres"`
+	ID          int     `json:"id"`
+	Title       string  `json:"title"`
+	Overview    string  `json:"overview"`
+	PosterPath  string  `json:"poster_path"`
+	ReleaseDate string  `json:"release_date"`
+	Genres      []Genre `json:"genres"`
 }
 
 type TV struct {
-	ID            int       `json:"id"`
-	Name          string    `json:"name"`
-	Overview      string    `json:"overview"`
-	PosterPath    string    `json:"poster_path"`
-	FirstAirDate  string    `json:"first_air_date"`
-	Genres        []Genre   `json:"genres"`
+	ID           int     `json:"id"`
+	Name         string  `json:"name"`
+	Overview     string  `json:"overview"`
+	PosterPath   string  `json:"poster_path"`
+	FirstAirDate string  `json:"first_air_date"`
+	Genres       []Genre `json:"genres"`
 }
 
 type Genre struct {

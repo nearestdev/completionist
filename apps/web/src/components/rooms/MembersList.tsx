@@ -21,7 +21,7 @@ export default function MembersList({ members, onlineUsers }: MembersListProps) 
     <div className="h-full flex flex-col bg-card/50">
       <div className="p-4 border-b border-border">
         <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">
-          Members — {members.length}
+          Members ({members.length})
         </h3>
       </div>
       <div className="flex-1 overflow-y-auto p-2 space-y-1">

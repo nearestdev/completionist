@@ -14,7 +14,7 @@ export default function RankBadge({ rank, showProgress = true }: RankBadgeProps)
             case Rank.Scribe: return <PenNib size={24} weight="duotone" />;
             case Rank.Chronicler: return <Scroll size={24} weight="duotone" />;
             case Rank.Curator: return <Books size={24} weight="duotone" />;
-            case Rank.Preserver: return <Gavel size={24} weight="duotone" />; // Or Shield/Archive
+            case Rank.Preserver: return <Gavel size={24} weight="duotone" />;
             case Rank.Warden: return <Eye size={24} weight="duotone" />;
             case Rank.Oracle: return <Crown size={24} weight="duotone" />;
             default: return <PenNib size={24} />;

@@ -1,6 +1,6 @@
 # Deploy Guide: AWS Lightsail + ECR + S3 + Self-Hosted Postgres
 
-This is the AWS-native deploy path. It runs the entire stack — `api`, `web`, and **a self-hosted Postgres** — on a single Amazon Lightsail instance, pulls images from Amazon ECR, and uses Amazon S3 for media uploads and nightly database backups. No managed database service is required.
+This is the AWS-native deploy path. It runs the entire stack (`api`, `web`, and **a self-hosted Postgres**) on a single Amazon Lightsail instance, pulls images from Amazon ECR, and uses Amazon S3 for media uploads and nightly database backups. No managed database service is required.
 
 For the alternative deploy that uses Supabase as the managed Postgres provider, see [DEPLOY_SUPABASE_VPS.md](DEPLOY_SUPABASE_VPS.md). The two guides share the same `Dockerfile.api` / `Dockerfile.web` / `docker-compose.prod.yml`; this guide layers an extra `docker-compose.aws.yml` override on top to add the `db` service.
 
@@ -35,12 +35,12 @@ Image registry: ECR  →  pulled by Lightsail at deploy time.
 |---|---|---|
 | Lightsail instance | 2 GB RAM / 2 vCPU / 60 GB SSD | $12 |
 | Lightsail static IP | attached to a running instance | $0 |
-| S3 (media + db backups) | low-traffic project | $1–3 |
-| ECR | first 500 MB free, then $0.10/GB-month | $0–1 |
+| S3 (media + db backups) | low-traffic project | $1 to 3 |
+| ECR | first 500 MB free, then $0.10/GB-month | $0 to 1 |
 | Data transfer out | included in Lightsail bundle (2 TB) | $0 |
-| **Total** | | **~$13–16** |
+| **Total** | | **~$13 to 16** |
 
-If the Lightsail box ever runs out of headroom, the upgrade path is to move Postgres to RDS — see the FAQ at the bottom.
+If the Lightsail box ever runs out of headroom, the upgrade path is to move Postgres to RDS (see the FAQ at the bottom).
 
 ## 2. Create the S3 bucket
 
@@ -82,14 +82,14 @@ The Go API reads these in [apps/api/internal/config/config.go](../apps/api/inter
 
 ## 3. Create the ECR repositories
 
-Two repositories — one per image:
+Two repositories, one per image:
 
 ```bash
 aws ecr create-repository --repository-name completionist-api --region <region>
 aws ecr create-repository --repository-name completionist-web --region <region>
 ```
 
-Optional but recommended — set a lifecycle policy to keep only the last 10 images per repo so storage doesn't drift upward.
+Optional but recommended: set a lifecycle policy to keep only the last 10 images per repo so storage doesn't drift upward.
 
 > ECR is **optional**. If your local machine is slow or you don't want a registry, you can build directly on the Lightsail instance the way [DEPLOY_SUPABASE_VPS.md](DEPLOY_SUPABASE_VPS.md) does (`git pull && docker compose build`). ECR is the right call if you want immutable, SHA-tagged images and/or you build in CI.
 
@@ -112,7 +112,7 @@ docker buildx build --platform linux/amd64 \
   -t "${REGISTRY}/completionist-api:latest" \
   -f Dockerfile.api . --push
 
-# web — build args bake the API URL at build time, so set them now
+# web: build args bake the API URL at build time, so set them now
 docker buildx build --platform linux/amd64 \
   --build-arg BACKEND_BASE_URL=https://api.<your-domain> \
   --build-arg BACKEND_PORT=443 \
@@ -121,7 +121,7 @@ docker buildx build --platform linux/amd64 \
   -f Dockerfile.web . --push
 ```
 
-`--platform linux/amd64` matters if you build on an Apple Silicon Mac — Lightsail instances are x86_64.
+`--platform linux/amd64` matters if you build on an Apple Silicon Mac. Lightsail instances are x86_64.
 
 ## 5. Create the Lightsail instance
 
@@ -200,7 +200,7 @@ aws ecr get-login-password --region "${REGION}" \
   | docker login --username AWS --password-stdin "${REGISTRY}"
 ```
 
-If you're using ECR-built images, edit `docker-compose.prod.yml` (or add a second override) so `api.image` and `web.image` point at the ECR URIs you pushed in step 4 — e.g. `${REGISTRY}/completionist-api:${TAG}`. If you're building on the box instead, leave the file alone and add `--build` to the `up` command below.
+If you're using ECR-built images, edit `docker-compose.prod.yml` (or add a second override) so `api.image` and `web.image` point at the ECR URIs you pushed in step 4 (e.g. `${REGISTRY}/completionist-api:${TAG}`). If you're building on the box instead, leave the file alone and add `--build` to the `up` command below.
 
 Then bring it up using both compose files:
 
@@ -218,7 +218,7 @@ docker compose --env-file .env.production \
 
 The `db` service comes from [docker-compose.aws.yml](../docker-compose.aws.yml). Without that override file the stack falls back to expecting an external Postgres (the Supabase path).
 
-golang-migrate runs at API startup automatically against the in-stack Postgres. The migrations create the `pgcrypto` extension before any `gen_random_uuid()` call, so vanilla `postgres:16-alpine` is sufficient — no custom image needed.
+golang-migrate runs at API startup automatically against the in-stack Postgres. The migrations create the `pgcrypto` extension before any `gen_random_uuid()` call, so vanilla `postgres:16-alpine` is sufficient; no custom image needed.
 
 ## 10. Verify
 
@@ -314,7 +314,7 @@ docker compose --env-file .env.production \
   up -d
 ```
 
-Once verified working, close ports `4000` and `8080` in the Lightsail firewall — only `80` and `443` need to be public.
+Once verified working, close ports `4000` and `8080` in the Lightsail firewall. Only `80` and `443` need to be public.
 
 ## 12. Backups
 
@@ -386,7 +386,7 @@ Cost. Aurora is overkill for a single-product workload at this stage, and even R
 2. Stop the `db` service: `docker compose ... stop db`.
 3. Restore the latest S3 backup into RDS with `pg_restore`.
 4. Point `DATABASE_URL` in `.env.production` at the RDS endpoint (use `sslmode=require`).
-5. Drop `docker-compose.aws.yml` from the compose command — back to the Supabase-style path.
+5. Drop `docker-compose.aws.yml` from the compose command (back to the Supabase-style path).
 6. `docker compose --env-file .env.production -f docker-compose.prod.yml up -d`.
 
 No Go code changes, no schema changes.
@@ -395,7 +395,7 @@ No Go code changes, no schema changes.
 
 It was the original idea for this deploy and I considered it carefully. It's the wrong choice for this codebase:
 
-- The schema uses **8 custom Postgres ENUM types**, **6+ JSONB columns with GIN indexes**, the **pgcrypto** extension, and `gen_random_uuid()`. None of these map cleanly to SQLite — every one would need a schema rewrite.
+- The schema uses **8 custom Postgres ENUM types**, **6+ JSONB columns with GIN indexes**, the **pgcrypto** extension, and `gen_random_uuid()`. None of these map cleanly to SQLite; every one would need a schema rewrite.
 - The app has a **WebSocket chat system** (rooms, DMs, message reactions). SQLite is single-writer and would hit `SQLITE_BUSY` under any concurrent message load.
 - A nightly `pg_dump` on a 2 GB Lightsail box already gives you the "DB-as-a-file" durability story you wanted, without sacrificing the features above.
 

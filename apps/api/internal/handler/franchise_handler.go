@@ -17,13 +17,11 @@ func (h *Handler) ListFranchises(w http.ResponseWriter, r *http.Request) {
 	limit, offset := parsePagination(r)
 
 	if category != "" && h.FranchiseDiscovery != nil {
-		// Auto-discover if the category is empty
 		franchises, err := h.FranchiseDiscovery.DiscoverByCategory(category)
 		if err == nil && len(franchises) > 0 {
 			httpx.JSON(w, http.StatusOK, franchises)
 			return
 		}
-		// Fall through to DB query
 		dbFranchises, err := h.FranchiseRepo.GetByCategory(category, limit, offset)
 		if err != nil {
 			httpx.JSONError(w, http.StatusInternalServerError, "Failed to list franchises")
@@ -33,7 +31,6 @@ func (h *Handler) ListFranchises(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// No category filter — return all, but try to auto-populate if empty
 	franchises, err := h.FranchiseRepo.GetAll(limit, offset)
 	if err != nil {
 		httpx.JSONError(w, http.StatusInternalServerError, "Failed to list franchises")

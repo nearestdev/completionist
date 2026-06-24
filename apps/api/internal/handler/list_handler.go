@@ -42,7 +42,6 @@ func (h *Handler) CreateListItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
 	newList := models.NewUserListItem{
 		MediaItemID:  media.ID,
 		Status:       payload.ListData.Status,
@@ -148,7 +147,7 @@ func (h *Handler) UpdateMyListItem(w http.ResponseWriter, r *http.Request) {
 		if media != nil {
 			title = media.Title
 		}
-		
+
 		desc := "Completed " + title
 		sid := strconv.FormatInt(item.ID, 10)
 		_ = h.UserRepo.AddXP(userID, models.XPSourceListCompletion, &sid, &desc)
@@ -162,7 +161,6 @@ func (h *Handler) UpdateMyListItem(w http.ResponseWriter, r *http.Request) {
 			_ = h.ChallengeService.NotifyAction(r.Context(), userID, "complete_item", meta)
 		}
 	}
-
 	httpx.JSON(w, http.StatusOK, item)
 }
 

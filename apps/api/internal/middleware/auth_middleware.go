@@ -69,7 +69,7 @@ func AuthMiddleware(userRepo *repository.UserRepository) func(http.Handler) http
 				}
 				role = user.Role
 
-				// Ban check — banned users can only access appeal and export endpoints
+				// Ban check: banned users can only access appeal and export endpoints
 				if user.BannedAt != nil {
 					path := r.URL.Path
 					if !strings.HasSuffix(path, "/me/appeal") && !strings.HasSuffix(path, "/me/export") {

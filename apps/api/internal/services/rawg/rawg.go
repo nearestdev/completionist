@@ -9,11 +9,13 @@ import (
 	"strconv"
 	"time"
 )
+
 type Client struct {
 	apiKey string
 	http   *http.Client
 	base   string
 }
+
 func New(apiKey string) *Client {
 	return &Client{
 		apiKey: apiKey,
@@ -21,26 +23,30 @@ func New(apiKey string) *Client {
 		base:   "https://api.rawg.io/api",
 	}
 }
+
 type SearchResult struct {
-	Count int `json:"count"`
+	Count   int `json:"count"`
 	Results []struct {
-		ID int `json:"id"`
-		Name string `json:"name"`
-		Released string `json:"released"`
-		BackgroundImage string `json:"background_image"`
-		Rating float64 `json:"rating"`
-		Platforms []struct {
-			Platform struct{ ID int `json:"id"`; Name string `json:"name"` } `json:"platform"`
+		ID              int     `json:"id"`
+		Name            string  `json:"name"`
+		Released        string  `json:"released"`
+		BackgroundImage string  `json:"background_image"`
+		Rating          float64 `json:"rating"`
+		Platforms       []struct {
+			Platform struct {
+				ID   int    `json:"id"`
+				Name string `json:"name"`
+			} `json:"platform"`
 		} `json:"platforms"`
 	} `json:"results"`
 }
 
 type Game struct {
-	ID              int    `json:"id"`
-	Name            string `json:"name"`
-	Released        string `json:"released"`
-	BackgroundImage string `json:"background_image"`
-	Description     string `json:"description_raw"`
+	ID              int     `json:"id"`
+	Name            string  `json:"name"`
+	Released        string  `json:"released"`
+	BackgroundImage string  `json:"background_image"`
+	Description     string  `json:"description_raw"`
 	Rating          float64 `json:"rating"`
 	Genres          []struct {
 		ID   int    `json:"id"`
@@ -49,15 +55,16 @@ type Game struct {
 }
 
 type AchievementsResult struct {
-	Count int `json:"count"`
+	Count   int `json:"count"`
 	Results []struct {
-		ID int `json:"id"`
-		Name string `json:"name"`
-		Description string `json:"description"`
-		Image string `json:"image"`
-		Percent float64 `json:"percent"`
+		ID          int     `json:"id"`
+		Name        string  `json:"name"`
+		Description string  `json:"description"`
+		Image       string  `json:"image"`
+		Percent     float64 `json:"percent"`
 	} `json:"results"`
 }
+
 func (c *Client) SearchGames(ctx context.Context, q string, page int) (*SearchResult, error) {
 	u := fmt.Sprintf("%s/games", c.base)
 	v := url.Values{}

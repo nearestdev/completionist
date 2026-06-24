@@ -42,6 +42,7 @@ func (h *Handler) SearchMoviesTMDB(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, res)
 }
+
 // @Summary      Search TV Shows (TMDb)
 // @Description  Search for TV shows using The Movie Database API
 // @Tags         Search
@@ -72,11 +73,13 @@ func (h *Handler) SearchTVTMDB(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, res)
 }
+
 type addFromTMDBBody struct {
 	Status       models.ItemStatus `json:"status"`
 	ProgressData *json.RawMessage  `json:"progressData,omitempty" swaggertype:"string"`
 	Rating       *int              `json:"rating,omitempty"`
 }
+
 // @Summary      Add Movie from TMDb
 // @Description  Imports a movie from TMDb into the user's list
 // @Tags         Lists
@@ -160,6 +163,7 @@ func (h *Handler) AddMovieFromTMDB(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusCreated, item)
 }
+
 // @Summary      Add TV Show from TMDb
 // @Description  Imports a TV show from TMDb into the user's list
 // @Tags         Lists

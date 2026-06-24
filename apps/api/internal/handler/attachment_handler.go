@@ -9,6 +9,7 @@ import (
 	"github.com/GATEOPENERZ/completionist-api/internal/models"
 	"github.com/google/uuid"
 )
+
 type createAttachmentBody struct {
 	Kind            string  `json:"kind"`
 	Value           string  `json:"value"`
@@ -16,6 +17,7 @@ type createAttachmentBody struct {
 	ContentType     *string `json:"contentType"`
 	SizeBytes       *int64  `json:"sizeBytes"`
 }
+
 // @Summary      Create Attachment
 // @Description  Creates a new standalone attachment record
 // @Tags         Attachments
@@ -51,11 +53,13 @@ func (h *Handler) CreateAttachment(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusCreated, a)
 }
+
 type linkBody struct {
 	EntityTable  string    `json:"entityTable"`
 	EntityPK     string    `json:"entityPk"`
 	AttachmentID uuid.UUID `json:"attachmentId"`
 }
+
 // @Summary      Link Attachment
 // @Description  Links an existing attachment to an entity (post, comment, etc.)
 // @Tags         Attachments
@@ -85,6 +89,7 @@ func (h *Handler) LinkAttachment(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusCreated, ea)
 }
+
 // @Summary      Unlink Attachment
 // @Description  Removes a link between an attachment and an entity
 // @Tags         Attachments
@@ -119,6 +124,7 @@ func (h *Handler) UnlinkAttachment(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
+
 // @Summary      List Attachments by Entity
 // @Description  Retrieves all attachments linked to a specific entity
 // @Tags         Attachments

@@ -120,9 +120,7 @@ export default function ChatBox({
     if (file) {
       try {
         const url = await messagingService.uploadFile(file);
-        // Automatically send the file as a message for now
-        // Ideally we would attach it to the input state
-        const content = `[${file.name}](${url})`; 
+        const content = `[${file.name}](${url})`;
         onSendMessage(content, replyTo?.id);
         setReplyTo(null);
       } catch (error) {
@@ -145,7 +143,6 @@ export default function ChatBox({
           } else {
               await roomService.reactToMessage((msg as RoomMessage).roomId, msg.id, reaction);
           }
-           // Optimistic update could happen here or wait for WS propagation
       } catch (error) {
           console.error("Failed to react", error);
       }
@@ -165,7 +162,6 @@ export default function ChatBox({
 
   return (
     <div className="flex flex-col flex-1 min-h-0 bg-muted/5 relative">
-      {/* Pinned Messages Section */}
       {(() => {
         const pinnedMessages = messages.filter(m => m.isPinned);
         if (pinnedMessages.length === 0) return null;
@@ -302,7 +298,6 @@ export default function ChatBox({
                         })()}
                     </div>
                     
-                    {/* Hover Actions */}
                     <div className={`absolute ${isSender ? '-left-20' : '-right-20'} top-1/2 -translate-y-1/2 opacity-0 group-hover/bubble:opacity-100 flex gap-1 bg-background/80 backdrop-blur rounded-lg p-1 shadow-sm transition-opacity`}>
                         <button onClick={() => setReplyTo(msg)} title="Reply" className="p-1 hover:bg-muted rounded"><ArrowUUpLeftIcon size={14} /></button>
                         <button onClick={() => handlePin(msg)} title={msg.isPinned ? "Unpin" : "Pin"} className="p-1 hover:bg-muted rounded"><PushPinIcon size={14} /></button>
@@ -335,7 +330,6 @@ export default function ChatBox({
                     </div>
                   </div>
 
-                  {/* Reactions Display */}
                   {msg.reactions && msg.reactions.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-1">
                       {(() => {

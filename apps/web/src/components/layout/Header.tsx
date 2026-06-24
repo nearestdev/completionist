@@ -16,7 +16,6 @@ export default function Header() {
       <nav className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-6">
-            {/* Logo removed as requested */}
           </div>
           
           <div className="flex items-center gap-3">

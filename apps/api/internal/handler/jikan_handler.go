@@ -43,6 +43,7 @@ func (h *Handler) SearchAnimeJikan(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, res)
 }
+
 // @Summary      Search Manga (Jikan)
 // @Description  Search for manga using the Jikan API (MyAnimeList)
 // @Tags         Search
@@ -73,11 +74,13 @@ func (h *Handler) SearchMangaJikan(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, res)
 }
+
 type addFromJikanBody struct {
 	Status       models.ItemStatus `json:"status"`
 	ProgressData *json.RawMessage  `json:"progressData,omitempty" swaggertype:"string"`
 	Rating       *int              `json:"rating,omitempty"`
 }
+
 // @Summary      Add Anime from Jikan
 // @Description  Imports an anime from Jikan/MAL into the user's list
 // @Tags         Lists
@@ -163,6 +166,7 @@ func (h *Handler) AddAnimeFromJikan(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusCreated, item)
 }
+
 // @Summary      Add Manga from Jikan
 // @Description  Imports a manga from Jikan/MAL into the user's list
 // @Tags         Lists

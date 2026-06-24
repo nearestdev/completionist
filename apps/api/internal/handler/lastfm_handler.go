@@ -28,6 +28,7 @@ func (h *Handler) LastFMAuth(w http.ResponseWriter, r *http.Request) {
 	authURL := h.LastFM.GetAuthURL(token)
 	http.Redirect(w, r, authURL, http.StatusFound)
 }
+
 // @Summary      Last.fm Callback
 // @Description  Handles the callback from Last.fm after authorization
 // @Tags         Last.fm
@@ -67,6 +68,7 @@ func (h *Handler) LastFMCallback(w http.ResponseWriter, r *http.Request) {
 	}
 	http.Redirect(w, r, h.Config.FrontendBaseURL+"/settings?success=lastfm_linked", http.StatusFound)
 }
+
 // @Summary      Get My Last.fm Account
 // @Description  Retrieves the linked Last.fm account details
 // @Tags         Last.fm
@@ -90,6 +92,7 @@ func (h *Handler) GetMyLastFMAccount(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, account)
 }
+
 // @Summary      Get Recent Tracks
 // @Description  Retrieves recent tracks from the linked Last.fm account
 // @Tags         Last.fm

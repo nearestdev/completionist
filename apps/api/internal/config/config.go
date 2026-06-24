@@ -126,7 +126,7 @@ func Load() (*Config, error) {
 		GoogleBooksAPIKey:         os.Getenv("GOOGLE_BOOKS_API_KEY"),
 		LastFMAPIKey:              os.Getenv("LASTFM_API_KEY"),
 		LastFMAPISecret:           os.Getenv("LASTFM_API_SECRET"),
-		StorageDriver:             os.Getenv("STORAGE_DRIVER"), // local or s3
+		StorageDriver:             os.Getenv("STORAGE_DRIVER"),
 		AWSRegion:                 os.Getenv("AWS_REGION"),
 		AWSBucket:                 os.Getenv("AWS_BUCKET"),
 		AWSAccessKeyID:            os.Getenv("AWS_ACCESS_KEY_ID"),

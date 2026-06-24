@@ -31,7 +31,7 @@ func (r *MessagingRepository) SendDirectMessage(msg *models.DirectMessage) (*mod
 
 func (r *MessagingRepository) GetConversation(userID, otherUserID int64, limit int, beforeID int64) ([]models.DirectMessageResponse, error) {
 	messages := []models.DirectMessageResponse{}
-	
+
 	query := `
 		SELECT 
 			dm.id,
@@ -67,8 +67,7 @@ func (r *MessagingRepository) GetConversation(userID, otherUserID int64, limit i
 		return nil, err
 	}
 
-	// Fetch reactions for these messages
-	// This is N+1 if done poorly, but with a small limit it's okay-ish, or better: fetch all reactions for these Message IDs
+	// N+1 if done poorly, but with a small limit it's acceptable; fetching all reactions for the returned message IDs in one query avoids it.
 	if len(messages) > 0 {
 		msgIDs := []int64{}
 		for _, m := range messages {
@@ -87,7 +86,6 @@ func (r *MessagingRepository) GetConversation(userID, otherUserID int64, limit i
 			var reactions []models.DirectMessageReaction
 			err = r.DB.Select(&reactions, query, args...)
 			if err == nil {
-				// Map reactions to messages
 				reactionsMap := make(map[int64][]models.DirectMessageReaction)
 				for _, r := range reactions {
 					reactionsMap[r.MessageID] = append(reactionsMap[r.MessageID], r)
@@ -98,7 +96,7 @@ func (r *MessagingRepository) GetConversation(userID, otherUserID int64, limit i
 					} else {
 						messages[i].Reactions = []models.DirectMessageReaction{}
 					}
-                    messages[i].Attachments = []models.Attachment{} // Init empty
+					messages[i].Attachments = []models.Attachment{}
 				}
 			}
 		}
@@ -386,8 +384,7 @@ func (r *MessagingRepository) GetRoomMessages(roomID int64, limit int) ([]models
 		return nil, err
 	}
 
-     // Fetch reactions
-    if len(messages) > 0 {
+	if len(messages) > 0 {
 		msgIDs := []int64{}
 		for _, m := range messages {
 			msgIDs = append(msgIDs, m.ID)
@@ -405,7 +402,6 @@ func (r *MessagingRepository) GetRoomMessages(roomID int64, limit int) ([]models
 			var reactions []models.RoomMessageReaction
 			err = r.DB.Select(&reactions, query, args...)
 			if err == nil {
-				// Map reactions
 				reactionsMap := make(map[int64][]models.RoomMessageReaction)
 				for _, r := range reactions {
 					reactionsMap[r.MessageID] = append(reactionsMap[r.MessageID], r)
@@ -416,7 +412,7 @@ func (r *MessagingRepository) GetRoomMessages(roomID int64, limit int) ([]models
 					} else {
 						messages[i].Reactions = []models.RoomMessageReaction{}
 					}
-                    messages[i].Attachments = []models.Attachment{} // Init empty
+					messages[i].Attachments = []models.Attachment{}
 				}
 			}
 		}
@@ -475,8 +471,6 @@ func (r *MessagingRepository) UpdateRoomState(roomID, userID int64, req *models.
 	return &state, nil
 }
 
-// Add these new methods
-
 func (r *MessagingRepository) ReactToDirectMessage(userID, messageID int64, reaction string) error {
 	_, err := r.DB.Exec(`
 		INSERT INTO direct_message_reactions (message_id, user_id, reaction)
@@ -512,27 +506,27 @@ func (r *MessagingRepository) RemoveRoomMessageReaction(userID, messageID int64,
 }
 
 func (r *MessagingRepository) PinDirectMessage(messageID int64) error {
-    _, err := r.DB.Exec("UPDATE direct_messages SET is_pinned = true WHERE id = $1", messageID)
-    return err
+	_, err := r.DB.Exec("UPDATE direct_messages SET is_pinned = true WHERE id = $1", messageID)
+	return err
 }
 
 func (r *MessagingRepository) UnpinDirectMessage(messageID int64) error {
-    _, err := r.DB.Exec("UPDATE direct_messages SET is_pinned = false WHERE id = $1", messageID)
-    return err
+	_, err := r.DB.Exec("UPDATE direct_messages SET is_pinned = false WHERE id = $1", messageID)
+	return err
 }
 
 func (r *MessagingRepository) PinRoomMessage(messageID int64) error {
-    _, err := r.DB.Exec("UPDATE room_messages SET is_pinned = true WHERE id = $1", messageID)
-    return err
+	_, err := r.DB.Exec("UPDATE room_messages SET is_pinned = true WHERE id = $1", messageID)
+	return err
 }
 
 func (r *MessagingRepository) UnpinRoomMessage(messageID int64) error {
-    _, err := r.DB.Exec("UPDATE room_messages SET is_pinned = false WHERE id = $1", messageID)
-    return err
+	_, err := r.DB.Exec("UPDATE room_messages SET is_pinned = false WHERE id = $1", messageID)
+	return err
 }
 
 func (r *MessagingRepository) GetPinnedRoomMessages(roomID int64) ([]models.RoomMessageResponse, error) {
-    messages := []models.RoomMessageResponse{}
+	messages := []models.RoomMessageResponse{}
 	err := r.DB.Select(&messages, `
 		SELECT 
 			rm.id,
@@ -551,7 +545,6 @@ func (r *MessagingRepository) GetPinnedRoomMessages(roomID int64) ([]models.Room
 	if err != nil {
 		return nil, err
 	}
-    // TODO: fetch reactions for pinned messages too if needed
-    return messages, nil
+	// TODO: fetch reactions for pinned messages too if needed
+	return messages, nil
 }
-

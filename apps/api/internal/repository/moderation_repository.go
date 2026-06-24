@@ -127,15 +127,15 @@ func (r *ModerationRepository) GetDeletionRequest(userID int64) (*models.Account
 
 func (r *ModerationRepository) ExportUserData(userID int64) (json.RawMessage, error) {
 	type exportData struct {
-		User         interface{} `json:"user"`
-		ListItems    interface{} `json:"listItems"`
-		Posts        interface{} `json:"posts"`
-		Messages     interface{} `json:"messages"`
-		Reviews      interface{} `json:"reviews"`
-		Badges       interface{} `json:"badges"`
-		Streaks      interface{} `json:"streaks"`
-		Follows      interface{} `json:"follows"`
-		XPHistory    interface{} `json:"xpHistory"`
+		User      interface{} `json:"user"`
+		ListItems interface{} `json:"listItems"`
+		Posts     interface{} `json:"posts"`
+		Messages  interface{} `json:"messages"`
+		Reviews   interface{} `json:"reviews"`
+		Badges    interface{} `json:"badges"`
+		Streaks   interface{} `json:"streaks"`
+		Follows   interface{} `json:"follows"`
+		XPHistory interface{} `json:"xpHistory"`
 	}
 
 	var user interface{}

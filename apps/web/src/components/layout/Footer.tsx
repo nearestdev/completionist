@@ -7,7 +7,6 @@ export default function Footer() {
       <div className="container mx-auto px-6">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           
-          {/* Logo & Copyright */}
           <div className="flex flex-col items-center md:items-start gap-2">
             <h3 className="text-lg font-heading font-bold text-foreground flex items-center gap-2">
               <span className="text-primary">Completionist</span>
@@ -17,7 +16,6 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Links */}
           <div className="flex flex-wrap justify-center gap-8 text-sm font-medium text-muted">
             <Link href="/about" className="hover:text-primary transition-colors">
               About
@@ -33,7 +31,6 @@ export default function Footer() {
             </Link>
           </div>
 
-          {/* Socials */}
           <div className="flex items-center gap-4">
             <a 
               href="https://github.com" 

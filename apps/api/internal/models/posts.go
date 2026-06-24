@@ -80,22 +80,22 @@ type CommentLike struct {
 }
 
 type PostWithDetails struct {
-	ID            int64      `json:"id"`
-	UserID        int64      `json:"userId"`
-	Username      string     `json:"username"`
-	MediaItemID   *uuid.UUID `json:"mediaItemId,omitempty"`
-	MediaTitle    *string    `json:"mediaTitle,omitempty"`
-	MediaCoverImage *string  `json:"mediaCoverImage,omitempty"`
-	Title         *string    `json:"title,omitempty"`
-	Content       string     `json:"content"`
-	PostType      PostType   `json:"postType"`
-	Rating        *int       `json:"rating,omitempty"`
-	IsSpoiler     bool       `json:"isSpoiler"`
-	CreatedAt     time.Time  `json:"createdAt"`
-	UpdatedAt     time.Time  `json:"updatedAt"`
-	LikesCount    int64      `json:"likesCount"`
-	CommentsCount int64      `json:"commentsCount"`
-	IsLikedByUser bool       `json:"isLikedByUser"`
+	ID              int64      `json:"id"`
+	UserID          int64      `json:"userId"`
+	Username        string     `json:"username"`
+	MediaItemID     *uuid.UUID `json:"mediaItemId,omitempty"`
+	MediaTitle      *string    `json:"mediaTitle,omitempty"`
+	MediaCoverImage *string    `json:"mediaCoverImage,omitempty"`
+	Title           *string    `json:"title,omitempty"`
+	Content         string     `json:"content"`
+	PostType        PostType   `json:"postType"`
+	Rating          *int       `json:"rating,omitempty"`
+	IsSpoiler       bool       `json:"isSpoiler"`
+	CreatedAt       time.Time  `json:"createdAt"`
+	UpdatedAt       time.Time  `json:"updatedAt"`
+	LikesCount      int64      `json:"likesCount"`
+	CommentsCount   int64      `json:"commentsCount"`
+	IsLikedByUser   bool       `json:"isLikedByUser"`
 }
 
 type CommentWithDetails struct {

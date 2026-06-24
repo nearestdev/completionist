@@ -18,9 +18,9 @@ type Attachment struct {
 }
 
 type EntityAttachment struct {
-	ID            int64     `db:"id" json:"id"`
-	EntityTable   string    `db:"entity_table" json:"entityTable"`
-	EntityPK      string    `db:"entity_pk" json:"entityPk"`
-	AttachmentID  uuid.UUID `db:"attachment_id" json:"attachmentId"`
-	CreatedAt     time.Time `db:"created_at" json:"createdAt"`
+	ID           int64     `db:"id" json:"id"`
+	EntityTable  string    `db:"entity_table" json:"entityTable"`
+	EntityPK     string    `db:"entity_pk" json:"entityPk"`
+	AttachmentID uuid.UUID `db:"attachment_id" json:"attachmentId"`
+	CreatedAt    time.Time `db:"created_at" json:"createdAt"`
 }

@@ -121,8 +121,8 @@ export interface DMPayload {
   isRead: boolean;
   replyToId?: number;
   isPinned: boolean;
-  reactions?: Reaction[]; // Optional in payload, usually fetched via REST or separate event
-  attachments?: Attachment[]; // Same
+  reactions?: Reaction[]; // Not always present in WS payloads; fetched separately via REST
+  attachments?: Attachment[]; // Not always present in WS payloads; fetched separately via REST
   createdAt: string;
 }
 

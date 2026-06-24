@@ -3,9 +3,9 @@ package handler
 import (
 	"github.com/GATEOPENERZ/completionist-api/internal/config"
 	"github.com/GATEOPENERZ/completionist-api/internal/repository"
-	"github.com/GATEOPENERZ/completionist-api/internal/service/filestorage"
 	"github.com/GATEOPENERZ/completionist-api/internal/services"
 	"github.com/GATEOPENERZ/completionist-api/internal/services/challenges"
+	"github.com/GATEOPENERZ/completionist-api/internal/services/filestorage"
 	"github.com/GATEOPENERZ/completionist-api/internal/services/googlebooks"
 	"github.com/GATEOPENERZ/completionist-api/internal/services/importer"
 	"github.com/GATEOPENERZ/completionist-api/internal/services/jikan"
@@ -17,16 +17,16 @@ import (
 )
 
 type Handler struct {
-	UserRepo          *repository.UserRepository
-	MediaRepo         *repository.MediaRepository
-	ListRepo          *repository.ListRepository
-	SocialRepo        *repository.SocialRepository
-	PostsRepo         *repository.PostsRepository
-	SteamRepo         *repository.SteamRepository
-	AttachmentRepo    *repository.AttachmentRepository
-	LastFMRepo        *repository.LastFMRepository
-	ChallengeRepo     *repository.ChallengeRepository
-	MessagingRepo     *repository.MessagingRepository
+	UserRepo           *repository.UserRepository
+	MediaRepo          *repository.MediaRepository
+	ListRepo           *repository.ListRepository
+	SocialRepo         *repository.SocialRepository
+	PostsRepo          *repository.PostsRepository
+	SteamRepo          *repository.SteamRepository
+	AttachmentRepo     *repository.AttachmentRepository
+	LastFMRepo         *repository.LastFMRepository
+	ChallengeRepo      *repository.ChallengeRepository
+	MessagingRepo      *repository.MessagingRepository
 	StreakRepo         *repository.StreakRepository
 	BadgeRepo          *repository.BadgeRepository
 	CollectionRepo     *repository.CollectionRepository
@@ -44,13 +44,13 @@ type Handler struct {
 	LastFM             *lastfm.Client
 	ChallengeService   *challenges.Service
 	RankService        *services.RankService
-	StreakService       *services.StreakService
-	BadgeService        *services.BadgeService
-	ModerationService   *services.ModerationService
-	SuggestionService   *services.SuggestionService
-	StripeService       *services.StripeService
-	ImporterService     *importer.Service
-	FranchiseDiscovery  *services.FranchiseDiscoveryService
+	StreakService      *services.StreakService
+	BadgeService       *services.BadgeService
+	ModerationService  *services.ModerationService
+	SuggestionService  *services.SuggestionService
+	StripeService      *services.StripeService
+	ImporterService    *importer.Service
+	FranchiseDiscovery *services.FranchiseDiscoveryService
 	AuditRepo          *repository.AuditRepository
 	WSHub              *websocket.Hub
 	FileService        filestorage.Service
@@ -98,43 +98,43 @@ func NewHandler(
 	cfg *config.Config,
 ) *Handler {
 	return &Handler{
-		UserRepo:          userRepo,
-		MediaRepo:         mediaRepo,
-		ListRepo:          listRepo,
-		SocialRepo:        socialRepo,
-		PostsRepo:         postsRepo,
-		SteamRepo:         steamRepo,
-		ChallengeRepo:     chalRepo,
-		AuditRepo:         auditRepo,
-		MessagingRepo:     messagingRepo,
+		UserRepo:           userRepo,
+		MediaRepo:          mediaRepo,
+		ListRepo:           listRepo,
+		SocialRepo:         socialRepo,
+		PostsRepo:          postsRepo,
+		SteamRepo:          steamRepo,
+		ChallengeRepo:      chalRepo,
+		AuditRepo:          auditRepo,
+		MessagingRepo:      messagingRepo,
 		StreakRepo:         streakRepo,
-		BadgeRepo:         badgeRepo,
-		CollectionRepo:    collectionRepo,
-		ReviewRepo:        reviewRepo,
-		ModerationRepo:    moderationRepo,
-		SubscriptionRepo:  subscriptionRepo,
-		AdRepo:            adRepo,
-		ConnectedAcctRepo: connAcctRepo,
-		FranchiseRepo:     franchiseRepo,
-		Jikan:             jk,
-		TMDB:              tm,
-		Steam:             st,
-		RAWG:              rg,
-		AttachmentRepo:    attachmentRepo,
-		GoogleBooks:       gb,
-		LastFM:            lf,
-		LastFMRepo:        lastfmRepo,
-		ChallengeService:  chalService,
-		RankService:       rankService,
+		BadgeRepo:          badgeRepo,
+		CollectionRepo:     collectionRepo,
+		ReviewRepo:         reviewRepo,
+		ModerationRepo:     moderationRepo,
+		SubscriptionRepo:   subscriptionRepo,
+		AdRepo:             adRepo,
+		ConnectedAcctRepo:  connAcctRepo,
+		FranchiseRepo:      franchiseRepo,
+		Jikan:              jk,
+		TMDB:               tm,
+		Steam:              st,
+		RAWG:               rg,
+		AttachmentRepo:     attachmentRepo,
+		GoogleBooks:        gb,
+		LastFM:             lf,
+		LastFMRepo:         lastfmRepo,
+		ChallengeService:   chalService,
+		RankService:        rankService,
 		StreakService:      streakService,
-		BadgeService:      badgeService,
-		ModerationService: moderationService,
-		SuggestionService: suggestionService,
-		StripeService:     stripeService,
+		BadgeService:       badgeService,
+		ModerationService:  moderationService,
+		SuggestionService:  suggestionService,
+		StripeService:      stripeService,
 		ImporterService:    importerService,
 		FranchiseDiscovery: franchiseDiscovery,
-		WSHub:             wsHub,
-		FileService:       fileService,
-		Config:            cfg,
+		WSHub:              wsHub,
+		FileService:        fileService,
+		Config:             cfg,
 	}
 }

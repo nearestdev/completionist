@@ -38,21 +38,21 @@ const (
 )
 
 type MediaItem struct {
-	ID                 uuid.UUID       `db:"id" json:"id"`
-	ItemType           ItemType        `db:"item_type" json:"itemType"`
-	Source             *string         `db:"source" json:"source,omitempty"`
-	ExternalID         *string         `db:"external_id" json:"externalId,omitempty"`
-	Title              string          `db:"title" json:"title"`
-	Description        *string         `db:"description" json:"description,omitempty"`
-	CoverImageURL      *string         `db:"cover_image_url" json:"coverImageUrl,omitempty"`
-	ReleaseDate        *time.Time      `db:"release_date" json:"releaseDate,omitempty"`
-	Genres             pq.StringArray  `db:"genres" json:"genres,omitempty" swaggertype:"array,string"`
-	CriticRatingValue  *float32        `db:"critic_rating_value" json:"criticRatingValue,omitempty"`
-	CriticRatingCount  *int            `db:"critic_rating_count" json:"criticRatingCount,omitempty"`
-	UserRatingExternal *float32        `db:"user_rating_external" json:"userRatingExternal,omitempty"`
+	ID                 uuid.UUID        `db:"id" json:"id"`
+	ItemType           ItemType         `db:"item_type" json:"itemType"`
+	Source             *string          `db:"source" json:"source,omitempty"`
+	ExternalID         *string          `db:"external_id" json:"externalId,omitempty"`
+	Title              string           `db:"title" json:"title"`
+	Description        *string          `db:"description" json:"description,omitempty"`
+	CoverImageURL      *string          `db:"cover_image_url" json:"coverImageUrl,omitempty"`
+	ReleaseDate        *time.Time       `db:"release_date" json:"releaseDate,omitempty"`
+	Genres             pq.StringArray   `db:"genres" json:"genres,omitempty" swaggertype:"array,string"`
+	CriticRatingValue  *float32         `db:"critic_rating_value" json:"criticRatingValue,omitempty"`
+	CriticRatingCount  *int             `db:"critic_rating_count" json:"criticRatingCount,omitempty"`
+	UserRatingExternal *float32         `db:"user_rating_external" json:"userRatingExternal,omitempty"`
 	Metadata           *json.RawMessage `db:"metadata" json:"metadata,omitempty" swaggertype:"string"`
-	CreatedAt          time.Time       `db:"created_at" json:"createdAt"`
-	UpdatedAt          time.Time       `db:"updated_at" json:"updatedAt"`
+	CreatedAt          time.Time        `db:"created_at" json:"createdAt"`
+	UpdatedAt          time.Time        `db:"updated_at" json:"updatedAt"`
 }
 
 type ProgressData struct {
@@ -86,25 +86,25 @@ type UserListItem struct {
 }
 
 type WishlistItem struct {
-	ID         int64         `db:"id" json:"id"`
-	UserID     int64         `db:"user_id" json:"userId"`
-	MediaItemID uuid.UUID    `db:"media_item_id" json:"mediaItemId"`
-	Priority   PriorityLevel `db:"priority" json:"priority"`
-	PriceCents *int          `db:"price_cents" json:"priceCents,omitempty"`
-	CreatedAt  time.Time     `db:"created_at" json:"createdAt"`
-	UpdatedAt  time.Time     `db:"updated_at" json:"updatedAt"`
-	Media      *MediaItem    `db:"-" json:"media,omitempty"`
+	ID          int64         `db:"id" json:"id"`
+	UserID      int64         `db:"user_id" json:"userId"`
+	MediaItemID uuid.UUID     `db:"media_item_id" json:"mediaItemId"`
+	Priority    PriorityLevel `db:"priority" json:"priority"`
+	PriceCents  *int          `db:"price_cents" json:"priceCents,omitempty"`
+	CreatedAt   time.Time     `db:"created_at" json:"createdAt"`
+	UpdatedAt   time.Time     `db:"updated_at" json:"updatedAt"`
+	Media       *MediaItem    `db:"-" json:"media,omitempty"`
 }
 
 type NewMediaItem struct {
-	ItemType      ItemType        `json:"itemType"`
-	Source        *string         `json:"source,omitempty"`
-	ExternalID    *string         `json:"externalId,omitempty"`
-	Title         string          `json:"title"`
-	Description   *string         `json:"description,omitempty"`
-	CoverImageURL *string         `json:"coverImageUrl,omitempty"`
-	ReleaseDate   *time.Time      `json:"releaseDate,omitempty"`
-	Genres        []string        `json:"genres,omitempty"`
+	ItemType      ItemType         `json:"itemType"`
+	Source        *string          `json:"source,omitempty"`
+	ExternalID    *string          `json:"externalId,omitempty"`
+	Title         string           `json:"title"`
+	Description   *string          `json:"description,omitempty"`
+	CoverImageURL *string          `json:"coverImageUrl,omitempty"`
+	ReleaseDate   *time.Time       `json:"releaseDate,omitempty"`
+	Genres        []string         `json:"genres,omitempty"`
 	Metadata      *json.RawMessage `json:"metadata,omitempty" swaggertype:"string"`
 }
 

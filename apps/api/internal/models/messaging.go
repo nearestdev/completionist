@@ -164,4 +164,3 @@ type UpdateRoomStateRequest struct {
 	CurrentPositionMs *int64  `json:"currentPositionMs,omitempty"`
 	IsPlaying         *bool   `json:"isPlaying,omitempty"`
 }
-

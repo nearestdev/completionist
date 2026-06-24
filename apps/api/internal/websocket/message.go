@@ -5,18 +5,18 @@ import "encoding/json"
 type MessageType string
 
 const (
-	MessageTypeDM         MessageType = "dm"
-	MessageTypeRoomChat   MessageType = "room_chat"
-	MessageTypeRoomJoin   MessageType = "room_join"
-	MessageTypeRoomLeave  MessageType = "room_leave"
-	MessageTypeRoomState  MessageType = "room_state"
-	MessageTypeTyping     MessageType = "typing"
-	MessageTypePing       MessageType = "ping"
-	MessageTypePong       MessageType = "pong"
-	MessageTypeError      MessageType = "error"
-	MessageTypeRoomUsers  MessageType = "room_users"
-	MessageTypeReaction   MessageType = "reaction"
-	MessageTypePin        MessageType = "pin"
+	MessageTypeDM        MessageType = "dm"
+	MessageTypeRoomChat  MessageType = "room_chat"
+	MessageTypeRoomJoin  MessageType = "room_join"
+	MessageTypeRoomLeave MessageType = "room_leave"
+	MessageTypeRoomState MessageType = "room_state"
+	MessageTypeTyping    MessageType = "typing"
+	MessageTypePing      MessageType = "ping"
+	MessageTypePong      MessageType = "pong"
+	MessageTypeError     MessageType = "error"
+	MessageTypeRoomUsers MessageType = "room_users"
+	MessageTypeReaction  MessageType = "reaction"
+	MessageTypePin       MessageType = "pin"
 )
 
 type WSMessage struct {
@@ -25,17 +25,16 @@ type WSMessage struct {
 }
 
 type DMPayload struct {
-	ID               int64               `json:"id"`
-	SenderID         int64               `json:"senderId"`
-	SenderUsername   string              `json:"senderUsername"`
-	ReceiverID       int64               `json:"receiverId"`
-	ReceiverUsername string              `json:"receiverUsername"`
-	Content          string              `json:"content"`
-	IsRead           bool                `json:"isRead"`
-	ReplyToID        *int64              `json:"replyToId,omitempty"`
-	IsPinned         bool                `json:"isPinned"`
-	CreatedAt        string              `json:"createdAt"`
-    // Attachments []models.Attachment `json:"attachments,omitempty"` // Future
+	ID               int64  `json:"id"`
+	SenderID         int64  `json:"senderId"`
+	SenderUsername   string `json:"senderUsername"`
+	ReceiverID       int64  `json:"receiverId"`
+	ReceiverUsername string `json:"receiverUsername"`
+	Content          string `json:"content"`
+	IsRead           bool   `json:"isRead"`
+	ReplyToID        *int64 `json:"replyToId,omitempty"`
+	IsPinned         bool   `json:"isPinned"`
+	CreatedAt        string `json:"createdAt"`
 }
 
 type RoomChatPayload struct {
@@ -44,8 +43,8 @@ type RoomChatPayload struct {
 	UserID    int64  `json:"userId"`
 	Username  string `json:"username"`
 	Content   string `json:"content"`
-    ReplyToID *int64 `json:"replyToId,omitempty"`
-    IsPinned  bool   `json:"isPinned"`
+	ReplyToID *int64 `json:"replyToId,omitempty"`
+	IsPinned  bool   `json:"isPinned"`
 	CreatedAt string `json:"createdAt"`
 }
 
@@ -88,17 +87,17 @@ type ErrorPayload struct {
 }
 
 type ReactionPayload struct {
-	MessageID  int64  `json:"messageId"`
-	UserID     int64  `json:"userId"`
-	Username   string `json:"username"`
-	Reaction   string `json:"reaction"`
-	RoomID     *int64 `json:"roomId,omitempty"`
-	IsDirectMessage bool `json:"isDirectMessage"`
+	MessageID       int64  `json:"messageId"`
+	UserID          int64  `json:"userId"`
+	Username        string `json:"username"`
+	Reaction        string `json:"reaction"`
+	RoomID          *int64 `json:"roomId,omitempty"`
+	IsDirectMessage bool   `json:"isDirectMessage"`
 }
 
 type PinPayload struct {
-	MessageID  int64  `json:"messageId"`
-	IsPinned   bool   `json:"isPinned"`
-	RoomID     *int64 `json:"roomId,omitempty"`
-	IsDirectMessage bool `json:"isDirectMessage"`
+	MessageID       int64  `json:"messageId"`
+	IsPinned        bool   `json:"isPinned"`
+	RoomID          *int64 `json:"roomId,omitempty"`
+	IsDirectMessage bool   `json:"isDirectMessage"`
 }

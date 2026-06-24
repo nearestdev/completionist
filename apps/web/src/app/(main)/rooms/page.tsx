@@ -47,7 +47,6 @@ export default function RoomsPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-      {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
@@ -64,7 +63,6 @@ export default function RoomsPage() {
         </button>
       </div>
 
-      {/* Filter Tabs */}
       <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-2 scrollbar-hide">
         <div className="p-1 bg-muted/10 border border-border rounded-xl flex items-center gap-1">
           {(['all', 'chat', 'music', 'watch'] as const).map((type) => (
@@ -85,7 +83,6 @@ export default function RoomsPage() {
         </div>
       </div>
 
-      {/* Content Grid */}
       {loading ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3, 4, 5, 6].map((i) => (

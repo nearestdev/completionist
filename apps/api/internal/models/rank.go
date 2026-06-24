@@ -37,7 +37,7 @@ func (r Rank) String() string {
 type UserRank struct {
 	ID          int64     `db:"id" json:"id"`
 	UserID      int64     `db:"user_id" json:"userId"`
-	SeasonID    *int64    `db:"season_id" json:"seasonId,omitempty"` 
+	SeasonID    *int64    `db:"season_id" json:"seasonId,omitempty"`
 	CurrentRank Rank      `db:"current_rank" json:"currentRank"`
 	CurrentElo  int       `db:"current_elo" json:"currentElo"`
 	PeakRank    Rank      `db:"peak_rank" json:"peakRank"`

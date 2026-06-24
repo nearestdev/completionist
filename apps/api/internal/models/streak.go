@@ -29,6 +29,6 @@ type UserStreak struct {
 	CurrentStreak    int        `db:"current_streak" json:"currentStreak"`
 	LongestStreak    int        `db:"longest_streak" json:"longestStreak"`
 	LastActivityDate *time.Time `db:"last_activity_date" json:"lastActivityDate,omitempty"`
-	Tier             StreakTier  `db:"tier" json:"tier"`
+	Tier             StreakTier `db:"tier" json:"tier"`
 	UpdatedAt        time.Time  `db:"updated_at" json:"updatedAt"`
 }

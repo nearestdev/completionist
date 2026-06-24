@@ -77,7 +77,6 @@ export default function SettingsPage() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            {/* Steam Card */}
             <div className="bg-card border border-border rounded-xl p-6 relative overflow-hidden group hover:border-primary/50 transition-colors">
               <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                 <GameControllerIcon size={120} weight="fill" />
@@ -144,7 +143,6 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            {/* Last.fm Card */}
             <div className="bg-card border border-border rounded-xl p-6 relative overflow-hidden group hover:border-red-500/30 transition-colors">
               <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity text-red-500">
                 <MusicNotesIcon size={120} weight="fill" />

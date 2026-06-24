@@ -128,16 +128,13 @@ export default function ProfilePage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl animate-in fade-in duration-500">
       
-      {/* Profile Header Card */}
       <div className="relative overflow-hidden bg-card rounded-3xl shadow-xl mb-10 border border-border group">
-        {/* Background Pattern */}
         <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 opacity-50" />
         <div className="absolute top-0 right-0 p-12 opacity-5 transform rotate-12">
           <UserCircleIcon size={300} weight="duotone" />
         </div>
 
         <div className="relative z-10 p-8 flex flex-col md:flex-row items-center md:items-start gap-8">
-          {/* Avatar */}
           <div className="relative shrink-0">
              <div className="w-32 h-32 rounded-full ring-4 ring-white dark:ring-gray-700 shadow-2xl overflow-hidden bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
                {steamAccount?.avatar ? (
@@ -152,7 +149,6 @@ export default function ProfilePage() {
                  <UserCircleIcon size={80} className="text-gray-400" weight="fill" />
                )}
              </div>
-             {/* Integration Badges */}
              <div className="absolute -bottom-2 -right-2 flex gap-1">
                {steamAccount && (
                  <div className="bg-[#171a21] text-white p-1.5 rounded-full shadow-md border border-gray-700" title="Steam Linked">
@@ -167,7 +163,6 @@ export default function ProfilePage() {
              </div>
           </div>
 
-          {/* Info */}
           <div className="flex-1 text-center md:text-left space-y-4">
             <div>
               <h1 className="text-4xl font-heading font-bold text-foreground tracking-tight mb-2">
@@ -178,7 +173,6 @@ export default function ProfilePage() {
               </p>
             </div>
 
-            {/* Stats */}
             <div className="flex items-center justify-center md:justify-start gap-8 pt-2">
               <Link href={`/profile/${profile.username}/followers`} className="group flex items-center gap-2 hover:text-primary transition-colors">
                 <div className="bg-primary/10 p-2 rounded-lg text-primary group-hover:bg-primary/20 transition-colors">
@@ -201,7 +195,6 @@ export default function ProfilePage() {
               </Link>
             </div>
             
-            {/* Actions */}
             <div className="pt-4 flex flex-wrap justify-center md:justify-start gap-3">
               {!isOwnProfile && currentUser && (
                 <>
@@ -236,7 +229,6 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Integration Details (Own Profile Only) */}
         {isOwnProfile && (steamAccount || lastfmAccount) && (
            <div className="border-t border-border bg-muted/5 p-4 flex flex-wrap justify-center md:justify-start gap-4">
               {steamAccount && (
@@ -259,7 +251,6 @@ export default function ProfilePage() {
         )}
       </div>
 
-      {/* Posts Section */}
       <div className="space-y-6">
         <div className="flex items-center gap-3 mb-6 border-b border-border pb-4">
            <ChatCircleTextIcon size={28} weight="duotone" className="text-primary" />

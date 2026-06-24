@@ -1,33 +1,31 @@
 ### Part 1: Frontend Design Document
 
-This document outlines the visual language and structure of the web application.
-
 #### 1. Visual Identity
-*   **Theme Name:** "Dark Mode Gamification" & "Light Mode Focus"
-*   **Concept (Dark Mode):** A sleek, high-contrast interface that makes progress (green bars, checks) pop against a dark background. Feels like a mix between a social network and a gaming dashboard.
-*   **Concept (Light Mode):** A clean, productivity-focused interface. Uses plenty of white space and subtle drop shadows to separate content, prioritizing readability and a "daytime" workflow feel.
+*   **Themes:** "Dark Mode Gamification" and "Light Mode Focus"
+*   **Dark Mode:** High-contrast; progress indicators (green bars, checks) stand out against a dark background. Closer to a gaming dashboard than a productivity tool.
+*   **Light Mode:** White space heavy, subtle drop shadows to separate content. Prioritizes readability for daytime use.
 *   **Typography:**
-    *   **Headings:** `Poppins` (Bold, Modern, Geometric).
-    *   **Body:** `Inter` (Clean, Highly Readable).
+    *   **Headings:** `Poppins` (bold, geometric)
+    *   **Body:** `Inter` (clean, readable)
 *   **Color Palette (Light Mode Variables):**
-    *   `--bg-light`: #F3F4F6 (Cool Light Gray - Main Background)
-    *   `--bg-card`: #FFFFFF (Pure White - Card Backgrounds)
-    *   `--primary`: #4F46E5 (Rich Indigo - Branding/Links)
-    *   `--accent`: #059669 (Deep Emerald - Completed/Success state)
-    *   `--text-main`: #1F2937 (Dark Charcoal - Main Text)
-    *   `--text-muted`: #6B7280 (Medium Gray - Secondary text)
-    *   `--border`: #E5E7EB (Subtle Light Gray)
+    *   `--bg-light`: #F3F4F6 (cool light gray, main background)
+    *   `--bg-card`: #FFFFFF (white, card backgrounds)
+    *   `--primary`: #4F46E5 (indigo, branding/links)
+    *   `--accent`: #059669 (emerald, completed/success state)
+    *   `--text-main`: #1F2937 (dark charcoal, main text)
+    *   `--text-muted`: #6B7280 (medium gray, secondary text)
+    *   `--border`: #E5E7EB (light gray)
 
-#### 2. Layout Structure (The "Holy Grail" Dashboard)
-The page is divided into 3 distinct columns:
-*   **Left Sidebar (Navigation):** Fixed position. Contains the Logo, Main Menu (Home, Lists, Challenges), and User Mini-Profile.
-*   **Center Column (The Feed):** Scrollable. This is the social aspect. Contains status updates ("I just finished Chapter 5"), reviews, and milestone achievements.
-*   **Right Column (Widgets):** Sticky. Contains "Trending Hobbies," "Friends' Activity," and "Current Streaks."
+#### 2. Layout Structure
+Three-column dashboard:
+*   **Left Sidebar:** Fixed. Logo, main nav (Home, Lists, Challenges), user mini-profile.
+*   **Center Column:** Scrollable feed. Status updates, reviews, milestone posts.
+*   **Right Column:** Sticky widgets. Trending, friends' activity, streaks.
 
 #### 3. Key UI Components
-*   **Completion Card:** The core unit. Displays an item (e.g., Book Cover) + Title + Progress Bar + "Mark as Done" Button.
-*   **The "Check" Badge:** A small circular icon that turns from gray to green when a task is done.
-*   **Activity Feed Post:** A social post showing `[User Avatar] [Action] [Item Cover] [Caption]`.
+*   **Completion Card:** Core unit. Item cover + title + progress bar + "Mark as Done" button.
+*   **Check Badge:** Circular icon that turns green on completion.
+*   **Activity Feed Post:** `[User Avatar] [Action] [Item Cover] [Caption]`.
 
 ---
 
@@ -960,12 +958,10 @@ The page is divided into 3 distinct columns:
 </html>
 ```
 
-### Key Features of this Template:
-1.  **Social Feed Logic:** The `completion-item` class is designed to handle both "100% Done" items (with a checkmark) and "In-Progress" items (with a progress bar), allowing you to mix different types of content in the feed.
-2.  **Visual Hierarchy:**
-    *   **Mint Green (`var(--accent)`)** is used sparingly to draw the eye to "Success" and "Completed" states.
-    *   **Indigo (`var(--primary)`)** is used for branding and in-progress elements.
-3.  **Responsive Design:**
-    *   **Desktop:** Shows the full 3-column dashboard.
-    *   **Tablet:** Hides the right widget column to give more space to the feed.
-    *   **Mobile:** Transforms the left sidebar into a bottom navigation bar (like Instagram or TikTok) for easy thumb access.
+### Template Notes
+1.  **Feed items:** `completion-item` handles both completed items (checkmark) and in-progress items (progress bar) in the same feed.
+2.  **Color intent:** `var(--accent)` (green) is reserved for success/completed states. `var(--primary)` (indigo) is used for branding and in-progress elements.
+3.  **Responsive breakpoints:**
+    *   **Desktop:** Full 3-column layout.
+    *   **Tablet (max 1024px):** Right widget column hidden, sidebar collapses to icon-only.
+    *   **Mobile (max 600px):** Sidebar becomes a fixed bottom nav bar.

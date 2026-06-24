@@ -50,10 +50,9 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Desktop Sidebar */}
-      <aside 
+      <aside
         className={`
-          fixed top-0 left-0 h-screen ${sidebarWidth} 
+          fixed top-0 left-0 h-screen ${sidebarWidth}
           border-r border-border bg-card transition-all duration-300
           hidden lg:flex flex-col z-50
         `}
@@ -83,7 +82,6 @@ export default function Sidebar() {
           </button>
         </div>
 
-        {/* Navigation */}
         <nav className="flex flex-col gap-2 px-4">
           {desktopLinks.map((link) => (
             <NavLink
@@ -134,7 +132,6 @@ export default function Sidebar() {
         </div>
       </aside>
 
-      {/* Mobile Navigation */}
       <nav className="lg:hidden fixed bottom-0 left-0 w-full bg-card border-t border-border flex justify-around py-3 px-2 z-50 safe-area-bottom">
         {mobileLinks.map((link) => (
           <Link

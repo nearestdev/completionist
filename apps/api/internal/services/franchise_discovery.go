@@ -33,12 +33,12 @@ type tmdbCollectionSearchResult struct {
 
 type tmdbTrendingResult struct {
 	Results []struct {
-		ID                 int    `json:"id"`
-		Title              string `json:"title"`
-		Name               string `json:"name"`
+		ID                  int    `json:"id"`
+		Title               string `json:"title"`
+		Name                string `json:"name"`
 		BelongsToCollection *struct {
-			ID       int    `json:"id"`
-			Name     string `json:"name"`
+			ID         int    `json:"id"`
+			Name       string `json:"name"`
 			PosterPath string `json:"poster_path"`
 		} `json:"belongs_to_collection"`
 	} `json:"results"`
@@ -49,7 +49,6 @@ func (s *FranchiseDiscoveryService) DiscoverMovieFranchises() ([]models.Franchis
 		return nil, fmt.Errorf("TMDB API key not configured")
 	}
 
-	// Fetch trending movies and extract their collections
 	url := fmt.Sprintf("https://api.themoviedb.org/3/trending/movie/week?api_key=%s", s.tmdbKey)
 	resp, err := http.Get(url)
 	if err != nil {
@@ -94,7 +93,6 @@ func (s *FranchiseDiscoveryService) DiscoverMovieFranchises() ([]models.Franchis
 		}
 	}
 
-	// Also fetch popular TV shows for series franchises
 	tvURL := fmt.Sprintf("https://api.themoviedb.org/3/trending/tv/week?api_key=%s", s.tmdbKey)
 	tvResp, err := http.Get(tvURL)
 	if err == nil {
@@ -102,8 +100,8 @@ func (s *FranchiseDiscoveryService) DiscoverMovieFranchises() ([]models.Franchis
 		tvBody, _ := io.ReadAll(tvResp.Body)
 		var tvTrending struct {
 			Results []struct {
-				ID   int    `json:"id"`
-				Name string `json:"name"`
+				ID         int    `json:"id"`
+				Name       string `json:"name"`
 				PosterPath string `json:"poster_path"`
 			} `json:"results"`
 		}
@@ -135,13 +133,11 @@ func (s *FranchiseDiscoveryService) DiscoverMovieFranchises() ([]models.Franchis
 }
 
 func (s *FranchiseDiscoveryService) DiscoverByCategory(category string) ([]models.Franchise, error) {
-	// First check if we already have data
 	existing, err := s.franchiseRepo.GetByCategory(category, 50, 0)
 	if err == nil && len(existing) > 0 {
 		return existing, nil
 	}
 
-	// Auto-discover from APIs
 	switch category {
 	case "movies", "series":
 		return s.DiscoverMovieFranchises()

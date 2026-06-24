@@ -168,7 +168,6 @@ export default function ChatRoom({ room }: ChatRoomProps) {
           />
         </div>
         
-        {/* Sidebar */}
         {showSidebar && (
           <div className="w-64 border-l border-border hidden md:block transition-all animate-in slide-in-from-right-4 duration-200">
             <MembersList members={members} onlineUsers={onlineUsers} />

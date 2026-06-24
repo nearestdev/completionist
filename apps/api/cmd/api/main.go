@@ -13,11 +13,11 @@ import (
 	"github.com/GATEOPENERZ/completionist-api/internal/repository"
 	"github.com/GATEOPENERZ/completionist-api/internal/routes"
 
-	"github.com/GATEOPENERZ/completionist-api/internal/service/filestorage"
 	"github.com/GATEOPENERZ/completionist-api/internal/services"
 	"github.com/GATEOPENERZ/completionist-api/internal/services/challenges"
-	"github.com/GATEOPENERZ/completionist-api/internal/services/importer"
+	"github.com/GATEOPENERZ/completionist-api/internal/services/filestorage"
 	"github.com/GATEOPENERZ/completionist-api/internal/services/googlebooks"
+	"github.com/GATEOPENERZ/completionist-api/internal/services/importer"
 	"github.com/GATEOPENERZ/completionist-api/internal/services/jikan"
 	"github.com/GATEOPENERZ/completionist-api/internal/services/lastfm"
 	"github.com/GATEOPENERZ/completionist-api/internal/services/rawg"
@@ -84,7 +84,6 @@ func main() {
 	wsHub := websocket.NewHub(messagingRepo)
 	go wsHub.Run()
 
-	// Initialize FileService
 	var fileService filestorage.Service
 
 	if cfg.StorageDriver == "s3" {
@@ -99,9 +98,7 @@ func main() {
 		fileService = filestorage.NewS3Storage(s3Client, cfg.AWSBucket, cfg.AWSRegion)
 		fmt.Printf("Initialized S3 Storage (Bucket: %s, Region: %s)\n", cfg.AWSBucket, cfg.AWSRegion)
 	} else {
-		// Using local storage for now as per requirement for "initially local"
 		uploadDir := config.ResolveAppPath("uploads")
-		// Assuming backend serves static files from /uploads, or we setup a route for it.
 		baseURL := fmt.Sprintf("http://localhost%s/uploads", cfg.ServerAddr)
 
 		fileService, err = filestorage.NewLocalStorage(uploadDir, baseURL)

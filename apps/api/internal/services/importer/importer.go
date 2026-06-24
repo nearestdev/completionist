@@ -24,10 +24,10 @@ type ImportResult struct {
 }
 
 type Service struct {
-	providers    map[string]Provider
-	connRepo     *repository.ConnectedAccountRepository
-	mediaRepo    *repository.MediaRepository
-	listRepo     *repository.ListRepository
+	providers map[string]Provider
+	connRepo  *repository.ConnectedAccountRepository
+	mediaRepo *repository.MediaRepository
+	listRepo  *repository.ListRepository
 }
 
 func NewService(connRepo *repository.ConnectedAccountRepository, mediaRepo *repository.MediaRepository, listRepo *repository.ListRepository) *Service {

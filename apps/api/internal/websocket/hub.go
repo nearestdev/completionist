@@ -76,7 +76,7 @@ func (h *Hub) Run() {
 
 func (h *Hub) processMessage(msg *ClientMessage) {
 	log.Printf("Processing message type: %s from userID=%d", msg.Message.Type, msg.Client.userID)
-	
+
 	switch msg.Message.Type {
 	case MessageTypeRoomChat:
 		var payload RoomChatPayload

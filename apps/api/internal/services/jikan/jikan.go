@@ -9,7 +9,9 @@ import (
 	"net/url"
 	"time"
 )
+
 const baseURL = "https://api.jikan.moe/v4"
+
 type SearchResponse[T any] struct {
 	Data       []T `json:"data"`
 	Pagination struct {
@@ -29,30 +31,42 @@ type MangaSearchResponse struct {
 	} `json:"pagination"`
 }
 type Anime struct {
-	MalID   int    `json:"mal_id"`
-	Title   string `json:"title"`
-	Images  struct {
-		JPG  struct{ ImageURL string `json:"image_url"` }  `json:"jpg"`
-		Webp struct{ ImageURL string `json:"image_url"` } `json:"webp"`
+	MalID  int    `json:"mal_id"`
+	Title  string `json:"title"`
+	Images struct {
+		JPG struct {
+			ImageURL string `json:"image_url"`
+		} `json:"jpg"`
+		Webp struct {
+			ImageURL string `json:"image_url"`
+		} `json:"webp"`
 	} `json:"images"`
 	Synopsis string `json:"synopsis"`
 	Type     string `json:"type"`
-	Genres   []struct{ Name string `json:"name"` } `json:"genres"`
-	Aired    struct {
+	Genres   []struct {
+		Name string `json:"name"`
+	} `json:"genres"`
+	Aired struct {
 		From *time.Time `json:"from"`
 	} `json:"aired"`
 	Score    *float32 `json:"score"`
 	ScoredBy *int     `json:"scored_by"`
 }
 type Manga struct {
-	MalID     int    `json:"mal_id"`
-	Title     string `json:"title"`
-	Images    struct {
-		JPG  struct{ ImageURL string `json:"image_url"` }  `json:"jpg"`
-		Webp struct{ ImageURL string `json:"image_url"` } `json:"webp"`
+	MalID  int    `json:"mal_id"`
+	Title  string `json:"title"`
+	Images struct {
+		JPG struct {
+			ImageURL string `json:"image_url"`
+		} `json:"jpg"`
+		Webp struct {
+			ImageURL string `json:"image_url"`
+		} `json:"webp"`
 	} `json:"images"`
-	Synopsis  string `json:"synopsis"`
-	Genres    []struct{ Name string `json:"name"` } `json:"genres"`
+	Synopsis string `json:"synopsis"`
+	Genres   []struct {
+		Name string `json:"name"`
+	} `json:"genres"`
 	Published struct {
 		From *time.Time `json:"from"`
 	} `json:"published"`
@@ -62,6 +76,7 @@ type Manga struct {
 type Client struct {
 	http *http.Client
 }
+
 func New() *Client {
 	return &Client{http: &http.Client{Timeout: 10 * time.Second}}
 }
@@ -105,7 +120,9 @@ func (c *Client) SearchManga(ctx context.Context, q string, page int) (*SearchRe
 }
 func (c *Client) GetAnime(ctx context.Context, malID int) (*Anime, error) {
 	u := fmt.Sprintf("%s/anime/%d", baseURL, malID)
-	var wrapper struct{ Data Anime `json:"data"` }
+	var wrapper struct {
+		Data Anime `json:"data"`
+	}
 	if err := c.doJSON(ctx, u, &wrapper); err != nil {
 		return nil, err
 	}
@@ -113,7 +130,9 @@ func (c *Client) GetAnime(ctx context.Context, malID int) (*Anime, error) {
 }
 func (c *Client) GetManga(ctx context.Context, malID int) (*Manga, error) {
 	u := fmt.Sprintf("%s/manga/%d", baseURL, malID)
-	var wrapper struct{ Data Manga `json:"data"` }
+	var wrapper struct {
+		Data Manga `json:"data"`
+	}
 	if err := c.doJSON(ctx, u, &wrapper); err != nil {
 		return nil, err
 	}

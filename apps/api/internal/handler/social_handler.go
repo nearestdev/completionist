@@ -45,6 +45,7 @@ func (h *Handler) FollowUser(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusCreated)
 }
+
 // @Summary      Unfollow a user
 // @Description  Removes a following relationship
 // @Tags         Social
@@ -80,6 +81,7 @@ func (h *Handler) UnfollowUser(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
+
 // @Summary      Get user followers
 // @Description  Retrieves a list of users following the target user
 // @Tags         Social
@@ -104,6 +106,7 @@ func (h *Handler) GetUserFollowers(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, list)
 }
+
 // @Summary      Get user following
 // @Description  Retrieves a list of users the target user follows
 // @Tags         Social
@@ -128,6 +131,7 @@ func (h *Handler) GetUserFollowing(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, list)
 }
+
 // @Summary      Get follow suggestions
 // @Description  Returns a list of users the current user might want to follow
 // @Tags         Social
@@ -158,6 +162,7 @@ func (h *Handler) GetFollowSuggestions(w http.ResponseWriter, r *http.Request) {
 	}
 	httpx.JSON(w, http.StatusOK, list)
 }
+
 // @Summary      Get user profile
 // @Description  Retrieves detailed profile information and stats for a user
 // @Tags         Users
@@ -193,18 +198,19 @@ func (h *Handler) GetUserProfile(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	resp := models.EnhancedUserProfile{
-		ID:           user.ID,
-		Username:     user.Username,
-		Bio:          nil,
+		ID:             user.ID,
+		Username:       user.Username,
+		Bio:            nil,
 		FavoriteGenres: nil,
-		CreatedAt:    user.CreatedAt,
-		UpdatedAt:    user.UpdatedAt,
-		Stats:        stats,
-		IsFollowing:  isFollowing,
-		IsFollowedBy: isFollowedBy,
+		CreatedAt:      user.CreatedAt,
+		UpdatedAt:      user.UpdatedAt,
+		Stats:          stats,
+		IsFollowing:    isFollowing,
+		IsFollowedBy:   isFollowedBy,
 	}
 	httpx.JSON(w, http.StatusOK, resp)
 }
+
 // @Summary      Search users
 // @Description  Searches for users by username
 // @Tags         Users

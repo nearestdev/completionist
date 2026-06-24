@@ -30,13 +30,13 @@ type UserStatsResponse struct {
 }
 
 type EnhancedUserProfile struct {
-	ID           int64             `json:"id"`
-	Username     string            `json:"username"`
-	Bio          *string           `json:"bio,omitempty"`
-	FavoriteGenres []string        `json:"favoriteGenres,omitempty"`
-	CreatedAt    time.Time         `json:"createdAt"`
-	UpdatedAt    time.Time         `json:"updatedAt"`
-	Stats        UserStatsResponse `json:"stats"`
-	IsFollowing  *bool             `json:"isFollowing,omitempty"`
-	IsFollowedBy *bool             `json:"isFollowedBy,omitempty"`
+	ID             int64             `json:"id"`
+	Username       string            `json:"username"`
+	Bio            *string           `json:"bio,omitempty"`
+	FavoriteGenres []string          `json:"favoriteGenres,omitempty"`
+	CreatedAt      time.Time         `json:"createdAt"`
+	UpdatedAt      time.Time         `json:"updatedAt"`
+	Stats          UserStatsResponse `json:"stats"`
+	IsFollowing    *bool             `json:"isFollowing,omitempty"`
+	IsFollowedBy   *bool             `json:"isFollowedBy,omitempty"`
 }
