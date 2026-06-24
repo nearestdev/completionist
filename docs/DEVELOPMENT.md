@@ -259,6 +259,16 @@ A nightly backup helper lives at `scripts/backup-db-to-s3.sh` for the self-hoste
 
 In production behind the optional Caddy overlay, `api:8080` and `web:4000` are internal to the Docker network and Caddy terminates TLS on `80`/`443`, routing by subdomain. See the deploy docs for that setup.
 
+## Running tests
+
+The API has a Go test suite. Run it from the repo root:
+
+```bash
+go -C apps/api test ./...
+```
+
+The `-C apps/api` flag runs the command inside the API module so you do not need to change directories. The tests are standard-library only (the `testing` package plus `net/http/httptest`); they exercise pure logic and HTTP handlers in memory, so they need no database, Docker, or network access and run without any setup.
+
 ## Troubleshooting
 
 **Port already in use.** If the API or frontend fails to bind, something else is holding `8080` or `4000`. Find and stop it (`lsof -i :8080` or `lsof -i :4000` on macOS/Linux), or change the port via `SERVER_ADDR`/`BACKEND_PORT` (API) or `PORT` (frontend) in your `.env`. If you change the API port, restart the backend; if you change ports for a Docker deploy, the web image must be rebuilt because the API URL is compile-time.

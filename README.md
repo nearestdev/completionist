@@ -154,3 +154,7 @@ This is run automatically before each `bun run dev`. The generated Swagger UI is
 ## Status
 
 Active development. The core tracking, social, realtime, and subscription features are working end to end; expect ongoing changes as domains are refined. Deployment guides for Supabase + VPS and AWS Lightsail live in [docs/](docs/).
+
+## License
+
+Released under the MIT License. See [LICENSE](LICENSE) for the full text.
