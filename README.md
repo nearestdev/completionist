@@ -6,6 +6,20 @@ A social completion-tracking platform for games, movies, anime, books, and music
 
 Completionist is a full-stack app for people who keep backlogs. You add titles from real media catalogs (TMDB, Jikan, RAWG, Google Books, Last.fm, Steam), set their status and progress, and the platform builds your profile, ranks, streaks, and stats around them. On top of personal tracking it adds a social layer: posts, profiles, follows, realtime rooms and direct messages, seasonal challenges, and a moderated public space. It is aimed at hobbyists who want one place for their whole media backlog, and it doubles as a portfolio project demonstrating a layered Go API and a Next.js frontend.
 
+## Screenshots
+
+![Home dashboard](docs/images/home-feed.webp)
+
+*Home dashboard: progress overview, quick actions, and trending media across every category.*
+
+![Explore the catalog](docs/images/explore.webp)
+
+*Explore the catalog by media type, backed by TMDB, Jikan, RAWG, Google Books, Last.fm, and Steam.*
+
+![Media detail](docs/images/media-detail.webp)
+
+*Media detail, with one click to add a title to your list or wishlist.*
+
 ## Key features
 
 **Tracking and progress.** Add items across games, movies, TV, anime, manga, books, and music. Per-item status and progress with a validator that keeps progress values consistent. Separate wishlist (priority and optional target price) and a "next up" queue you can reorder.
