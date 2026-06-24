@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/GATEOPENERZ/completionist-api/internal/models"
-	"github.com/GATEOPENERZ/completionist-api/internal/repository"
-	"github.com/GATEOPENERZ/completionist-api/internal/services"
+	"github.com/nearestdev/completionist/internal/models"
+	"github.com/nearestdev/completionist/internal/repository"
+	"github.com/nearestdev/completionist/internal/services"
 )
 
 type Service struct {

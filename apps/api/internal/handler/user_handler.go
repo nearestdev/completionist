@@ -7,10 +7,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/GATEOPENERZ/completionist-api/internal/auth"
-	"github.com/GATEOPENERZ/completionist-api/internal/httpx"
-	"github.com/GATEOPENERZ/completionist-api/internal/middleware"
-	"github.com/GATEOPENERZ/completionist-api/internal/models"
+	"github.com/nearestdev/completionist/internal/auth"
+	"github.com/nearestdev/completionist/internal/httpx"
+	"github.com/nearestdev/completionist/internal/middleware"
+	"github.com/nearestdev/completionist/internal/models"
 	"golang.org/x/crypto/bcrypt"
 )
 

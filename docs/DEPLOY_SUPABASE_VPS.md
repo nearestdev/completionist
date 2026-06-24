@@ -44,8 +44,8 @@ newgrp docker
 ## 3. Clone repo on VPS
 
 ```bash
-git clone <YOUR_REPO_URL> completionist-api-go
-cd completionist-api-go
+git clone <YOUR_REPO_URL> completionist
+cd completionist
 ```
 
 ## 4. Create production env file

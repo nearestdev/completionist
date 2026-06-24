@@ -8,15 +8,15 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/GATEOPENERZ/completionist-api/internal/httpx"
-	"github.com/GATEOPENERZ/completionist-api/internal/middleware"
-	"github.com/GATEOPENERZ/completionist-api/internal/models"
-	"github.com/GATEOPENERZ/completionist-api/internal/services/googlebooks"
-	"github.com/GATEOPENERZ/completionist-api/internal/services/jikan"
-	"github.com/GATEOPENERZ/completionist-api/internal/services/rawg"
-	"github.com/GATEOPENERZ/completionist-api/internal/services/tmdb"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
+	"github.com/nearestdev/completionist/internal/httpx"
+	"github.com/nearestdev/completionist/internal/middleware"
+	"github.com/nearestdev/completionist/internal/models"
+	"github.com/nearestdev/completionist/internal/services/googlebooks"
+	"github.com/nearestdev/completionist/internal/services/jikan"
+	"github.com/nearestdev/completionist/internal/services/rawg"
+	"github.com/nearestdev/completionist/internal/services/tmdb"
 )
 
 // @Summary      Get Media Details

@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/GATEOPENERZ/completionist-api/internal/httpx"
 	"github.com/go-chi/chi/v5"
+	"github.com/nearestdev/completionist/internal/httpx"
 )
 
 func (h *Handler) ListBadges(w http.ResponseWriter, r *http.Request) {

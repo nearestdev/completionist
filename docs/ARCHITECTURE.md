@@ -20,7 +20,7 @@ The product is a monorepo with two deployable apps plus a set of external
 dependencies.
 
 - **apps/api** is the Go 1.25 backend. It is a single module
-  (`github.com/GATEOPENERZ/completionist-api`) built on go-chi/chi v5, talking to
+  (`github.com/nearestdev/completionist`) built on go-chi/chi v5, talking to
   PostgreSQL through jmoiron/sqlx over the lib/pq driver. It owns auth, all
   domain logic, persistence, the WebSocket hub, and every outbound call to a
   third-party API. It serves a REST API under `/api` and a WebSocket endpoint at

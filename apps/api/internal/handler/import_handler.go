@@ -3,9 +3,9 @@ package handler
 import (
 	"net/http"
 
-	"github.com/GATEOPENERZ/completionist-api/internal/httpx"
-	"github.com/GATEOPENERZ/completionist-api/internal/middleware"
 	"github.com/go-chi/chi/v5"
+	"github.com/nearestdev/completionist/internal/httpx"
+	"github.com/nearestdev/completionist/internal/middleware"
 )
 
 func (h *Handler) GetConnections(w http.ResponseWriter, r *http.Request) {

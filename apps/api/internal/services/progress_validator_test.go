@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/GATEOPENERZ/completionist-api/internal/models"
+	"github.com/nearestdev/completionist/internal/models"
 )
 
 func ptrInt(v int) *int           { return &v }

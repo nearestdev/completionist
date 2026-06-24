@@ -1,19 +1,19 @@
 package handler
 
 import (
-	"github.com/GATEOPENERZ/completionist-api/internal/config"
-	"github.com/GATEOPENERZ/completionist-api/internal/repository"
-	"github.com/GATEOPENERZ/completionist-api/internal/services"
-	"github.com/GATEOPENERZ/completionist-api/internal/services/challenges"
-	"github.com/GATEOPENERZ/completionist-api/internal/services/filestorage"
-	"github.com/GATEOPENERZ/completionist-api/internal/services/googlebooks"
-	"github.com/GATEOPENERZ/completionist-api/internal/services/importer"
-	"github.com/GATEOPENERZ/completionist-api/internal/services/jikan"
-	"github.com/GATEOPENERZ/completionist-api/internal/services/lastfm"
-	"github.com/GATEOPENERZ/completionist-api/internal/services/rawg"
-	"github.com/GATEOPENERZ/completionist-api/internal/services/steam"
-	"github.com/GATEOPENERZ/completionist-api/internal/services/tmdb"
-	"github.com/GATEOPENERZ/completionist-api/internal/websocket"
+	"github.com/nearestdev/completionist/internal/config"
+	"github.com/nearestdev/completionist/internal/repository"
+	"github.com/nearestdev/completionist/internal/services"
+	"github.com/nearestdev/completionist/internal/services/challenges"
+	"github.com/nearestdev/completionist/internal/services/filestorage"
+	"github.com/nearestdev/completionist/internal/services/googlebooks"
+	"github.com/nearestdev/completionist/internal/services/importer"
+	"github.com/nearestdev/completionist/internal/services/jikan"
+	"github.com/nearestdev/completionist/internal/services/lastfm"
+	"github.com/nearestdev/completionist/internal/services/rawg"
+	"github.com/nearestdev/completionist/internal/services/steam"
+	"github.com/nearestdev/completionist/internal/services/tmdb"
+	"github.com/nearestdev/completionist/internal/websocket"
 )
 
 type Handler struct {

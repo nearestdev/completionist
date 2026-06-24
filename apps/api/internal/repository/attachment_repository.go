@@ -1,9 +1,9 @@
 package repository
 
 import (
-	"github.com/GATEOPENERZ/completionist-api/internal/models"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
+	"github.com/nearestdev/completionist/internal/models"
 )
 
 type AttachmentRepository struct {

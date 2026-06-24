@@ -5,8 +5,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/GATEOPENERZ/completionist-api/internal/models"
-	"github.com/GATEOPENERZ/completionist-api/internal/repository"
+	"github.com/nearestdev/completionist/internal/models"
+	"github.com/nearestdev/completionist/internal/repository"
 )
 
 type Provider interface {

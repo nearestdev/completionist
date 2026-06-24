@@ -6,8 +6,8 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/GATEOPENERZ/completionist-api/internal/models"
-	"github.com/GATEOPENERZ/completionist-api/internal/repository"
+	"github.com/nearestdev/completionist/internal/models"
+	"github.com/nearestdev/completionist/internal/repository"
 )
 
 type FranchiseDiscoveryService struct {

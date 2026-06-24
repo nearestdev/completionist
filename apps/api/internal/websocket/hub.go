@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/GATEOPENERZ/completionist-api/internal/models"
+	"github.com/nearestdev/completionist/internal/models"
 )
 
 type ClientMessage struct {

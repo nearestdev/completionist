@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/GATEOPENERZ/completionist-api/internal/auth"
-	"github.com/GATEOPENERZ/completionist-api/internal/models"
+	"github.com/nearestdev/completionist/internal/auth"
+	"github.com/nearestdev/completionist/internal/models"
 )
 
 func recordingHandler(ran *bool) http.Handler {

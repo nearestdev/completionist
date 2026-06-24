@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/GATEOPENERZ/completionist-api/internal/models"
-	"github.com/GATEOPENERZ/completionist-api/internal/repository"
+	"github.com/nearestdev/completionist/internal/models"
+	"github.com/nearestdev/completionist/internal/repository"
 	"github.com/stripe/stripe-go/v81"
 	billingsession "github.com/stripe/stripe-go/v81/billingportal/session"
 	checkoutsession "github.com/stripe/stripe-go/v81/checkout/session"

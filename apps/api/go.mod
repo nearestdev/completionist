@@ -1,4 +1,4 @@
-module github.com/GATEOPENERZ/completionist-api
+module github.com/nearestdev/completionist
 
 go 1.25.1
 

@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/GATEOPENERZ/completionist-api/internal/auth"
-	"github.com/GATEOPENERZ/completionist-api/internal/httpx"
-	"github.com/GATEOPENERZ/completionist-api/internal/middleware"
-	"github.com/GATEOPENERZ/completionist-api/internal/models"
 	"github.com/go-chi/chi/v5"
+	"github.com/nearestdev/completionist/internal/auth"
+	"github.com/nearestdev/completionist/internal/httpx"
+	"github.com/nearestdev/completionist/internal/middleware"
+	"github.com/nearestdev/completionist/internal/models"
 )
 
 // @Summary      Initiate Steam Login

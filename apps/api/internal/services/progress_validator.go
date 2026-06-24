@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/GATEOPENERZ/completionist-api/internal/models"
+	"github.com/nearestdev/completionist/internal/models"
 )
 
 type ProgressValidator struct{}

@@ -5,9 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/GATEOPENERZ/completionist-api/internal/middleware"
-	"github.com/GATEOPENERZ/completionist-api/internal/websocket"
 	ws "github.com/gorilla/websocket"
+	"github.com/nearestdev/completionist/internal/middleware"
+	"github.com/nearestdev/completionist/internal/websocket"
 )
 
 var upgrader = ws.Upgrader{

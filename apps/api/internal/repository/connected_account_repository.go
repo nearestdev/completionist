@@ -3,8 +3,8 @@ package repository
 import (
 	"database/sql"
 
-	"github.com/GATEOPENERZ/completionist-api/internal/models"
 	"github.com/jmoiron/sqlx"
+	"github.com/nearestdev/completionist/internal/models"
 )
 
 type ConnectedAccountRepository struct {

@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/GATEOPENERZ/completionist-api/internal/httpx"
-	"github.com/GATEOPENERZ/completionist-api/internal/middleware"
-	"github.com/GATEOPENERZ/completionist-api/internal/models"
+	"github.com/nearestdev/completionist/internal/httpx"
+	"github.com/nearestdev/completionist/internal/middleware"
+	"github.com/nearestdev/completionist/internal/models"
 )
 
 func (h *Handler) RequestAccountDeletion(w http.ResponseWriter, r *http.Request) {

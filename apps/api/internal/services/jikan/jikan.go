@@ -82,7 +82,7 @@ func New() *Client {
 }
 func (c *Client) doJSON(ctx context.Context, rawURL string, out any) error {
 	req, _ := http.NewRequestWithContext(ctx, "GET", rawURL, nil)
-	req.Header.Set("User-Agent", "completionist-api-go/1.0 (+https://localhost)")
+	req.Header.Set("User-Agent", "completionist/1.0 (+https://localhost)")
 	resp, err := c.http.Do(req)
 	if err != nil {
 		return err

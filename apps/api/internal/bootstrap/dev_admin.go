@@ -8,9 +8,9 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/GATEOPENERZ/completionist-api/internal/config"
-	"github.com/GATEOPENERZ/completionist-api/internal/models"
-	"github.com/GATEOPENERZ/completionist-api/internal/repository"
+	"github.com/nearestdev/completionist/internal/config"
+	"github.com/nearestdev/completionist/internal/models"
+	"github.com/nearestdev/completionist/internal/repository"
 	"golang.org/x/crypto/bcrypt"
 )
 

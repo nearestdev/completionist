@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/GATEOPENERZ/completionist-api/internal/httpx"
+	"github.com/nearestdev/completionist/internal/httpx"
 )
 
 // @Summary      List users (admin)

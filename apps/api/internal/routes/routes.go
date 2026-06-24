@@ -4,13 +4,13 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/GATEOPENERZ/completionist-api/internal/config"
-	"github.com/GATEOPENERZ/completionist-api/internal/handler"
-	appmw "github.com/GATEOPENERZ/completionist-api/internal/middleware"
-	"github.com/GATEOPENERZ/completionist-api/internal/models"
 	"github.com/go-chi/chi/v5"
 	chimw "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	"github.com/nearestdev/completionist/internal/config"
+	"github.com/nearestdev/completionist/internal/handler"
+	appmw "github.com/nearestdev/completionist/internal/middleware"
+	"github.com/nearestdev/completionist/internal/models"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 

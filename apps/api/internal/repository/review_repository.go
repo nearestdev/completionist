@@ -3,10 +3,10 @@ package repository
 import (
 	"database/sql"
 
-	"github.com/GATEOPENERZ/completionist-api/internal/models"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
+	"github.com/nearestdev/completionist/internal/models"
 )
 
 type ReviewRepository struct {

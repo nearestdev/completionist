@@ -6,11 +6,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/GATEOPENERZ/completionist-api/internal/httpx"
-	"github.com/GATEOPENERZ/completionist-api/internal/middleware"
-	"github.com/GATEOPENERZ/completionist-api/internal/models"
-	_ "github.com/GATEOPENERZ/completionist-api/internal/services/jikan"
 	"github.com/go-chi/chi/v5"
+	"github.com/nearestdev/completionist/internal/httpx"
+	"github.com/nearestdev/completionist/internal/middleware"
+	"github.com/nearestdev/completionist/internal/models"
+	_ "github.com/nearestdev/completionist/internal/services/jikan"
 )
 
 // @Summary      Search Anime (Jikan)

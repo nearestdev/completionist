@@ -72,7 +72,7 @@ Schema migrations run automatically at API startup via golang-migrate. For a dee
 ## Monorepo layout
 
 ```
-completionist-api-go/
+completionist/
 ├── apps/
 │   ├── api/                  # Go backend
 │   │   ├── cmd/api/main.go   # composition root

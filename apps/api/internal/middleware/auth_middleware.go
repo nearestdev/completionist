@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/GATEOPENERZ/completionist-api/internal/auth"
-	"github.com/GATEOPENERZ/completionist-api/internal/models"
-	"github.com/GATEOPENERZ/completionist-api/internal/repository"
+	"github.com/nearestdev/completionist/internal/auth"
+	"github.com/nearestdev/completionist/internal/models"
+	"github.com/nearestdev/completionist/internal/repository"
 )
 
 type ctxKey string
