@@ -16,24 +16,5 @@ services:
     volumes:
       - api_uploads:/app/uploads
 
-  web:
-    image: completionist-web:prod
-    build:
-      context: .
-      dockerfile: Dockerfile.web
-      args:
-        BACKEND_BASE_URL: ${WEB_BACKEND_BASE_URL:-http://localhost}
-        BACKEND_PORT: ${WEB_BACKEND_PORT:-8080}
-    restart: unless-stopped
-    env_file:
-      - .env.production
-    environment:
-      NODE_ENV: production
-      PORT: 4000
-    depends_on:
-      - api
-    ports:
-      - "4000:4000"
-
 volumes:
   api_uploads:

@@ -16,10 +16,9 @@
 - Next.js web: [apps/web](apps/web)
 - Migrations: [apps/api/migrations/](apps/api/migrations/) (001 init, 002 seed XP, 003 roles)
 
-**Deployment paths (both supported, same images, different compose overlays):**
+**Deployment (single AWS-native path):**
 
-- Supabase + VPS: [docs/DEPLOY_SUPABASE_VPS.md](docs/DEPLOY_SUPABASE_VPS.md), uses [docker-compose.prod.yml](docker-compose.prod.yml) alone, external `DATABASE_URL`.
-- AWS Lightsail + self-hosted Postgres: [docs/DEPLOY_AWS_LIGHTSAIL.md](docs/DEPLOY_AWS_LIGHTSAIL.md), uses [docker-compose.prod.yml](docker-compose.prod.yml) + [docker-compose.aws.yml](docker-compose.aws.yml) override, adds in-stack `db` service, uses ECR + S3, nightly `pg_dump` to S3 via [scripts/backup-db-to-s3.sh](scripts/backup-db-to-s3.sh).
+- AWS: [docs/DEPLOY_AWS_LIGHTSAIL.md](docs/DEPLOY_AWS_LIGHTSAIL.md). Go API in Docker on a Lightsail instance behind Caddy ([docker-compose.prod.yml](docker-compose.prod.yml), api only), Next.js frontend on AWS Amplify, managed Postgres on RDS, media on S3. RDS handles backups (automated + PITR + snapshots), so there is no backup script.
 
 **What exists end-to-end today:**
 
@@ -142,7 +141,7 @@ Missing coverage:
 
 ### 6.2 Deploy validation (from old CURRENT_STATE.md "Next Steps #3")
 
-Manual smoke test on the Supabase + VPS stack or the AWS stack:
+Manual smoke test on the AWS stack (Lightsail API + Amplify web + RDS + S3):
 
 - Guest can access `/` and `/search/*`.
 - Guest is redirected from `/my-list`, `/settings`, `/admin`.
@@ -154,7 +153,7 @@ Not blocking, but should happen before the next release tag.
 
 ### 6.3 AWS deploy doc (just shipped, no card)
 
-Already delivered: [docs/DEPLOY_AWS_LIGHTSAIL.md](docs/DEPLOY_AWS_LIGHTSAIL.md), [docker-compose.aws.yml](docker-compose.aws.yml), [scripts/backup-db-to-s3.sh](scripts/backup-db-to-s3.sh), [.env.production.example](.env.production.example) extended. No Trello card, it was an explicit priority exception.
+Already delivered: [docs/DEPLOY_AWS_LIGHTSAIL.md](docs/DEPLOY_AWS_LIGHTSAIL.md) (single AWS-native path: Lightsail API + Amplify web + RDS + S3) and the extended [.env.production.example](.env.production.example). Supabase was dropped as an option; the self-hosted Postgres overlay (`docker-compose.aws.yml`), the Supabase guide, the `Dockerfile.web` web image, and the `pg_dump` backup script were removed (RDS handles backups, Amplify hosts the frontend). No Trello card, it was an explicit priority exception.
 
 ### 6.4 Local dev launcher (just shipped, no card)
 
@@ -212,16 +211,10 @@ bun run swagger:gen
 bun run --cwd apps/web lint
 bun run build
 docker build -f Dockerfile.api --target builder -t completionist-api-builder-test .
-docker build -f Dockerfile.web --target builder \
-  --build-arg BACKEND_BASE_URL=http://localhost \
-  --build-arg BACKEND_PORT=8080 \
-  -t completionist-web-builder-test .
 docker compose --env-file .env.production -f docker-compose.prod.yml config
-# AWS path additionally:
-docker compose --env-file .env.production \
-  -f docker-compose.prod.yml \
-  -f docker-compose.aws.yml config
 ```
+
+The web app is built and verified by `bun run build` and by Amplify; there is no web Docker image. The production compose stack is api-only.
 
 For UI-touching work, also manually exercise the feature in a browser against the dev server. Type-checks and tests verify code, not UX.
 
@@ -231,7 +224,7 @@ For UI-touching work, also manually exercise the feature in a browser against th
 
 This is the plan for finishing every Trello card and cutting a feature-complete `2.0.0`. Releases are forward-only. Minor bumps ship user-visible features. Patch bumps ship stability/tests/docs only. Major (`2.0.0`) is cut exactly once, when everything below is green.
 
-Each phase has a fixed **exit criteria** gate. A release does not ship, and this file is not updated with the new version, until its gate is met. Gates are strict: `bun run build`, `go -C apps/api test ./...`, both `docker compose config` invocations, and a manual browser pass against the dev server.
+Each phase has a fixed **exit criteria** gate. A release does not ship, and this file is not updated with the new version, until its gate is met. Gates are strict: `bun run build`, `go -C apps/api test ./...`, the `docker compose -f docker-compose.prod.yml config` check, and a manual browser pass against the dev server.
 
 ### 9.0 Release table
 
@@ -276,7 +269,7 @@ Fifteen releases. Some are heavy (1.8.0 payments, 1.10.0/1.11.0 importers) and w
    - [admin_handler.go](apps/api/internal/handler/admin_handler.go): happy path + forbidden path.
    - [access.ts](apps/web/src/lib/access.ts): (role, path) to allowed table test.
 4. Deploy validation per §6.2:
-   - Pick one deploy path (Supabase+VPS or AWS+Lightsail). Stand it up. Run the guest/admin/auth smoke checklist.
+   - Stand up the AWS stack (Lightsail API + Amplify web + RDS + S3). Run the guest/admin/auth smoke checklist.
    - Document the result in §6.2.
 
 **Exit gate:**
@@ -582,7 +575,7 @@ Fifteen releases. Some are heavy (1.8.0 payments, 1.10.0/1.11.0 importers) and w
 
 **Work items:**
 
-1. Final smoke test on **both** deploy paths (Supabase+VPS **and** AWS+Lightsail). This is the first release where both are mandatory.
+1. Final smoke test on the AWS stack (Lightsail API + Amplify web + RDS + S3).
 2. Verify TO-DO is empty, DOING is empty, BUGS is empty. If any card landed since the plan was written, decide: include in 2.0.0 or defer to 2.1.0.
 3. Write `CHANGELOG.md` covering the entire 1.1.0 to 2.0.0 arc. One section per minor release, linking to the Trello card each one closed.
 4. Regenerate Swagger and pin it as the `v2` API surface. From here on, breaking API changes require a `3.0.0`.

@@ -1,32 +1,29 @@
-# Deploy Guide: AWS Lightsail + ECR + S3 + Self-Hosted Postgres
+# Deploy Guide: AWS (Lightsail API + Amplify Web + RDS Postgres + S3)
 
-This is the AWS-native deploy path. It runs the entire stack (`api`, `web`, and **a self-hosted Postgres**) on a single Amazon Lightsail instance, pulls images from Amazon ECR, and uses Amazon S3 for media uploads and nightly database backups. No managed database service is required.
+This is the AWS deploy path for Completionist. The Go API runs in Docker on a single Amazon Lightsail instance behind Caddy for TLS. The Next.js frontend is hosted on AWS Amplify, built straight from this repo. PostgreSQL is managed by Amazon RDS, and media uploads go to Amazon S3.
 
-For the alternative deploy that uses Supabase as the managed Postgres provider, see [DEPLOY_SUPABASE_VPS.md](DEPLOY_SUPABASE_VPS.md). The two guides share the same `Dockerfile.api` / `Dockerfile.web` / `docker-compose.prod.yml`; this guide layers an extra `docker-compose.aws.yml` override on top to add the `db` service.
+The backend applies its SQL migrations at startup via golang-migrate (see [apps/api/internal/database/database.go](../apps/api/internal/database/database.go)), so there is no separate migration step.
 
-The backend automatically runs SQL migrations at startup via golang-migrate (see [apps/api/internal/database/database.go](../apps/api/internal/database/database.go)), so there is no separate migration step.
+> **Next.js version note.** Amplify Hosting documents managed Next.js SSR support through Next.js 15, and `apps/web` is on Next.js 16. Confirm Amplify's current Next.js support before the first deploy. If 16 is not yet supported, either pin the web app to Next.js 15 or, as a stopgap, run the Next server in a container on the Lightsail box behind the same Caddy. The API, RDS, and S3 parts of this guide are unaffected.
 
 ## 0. Architecture
 
 ```
-                        ┌──────────────────────────────────────────────┐
-                        │             Lightsail instance               │
-                        │       (Ubuntu 24.04, 2 GB / 2 vCPU)          │
-                        │                                              │
-   users ── HTTPS ──►   │   ┌────────┐   ┌────────┐   ┌────────────┐   │
-                        │   │  web   │──►│  api   │──►│  db (pg16) │   │
-                        │   │ :4000  │   │ :8080  │   │  :5432     │   │
-                        │   └────────┘   └────────┘   └────────────┘   │
-                        │                    │              │          │
-                        └────────────────────┼──────────────┼──────────┘
-                                             │              │
-                                             ▼              ▼
-                                     ┌──────────────┐  ┌──────────────┐
-                                     │     S3       │  │     S3       │
-                                     │ media/       │  │ db-backups/  │
-                                     └──────────────┘  └──────────────┘
-
-Image registry: ECR  →  pulled by Lightsail at deploy time.
+        ┌────────────────────────────┐
+        │  AWS Amplify (Next.js web)  │  CDN + TLS, built from GitHub
+        └─────────────┬──────────────┘
+                      │ HTTPS  (calls api.<domain>)
+   users ── HTTPS ──► │
+                      ▼
+        ┌────────────────────────────┐
+        │  Lightsail instance         │
+        │  Caddy (TLS) -> Go API:8080 │  Docker, Dockerfile.api
+        └──────┬───────────────┬──────┘
+               │               │
+               ▼               ▼
+        ┌─────────────┐  ┌─────────────┐
+        │ RDS Postgres │  │ S3 (media/) │
+        └─────────────┘  └─────────────┘
 ```
 
 ## 1. Cost sketch
@@ -35,107 +32,64 @@ Image registry: ECR  →  pulled by Lightsail at deploy time.
 |---|---|---|
 | Lightsail instance | 2 GB RAM / 2 vCPU / 60 GB SSD | $12 |
 | Lightsail static IP | attached to a running instance | $0 |
-| S3 (media + db backups) | low-traffic project | $1 to 3 |
-| ECR | first 500 MB free, then $0.10/GB-month | $0 to 1 |
-| Data transfer out | included in Lightsail bundle (2 TB) | $0 |
-| **Total** | | **~$13 to 16** |
+| RDS Postgres | `db.t4g.micro`, single-AZ, 20 GB gp3 | $14 to 16 |
+| Amplify Hosting | low traffic (build minutes + served GB) | $0 to 2 |
+| S3 | media for a low-traffic project | $1 to 3 |
+| Data transfer | Lightsail bundle includes 2 TB | $0 |
+| **Total** | | **~$27 to 33** |
 
-If the Lightsail box ever runs out of headroom, the upgrade path is to move Postgres to RDS (see the FAQ at the bottom).
+RDS is the main line item versus self-hosting Postgres on the box. You pay for it to get managed automated backups, point-in-time recovery, and snapshots, so there is no backup script to run and no cron to babysit.
 
-## 2. Create the S3 bucket
+## 2. S3 bucket and IAM (media)
 
-1. AWS console → S3 → **Create bucket**.
-2. Pick a region close to your Lightsail region (e.g. `us-east-1`). Use the same region for everything.
-3. Block all public access: **ON**.
-4. Bucket versioning: optional but recommended for the backups prefix.
-5. Inside the bucket, create two prefixes (folders): `media/` and `db-backups/`.
+1. AWS console, S3, **Create bucket**. Pick one region and use it for everything (Lightsail, RDS, S3).
+2. Block all public access: **ON**. The API serves media through the app, so the bucket stays private.
+3. Create one prefix: `media/`.
 
-Then create an IAM user with a scoped policy:
+Create an IAM user with a scoped policy:
 
 ```json
 {
   "Version": "2012-10-17",
   "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"],
-      "Resource": "arn:aws:s3:::<your-bucket>/*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": ["s3:ListBucket"],
-      "Resource": "arn:aws:s3:::<your-bucket>"
-    }
+    { "Effect": "Allow", "Action": ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"], "Resource": "arn:aws:s3:::<your-bucket>/*" },
+    { "Effect": "Allow", "Action": ["s3:ListBucket"], "Resource": "arn:aws:s3:::<your-bucket>" }
   ]
 }
 ```
 
-Generate an access key for that user. You'll plug those values into `.env.production` as:
+Generate an access key. These map to `.env.production`:
 
-- `AWS_REGION`
-- `AWS_BUCKET`
-- `AWS_ACCESS_KEY_ID`
-- `AWS_SECRET_ACCESS_KEY`
 - `STORAGE_DRIVER=s3`
+- `AWS_REGION`, `AWS_BUCKET`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
 
-The Go API reads these in [apps/api/internal/config/config.go](../apps/api/internal/config/config.go).
+The Go API reads them in [apps/api/internal/config/config.go](../apps/api/internal/config/config.go).
 
-## 3. Create the ECR repositories
+## 3. RDS Postgres
 
-Two repositories, one per image:
+1. AWS console, RDS, **Create database**, Standard create, **PostgreSQL 16**.
+2. Template: Free tier or Dev/Test. Instance: **`db.t4g.micro`**. Storage: **20 GB gp3**, single-AZ to start.
+3. Set the master username, a strong password, and an initial database name (e.g. `completionist`).
+4. Connectivity: place it in the **default VPC** of your region, **Public access: No**.
+5. Keep automated backups on (7 day retention is fine). Backups plus snapshots are what replace the old `pg_dump` cron.
 
-```bash
-aws ecr create-repository --repository-name completionist-api --region <region>
-aws ecr create-repository --repository-name completionist-web --region <region>
+Build the connection string for `.env.production`:
+
+```
+DATABASE_URL=postgres://<master_user>:<password>@<rds-endpoint>:5432/<db_name>?sslmode=require
 ```
 
-Optional but recommended: set a lifecycle policy to keep only the last 10 images per repo so storage doesn't drift upward.
+`sslmode=require` matters: RDS encrypts connections in transit. The API runs its migrations against this database at startup. Networking is covered in the next step, since the Lightsail box has to reach this private endpoint.
 
-> ECR is **optional**. If your local machine is slow or you don't want a registry, you can build directly on the Lightsail instance the way [DEPLOY_SUPABASE_VPS.md](DEPLOY_SUPABASE_VPS.md) does (`git pull && docker compose build`). ECR is the right call if you want immutable, SHA-tagged images and/or you build in CI.
+## 4. Lightsail instance and VPC peering to RDS
 
-## 4. Build and push images to ECR
+1. Lightsail, **Create instance**, same region as RDS and S3. Linux/Unix, OS Only, **Ubuntu 24.04 LTS**.
+2. Plan: **$12 / 2 GB / 2 vCPU**. Attach a **Static IP** under Networking.
+3. IPv4 firewall: allow `22/tcp` (ideally your IP only), `80/tcp`, `443/tcp`.
+4. **Enable Lightsail VPC peering**: Lightsail home, Account, Advanced, "Enable VPC peering" for the RDS region. This peers the Lightsail network with your region's default VPC, where RDS lives.
+5. On the **RDS security group**, add an inbound rule: PostgreSQL (`5432`) from the Lightsail peered range (the region's Lightsail VPC CIDR, or the instance's private IP). The box can now reach the private RDS endpoint over TLS.
 
-From your dev machine, with Docker buildx and the AWS CLI logged in:
-
-```bash
-ACCOUNT_ID=<your-aws-account-id>
-REGION=<your-region>
-TAG=$(git rev-parse --short HEAD)
-REGISTRY="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
-
-aws ecr get-login-password --region "${REGION}" \
-  | docker login --username AWS --password-stdin "${REGISTRY}"
-
-# api
-docker buildx build --platform linux/amd64 \
-  -t "${REGISTRY}/completionist-api:${TAG}" \
-  -t "${REGISTRY}/completionist-api:latest" \
-  -f Dockerfile.api . --push
-
-# web: build args bake the API URL at build time, so set them now
-docker buildx build --platform linux/amd64 \
-  --build-arg BACKEND_BASE_URL=https://api.<your-domain> \
-  --build-arg BACKEND_PORT=443 \
-  -t "${REGISTRY}/completionist-web:${TAG}" \
-  -t "${REGISTRY}/completionist-web:latest" \
-  -f Dockerfile.web . --push
-```
-
-`--platform linux/amd64` matters if you build on an Apple Silicon Mac. Lightsail instances are x86_64.
-
-## 5. Create the Lightsail instance
-
-1. AWS console → Lightsail → **Create instance**.
-2. Region: same as your S3 bucket.
-3. Platform: Linux/Unix → OS Only → **Ubuntu 24.04 LTS**.
-4. Instance plan: **$12 / 2 GB / 2 vCPU / 60 GB SSD** minimum. The 1 GB plan is too small for Postgres + API + web + a Next.js production server side-by-side.
-5. Name it (e.g. `completionist-prod`) and create.
-6. Once running, attach a **Static IP** under Networking → Static IPs.
-7. Open firewall ports under Networking → IPv4 Firewall: `22/tcp` (SSH, ideally restricted to your IP), `80/tcp`, `443/tcp`. You do **not** need to expose `4000` or `8080` once Caddy is in front; before that, temporarily allow `4000/tcp` and `8080/tcp` for smoke testing.
-
-## 6. Install Docker on the instance
-
-SSH in (use the Lightsail browser console or download the SSH key) and run the same install steps as the Supabase guide:
+Install Docker on the instance (SSH in via the Lightsail console):
 
 ```bash
 sudo apt-get update
@@ -148,28 +102,12 @@ echo \
   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt-get update
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin git awscli
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin git
 sudo usermod -aG docker $USER
 newgrp docker
 ```
 
-Note that this also installs `awscli` (used by the backup script).
-
-## 7. Configure the AWS CLI on the instance
-
-Same IAM credentials you generated in step 2:
-
-```bash
-aws configure
-# AWS Access Key ID: <key>
-# AWS Secret Access Key: <secret>
-# Default region name: <region>
-# Default output format: json
-```
-
-This is what lets `scripts/backup-db-to-s3.sh` push dumps to S3.
-
-## 8. Clone the repo and write `.env.production`
+## 5. Deploy the API
 
 ```bash
 sudo mkdir -p /opt/completionist
@@ -179,87 +117,32 @@ cd /opt/completionist
 cp .env.production.example .env.production
 ```
 
-Edit `.env.production` and:
+Edit `.env.production`:
 
-- **Comment out** the Supabase `DATABASE_URL` (Option A).
-- **Uncomment** the Option B block and set `POSTGRES_PASSWORD` to a strong random value.
-- Set `JWT_SECRET` to a strong random value.
-- Set `BACKEND_BASE_URL`, `FRONTEND_BASE_URL`, `ALLOWED_ORIGINS`, `WEB_BACKEND_BASE_URL`, `WEB_BACKEND_PORT` to whatever your final domain (or static IP) will be.
-- Set `STORAGE_DRIVER=s3` and fill in `AWS_REGION`, `AWS_BUCKET`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`.
+- `JWT_SECRET`: a strong random value.
+- `DATABASE_URL`: the RDS string from step 3 (`sslmode=require`).
+- `BACKEND_BASE_URL` and `PUBLIC_BASE_URL`: `https://api.<your-domain>` (finalized after Caddy, step 6).
+- `FRONTEND_BASE_URL` and `ALLOWED_ORIGINS`: your Amplify URL (finalized after step 7).
+- `STORAGE_DRIVER=s3` and the four `AWS_*` values from step 2.
 
-The connection string `postgres://completionist:<POSTGRES_PASSWORD>@db:5432/completionist?sslmode=disable` works because `db` is the Compose service name and the connection never leaves the Docker network.
-
-## 9. Pull from ECR and start the stack
+Bring up the API (only `docker-compose.prod.yml`; there is no in-stack database):
 
 ```bash
-ACCOUNT_ID=<your-aws-account-id>
-REGION=<your-region>
-REGISTRY="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
-
-aws ecr get-login-password --region "${REGION}" \
-  | docker login --username AWS --password-stdin "${REGISTRY}"
+docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build
 ```
 
-If you're using ECR-built images, edit `docker-compose.prod.yml` (or add a second override) so `api.image` and `web.image` point at the ECR URIs you pushed in step 4 (e.g. `${REGISTRY}/completionist-api:${TAG}`). If you're building on the box instead, leave the file alone and add `--build` to the `up` command below.
-
-Then bring it up using both compose files:
+Building on the box keeps it simple. If you prefer immutable images, push `Dockerfile.api` to ECR and point `api.image` at the ECR URI instead of building:
 
 ```bash
-docker compose --env-file .env.production \
-  -f docker-compose.prod.yml \
-  -f docker-compose.aws.yml \
-  pull
-
-docker compose --env-file .env.production \
-  -f docker-compose.prod.yml \
-  -f docker-compose.aws.yml \
-  up -d
+aws ecr create-repository --repository-name completionist-api --region <region>
+docker buildx build --platform linux/amd64 -t <acct>.dkr.ecr.<region>.amazonaws.com/completionist-api:<tag> -f Dockerfile.api . --push
 ```
 
-The `db` service comes from [docker-compose.aws.yml](../docker-compose.aws.yml). Without that override file the stack falls back to expecting an external Postgres (the Supabase path).
+The API applies any pending migrations against RDS on startup.
 
-golang-migrate runs at API startup automatically against the in-stack Postgres. The migrations create the `pgcrypto` extension before any `gen_random_uuid()` call, so vanilla `postgres:16-alpine` is sufficient; no custom image needed.
+## 6. HTTPS for the API with Caddy
 
-## 10. Verify
-
-```bash
-docker compose --env-file .env.production \
-  -f docker-compose.prod.yml \
-  -f docker-compose.aws.yml \
-  ps
-
-docker compose --env-file .env.production \
-  -f docker-compose.prod.yml \
-  -f docker-compose.aws.yml \
-  logs -f api
-```
-
-The api logs should show migrations applied and the server listening on `:8080`. From the instance:
-
-```bash
-curl -I http://localhost:4000
-curl -I http://localhost:8080/swagger/index.html
-```
-
-From your browser (using the static IP, before Caddy is in front):
-
-- Frontend: `http://<STATIC_IP>:4000`
-- API docs: `http://<STATIC_IP>:8080/swagger/index.html`
-
-Confirm the schema landed by listing tables in the running db container:
-
-```bash
-docker compose --env-file .env.production \
-  -f docker-compose.prod.yml \
-  -f docker-compose.aws.yml \
-  exec db psql -U completionist completionist -c "\dt"
-```
-
-You should see ~25 tables (`users`, `posts`, `rooms`, `room_messages`, `direct_messages`, etc.).
-
-## 11. HTTPS with Caddy
-
-Once the stack is up on `:4000` / `:8080`, put Caddy in front of it for automatic Let's Encrypt and clean URLs. Create `docker-compose.caddy.yml` (a third override):
+The frontend gets TLS from Amplify. The API needs its own certificate. Put Caddy in front of it with an override `docker-compose.caddy.yml`:
 
 ```yaml
 services:
@@ -275,7 +158,6 @@ services:
       - caddy_config:/config
     depends_on:
       - api
-      - web
 
 volumes:
   caddy_data:
@@ -285,122 +167,70 @@ volumes:
 `Caddyfile`:
 
 ```
-app.<your-domain> {
-    reverse_proxy web:4000
-}
-
 api.<your-domain> {
     reverse_proxy api:8080
 }
 ```
 
-Then update `.env.production`:
-
-- `BACKEND_BASE_URL=https://api.<your-domain>`
-- `FRONTEND_BASE_URL=https://app.<your-domain>`
-- `ALLOWED_ORIGINS=https://app.<your-domain>`
-- `WEB_BACKEND_BASE_URL=https://api.<your-domain>`
-- `WEB_BACKEND_PORT=443`
-
-The web image bakes the API URL at build time (see the `BACKEND_BASE_URL` build-arg in [Dockerfile.web](../Dockerfile.web)), so after changing `WEB_BACKEND_BASE_URL` you must **rebuild and re-push the web image**, then `pull && up -d` on the box. Same gotcha as section 9 of [DEPLOY_SUPABASE_VPS.md](DEPLOY_SUPABASE_VPS.md).
-
-Bring Caddy up:
+Point `api.<your-domain>` at the Lightsail static IP (an A record in Route 53 or any DNS provider). Then:
 
 ```bash
 docker compose --env-file .env.production \
   -f docker-compose.prod.yml \
-  -f docker-compose.aws.yml \
   -f docker-compose.caddy.yml \
   up -d
 ```
 
-Once verified working, close ports `4000` and `8080` in the Lightsail firewall. Only `80` and `443` need to be public.
+Set `BACKEND_BASE_URL=https://api.<your-domain>` and `PUBLIC_BASE_URL=https://api.<your-domain>` in `.env.production`, then re-up. Once Caddy works, close `8080` in the Lightsail firewall; only `80` and `443` stay open.
 
-## 12. Backups
+## 7. Frontend on AWS Amplify
 
-Install the cron job:
+1. Amplify console, **Create new app**, **Host web app**, connect your GitHub repo and branch.
+2. This is a monorepo: set the app root to **`apps/web`** (Amplify monorepo build settings, `appRoot: apps/web`). Amplify detects Next.js and runs the install plus `next build`.
+3. Build-time environment variables (the Next build reads these via [apps/web/next.config.ts](../apps/web/next.config.ts) and bakes them into `NEXT_PUBLIC_*`):
+   - `BACKEND_BASE_URL=https://api.<your-domain>`
+   - `BACKEND_PORT=443`
+4. Add a custom domain (e.g. `app.<your-domain>`). Amplify provisions the certificate and serves over its CDN.
+5. Back in `.env.production` on the Lightsail box, set `FRONTEND_BASE_URL` and `ALLOWED_ORIGINS` to the Amplify domain, then re-up the API so CORS allows the frontend.
 
-```bash
-sudo cp /opt/completionist/scripts/backup-db-to-s3.sh /opt/completionist/scripts/backup-db-to-s3.sh
-sudo chmod +x /opt/completionist/scripts/backup-db-to-s3.sh
-sudo crontab -e
-# add:
-0 4 * * * /opt/completionist/scripts/backup-db-to-s3.sh >> /var/log/completionist-backup.log 2>&1
-```
+Re-read the Next.js version note at the top of this guide before the first Amplify build.
 
-The script reads `.env.production`, runs `pg_dump` inside the `db` container, gzips the result into `/opt/completionist/backups/`, ships it to `s3://<AWS_BUCKET>/db-backups/`, and prunes anything older than the 14 most recent local archives. See [scripts/backup-db-to-s3.sh](../scripts/backup-db-to-s3.sh).
-
-To test it manually:
+## 8. Verify
 
 ```bash
-sudo /opt/completionist/scripts/backup-db-to-s3.sh
-aws s3 ls "s3://<AWS_BUCKET>/db-backups/"
+# API (from your machine, after Caddy + DNS):
+curl -I https://api.<your-domain>/swagger/index.html
+
+# Web: open https://app.<your-domain> in a browser.
+# Confirm the network tab shows calls to https://api.<your-domain>/api/... ,
+# and that login works (this exercises CORS end to end).
 ```
 
-To **restore** from a backup:
+Confirm the schema landed in RDS (from the box, with psql pointed at DATABASE_URL):
 
 ```bash
-aws s3 cp s3://<AWS_BUCKET>/db-backups/completionist-<STAMP>.sql.gz .
-gunzip -c completionist-<STAMP>.sql.gz \
-  | docker compose --env-file .env.production \
-      -f docker-compose.prod.yml \
-      -f docker-compose.aws.yml \
-      exec -T db psql -U completionist completionist
+psql "$DATABASE_URL" -c "\dt"
 ```
 
-For a clean restore you'll usually want to drop and recreate the database first.
+You should see ~25 tables (`users`, `posts`, `rooms`, `room_messages`, `direct_messages`, etc.).
 
-## 13. Update / redeploy
+## 9. Update and redeploy
 
-Each release:
-
-1. Locally (or in CI): rebuild and push the images with a new SHA tag.
-   ```bash
-   TAG=$(git rev-parse --short HEAD)
-   docker buildx build --platform linux/amd64 -t "${REGISTRY}/completionist-api:${TAG}" -f Dockerfile.api . --push
-   docker buildx build --platform linux/amd64 -t "${REGISTRY}/completionist-web:${TAG}" -f Dockerfile.web . --push
-   ```
-2. SSH to the Lightsail instance, update the image tags in `docker-compose.prod.yml` (or whichever override holds them), and:
-   ```bash
-   docker compose --env-file .env.production \
-     -f docker-compose.prod.yml \
-     -f docker-compose.aws.yml \
-     pull
-   docker compose --env-file .env.production \
-     -f docker-compose.prod.yml \
-     -f docker-compose.aws.yml \
-     up -d
-   ```
-
-The api applies any new migrations on startup. The `db` volume is preserved across updates.
+- **API**: on the box, `git pull`, then `docker compose --env-file .env.production -f docker-compose.prod.yml -f docker-compose.caddy.yml up -d --build`. Migrations auto-apply. (Or push a new ECR tag and `pull` instead of `--build`.)
+- **Web**: push to the connected branch. Amplify builds and deploys automatically, with atomic rollouts and one-click rollback.
 
 ---
 
 ## FAQ
 
-### Why not Aurora or RDS?
+### Why RDS instead of self-hosting Postgres on the box?
 
-Cost. Aurora is overkill for a single-product workload at this stage, and even RDS Postgres `db.t4g.micro` adds ~$13/mo for backups + multi-AZ failover you don't need yet. Self-hosted Postgres on the same Lightsail box costs $0 extra and has the same schema compatibility. The upgrade path is real and painless if you outgrow the box:
+Managed automated backups, point-in-time recovery, and snapshots, with the database decoupled from the instance lifecycle. That removes the old `pg_dump`-to-S3 cron entirely. `db.t4g.micro` is the low-cost tier and is plenty for this workload; scale it up in place if you outgrow it.
 
-1. Spin up RDS Postgres in the same region.
-2. Stop the `db` service: `docker compose ... stop db`.
-3. Restore the latest S3 backup into RDS with `pg_restore`.
-4. Point `DATABASE_URL` in `.env.production` at the RDS endpoint (use `sslmode=require`).
-5. Drop `docker-compose.aws.yml` from the compose command (back to the Supabase-style path).
-6. `docker compose --env-file .env.production -f docker-compose.prod.yml up -d`.
+### Why Amplify for the web instead of a container on Lightsail?
 
-No Go code changes, no schema changes.
+Managed builds from git, a global CDN, automatic TLS, and atomic deploys with rollback, none of which you operate by hand. The one caveat is the Next.js version note at the top; verify Amplify's Next 16 support before committing to it.
 
-### Why not SQLite?
+### Why is the API on Lightsail and not Amplify or App Runner?
 
-It was the original idea for this deploy and I considered it carefully. It's the wrong choice for this codebase:
-
-- The schema uses **8 custom Postgres ENUM types**, **6+ JSONB columns with GIN indexes**, the **pgcrypto** extension, and `gen_random_uuid()`. None of these map cleanly to SQLite; every one would need a schema rewrite.
-- The app has a **WebSocket chat system** (rooms, DMs, message reactions). SQLite is single-writer and would hit `SQLITE_BUSY` under any concurrent message load.
-- A nightly `pg_dump` on a 2 GB Lightsail box already gives you the "DB-as-a-file" durability story you wanted, without sacrificing the features above.
-
-Postgres-in-Docker hits the same cost target as SQLite ($0 extra) without any of the trade-offs.
-
-### Why a separate `docker-compose.aws.yml` instead of editing `docker-compose.prod.yml`?
-
-So the existing Supabase deploy path documented in [DEPLOY_SUPABASE_VPS.md](DEPLOY_SUPABASE_VPS.md) keeps working unchanged. Using `docker-compose.prod.yml` alone gives you the external-DB stack; adding `-f docker-compose.aws.yml` layers on the in-stack `db` service and the `api → db` healthcheck dependency. Both deploy targets stay first-class.
+The API is a long-lived Go process with a WebSocket hub, which wants a persistent server, not a frontend host or a request-scoped function. Lightsail is the cheapest predictable box for that. ECS/Fargate or App Runner are the next step if you outgrow a single instance.

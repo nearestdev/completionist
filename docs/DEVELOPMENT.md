@@ -7,7 +7,7 @@ The repo is a single bun workspace at the root with two apps:
 - `apps/api` is the Go 1.25 HTTP API (chi router, sqlx over PostgreSQL, JWT auth, WebSocket realtime, S3 or local file storage).
 - `apps/web` is the Next.js (App Router) + TypeScript + Tailwind frontend.
 
-For deployment specifics see `docs/DEPLOY_SUPABASE_VPS.md` and `docs/DEPLOY_AWS_LIGHTSAIL.md`. For a deeper explanation of how the host and port values fit together, see `docs/PORT_CONFIGURATION.md`.
+For deployment specifics see `docs/DEPLOY_AWS_LIGHTSAIL.md`. For a deeper explanation of how the host and port values fit together, see `docs/PORT_CONFIGURATION.md`.
 
 ## Prerequisites
 
@@ -16,7 +16,7 @@ For deployment specifics see `docs/DEPLOY_SUPABASE_VPS.md` and `docs/DEPLOY_AWS_
 | Go | 1.25+ | Builds and runs the API. Must be on `PATH`. |
 | Bun | 1.3.9+ | Package manager and task runner for the whole repo. The root `package.json` pins `bun@1.3.9`. |
 | Docker | recent, with the Compose plugin | Runs local Postgres. The dev script accepts either `docker compose` or the legacy `docker-compose`. |
-| Node | 22 | Only needed for the production web image (`Dockerfile.web` uses `node:22-bookworm-slim`). Local dev uses Bun, so you do not need a separate Node install for `bun run dev`. |
+| Node | 22+ | Not needed locally; Bun handles dev and `bun run build`. AWS Amplify builds the frontend on Node in the cloud. |
 
 Two CLI tools are installed into your Go bin during setup, so you do not need to fetch them by hand:
 
@@ -90,7 +90,7 @@ The table below lists every key. "Required" means the app needs it to start or t
 | Key | Required | Description |
 | --- | --- | --- |
 | `JWT_SECRET` | yes | HMAC secret used to sign and validate JWTs. Use a long random string. |
-| `DATABASE_URL` | yes (prod) | Postgres connection string. For local dev the app falls back to the Docker Postgres defaults, so you usually leave it unset locally. In prod it points at Supabase (`sslmode=require`) or the in-stack `db` service (`sslmode=disable`). |
+| `DATABASE_URL` | yes (prod) | Postgres connection string. For local dev the app falls back to the Docker Postgres defaults, so you usually leave it unset locally. In prod it points at the managed RDS Postgres endpoint (`sslmode=require`). |
 | `GO_ENV` | no | `development` or `production`. Set automatically by the dev and start scripts; controls dev-only behavior such as admin seeding. |
 
 ### Host and port configuration
@@ -99,21 +99,11 @@ The table below lists every key. "Required" means the app needs it to start or t
 | --- | --- | --- |
 | `SERVER_ADDR` | no | Address the API listens on. Defaults to `:8080`. |
 | `BACKEND_PORT` | no | API port advertised to other config and to the web build. Defaults to `8080`. |
-| `BACKEND_BASE_URL` | no | Public base URL of the API (scheme and host, no port). Used to build absolute links. |
+| `BACKEND_BASE_URL` | no | Public base URL of the API (scheme and host, no port). Used to build absolute links, and set as an Amplify build env so the web app knows the API URL. |
 | `PORT` | no | Frontend port. The scripts set this to `4000`. |
-| `FRONTEND_BASE_URL` | no | Public base URL of the frontend. |
+| `FRONTEND_BASE_URL` | no | Public base URL of the frontend (the Amplify domain in prod). |
 | `PUBLIC_BASE_URL` | no | Public base URL used when building absolute media/upload links. |
-| `ALLOWED_ORIGINS` | no | Comma-separated CORS allowlist for the API. |
-| `WEB_BACKEND_BASE_URL` | no | Compile-time only: API base URL baked into the Next.js image at build. Changing it requires rebuilding the web image. |
-| `WEB_BACKEND_PORT` | no | Compile-time only: API port baked into the Next.js image at build. Same rebuild caveat. |
-
-### Self-hosted database (AWS / Lightsail path only)
-
-| Key | Required | Description |
-| --- | --- | --- |
-| `POSTGRES_USER` | conditional | Username for the in-stack Postgres in `docker-compose.aws.yml`. Ignored on the Supabase path. |
-| `POSTGRES_PASSWORD` | conditional | Password for the in-stack Postgres. The AWS compose file refuses to start without it. |
-| `POSTGRES_DB` | conditional | Database name for the in-stack Postgres. |
+| `ALLOWED_ORIGINS` | no | Comma-separated CORS allowlist for the API (the Amplify origin in prod). |
 
 ### File storage
 
@@ -121,7 +111,7 @@ The table below lists every key. "Required" means the app needs it to start or t
 | --- | --- | --- |
 | `STORAGE_DRIVER` | no | `local` (default) writes uploads to disk and serves them from `/uploads`. `s3` uses S3. |
 | `AWS_REGION` | conditional | Required when `STORAGE_DRIVER=s3`. |
-| `AWS_BUCKET` | conditional | S3 bucket for uploads. Also used by the nightly backup script. Required for S3 storage. |
+| `AWS_BUCKET` | conditional | S3 bucket for uploads. Required when `STORAGE_DRIVER=s3`. |
 | `AWS_ACCESS_KEY_ID` | conditional | Required when `STORAGE_DRIVER=s3`. |
 | `AWS_SECRET_ACCESS_KEY` | conditional | Required when `STORAGE_DRIVER=s3`. |
 
@@ -224,40 +214,28 @@ bun run start
 
 ### Docker
 
-Two images cover production:
-
-- `Dockerfile.api`: multi-stage Go build on `golang:1.25-alpine`, final image on `alpine:3.22` running as a non-root `app` user. It copies the compiled binary and the `migrations/` directory, exposes `8080`, and applies migrations at container startup like any other run of the binary.
-- `Dockerfile.web`: multi-stage Node build on `node:22-bookworm-slim`. The API base URL and port are baked in at build time through the `BACKEND_BASE_URL` and `BACKEND_PORT` build args. It exposes `4000`.
-
-Because the web image bakes the API URL at build time, changing where the API lives means rebuilding and redeploying the web image, not just restarting it.
+`Dockerfile.api` is the only production image: a multi-stage Go build on `golang:1.25-alpine`, final image on `alpine:3.22` running as a non-root `app` user. It copies the compiled binary and the `migrations/` directory, exposes `8080`, and applies migrations at container startup like any other run of the binary. The frontend is built and served by AWS Amplify, so there is no production web image.
 
 The Compose files:
 
 - `docker-compose.yml`: local Postgres only, for development.
-- `docker-compose.prod.yml`: the `api` and `web` services, both reading `.env.production`. Use this alone with an external managed database (Supabase, RDS).
-- `docker-compose.aws.yml`: an overlay that adds an in-stack `postgres:16-alpine` `db` service with a healthcheck and makes `api` wait for it. It does not define `api` or `web` itself, so always combine it with `docker-compose.prod.yml`.
+- `docker-compose.prod.yml`: the `api` service reading `.env.production`. It connects to managed RDS Postgres via `DATABASE_URL` and stores uploads in S3.
 
-Typical production commands (see the deploy docs for the full procedure):
+Typical production command (see the deploy doc for the full procedure):
 
 ```bash
-# External managed database
-docker compose --env-file .env.production -f docker-compose.prod.yml up -d
-
-# Self-hosted database in the same stack
-docker compose --env-file .env.production -f docker-compose.prod.yml -f docker-compose.aws.yml up -d
+docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build
 ```
-
-A nightly backup helper lives at `scripts/backup-db-to-s3.sh` for the self-hosted database path. It dumps the `db` service with `pg_dump`, gzips into `./backups`, ships to `s3://<AWS_BUCKET>/db-backups/`, and keeps the 14 most recent local archives. Wire it via cron on the host as documented in the script header.
 
 ## Ports
 
 | Service | Port | Where |
 | --- | --- | --- |
 | API | 8080 | `SERVER_ADDR=:8080`. Local and inside the Docker network. Swagger UI at `/swagger/index.html`. |
-| Frontend | 4000 | Next.js, set by `PORT=4000` in the dev and start scripts and in both Docker images. |
+| Frontend | 4000 | Next.js dev/start server, set by `PORT=4000` in the dev and start scripts. In production the frontend is hosted on AWS Amplify. |
 | Local Postgres | 5435 | Host port mapped from the container's `5432` (`docker-compose.yml`). |
 
-In production behind the optional Caddy overlay, `api:8080` and `web:4000` are internal to the Docker network and Caddy terminates TLS on `80`/`443`, routing by subdomain. See the deploy docs for that setup.
+In production the Caddy overlay terminates TLS on `80`/`443` and reverse-proxies `api:8080`. The frontend is hosted on AWS Amplify with its own CDN and TLS. See the deploy doc for that setup.
 
 ## Running tests
 

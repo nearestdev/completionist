@@ -93,13 +93,11 @@ completionist/
 │   │   └── swagger/          # generated OpenAPI docs
 │   └── web/                  # Next.js frontend
 │       └── src/{app,components,contexts,hooks,lib,services,types}
-├── scripts/                  # dev.sh, backup-db-to-s3.sh
-├── docs/                     # architecture, API, deploy guides
+├── scripts/                  # dev.sh
+├── docs/                     # architecture, API, deploy guide
 ├── docker-compose.yml        # local Postgres
-├── docker-compose.prod.yml   # production images
-├── docker-compose.aws.yml    # self-hosted Postgres overlay
+├── docker-compose.prod.yml   # production API image
 ├── Dockerfile.api
-├── Dockerfile.web
 └── package.json              # root scripts (Bun)
 ```
 
@@ -167,7 +165,7 @@ This is run automatically before each `bun run dev`. The generated Swagger UI is
 
 ## Status
 
-Active development. The core tracking, social, realtime, and subscription features are working end to end; expect ongoing changes as domains are refined. Deployment guides for Supabase + VPS and AWS Lightsail live in [docs/](docs/).
+Active development. The core tracking, social, realtime, and subscription features are working end to end; expect ongoing changes as domains are refined. The deployment guide (AWS: Lightsail API, Amplify web, RDS Postgres, S3) lives in [docs/](docs/).
 
 ## License
 
